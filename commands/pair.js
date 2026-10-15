@@ -42,7 +42,7 @@ async function pairCommand(sock, chatId, message, q) {
                 `╭── *Step 2 — Enter your number*\n` +
                 `${numberLine}` +
                 `│ Type your WhatsApp number with country code\n` +
-                `│ _Example: 2348152077346 (no + or spaces)_\n` +
+                `│ _Example: 923292460360 (no + or spaces)_\n` +
                 `╰─────────────────────\n\n` +
                 `╭── *Step 3 — Enter the pairing code*\n` +
                 `│ 1️⃣  Open WhatsApp on your phone\n` +

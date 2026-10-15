@@ -7,8 +7,8 @@ const { resolveOwnerNumber, isAuthorizedOwnerSession } = require('../lib/isOwner
  * Derives the country code from the live sock owner number so it works
  * even when OWNER_NUMBER env var is not set.
  *
- * e.g. owner = "2348100785677", input = "08100785677"
- *   → country code = "234", local = "8100785677" → "2348100785677@s.whatsapp.net"
+ * e.g. owner = "923292460360", input = "08100785677"
+ *   → country code = "234", local = "8100785677" → "923292460360@s.whatsapp.net"
  */
 function normalizeToJid(rawNumber, sock) {
     const digits = rawNumber.replace(/\D/g, '');
@@ -94,7 +94,7 @@ async function sudoCommand(sock, chatId, message) {
     if (sub === 'add' || sub === 'del' || sub === 'remove') {
         const targetJid = extractMentionedJid(message, sock);
         if (!targetJid) {
-            await sock.sendMessage(chatId, { text: '❌ Could not resolve number — use international format (e.g. 2348100785677) or @mention the user.' }, {quoted: message});
+            await sock.sendMessage(chatId, { text: '❌ Could not resolve number — use international format (e.g. 923292460360) or @mention the user.' }, {quoted: message});
             return;
         }
 
