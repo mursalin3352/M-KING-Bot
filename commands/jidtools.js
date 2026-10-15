@@ -107,7 +107,7 @@ function box(title, lines) {
         body,
         `╰${'─'.repeat(38)}╯`,
         '',
-        '_Daratech_ ⚡',
+        '_M-KING_ ⚡',
     ].join('\n');
 }
 

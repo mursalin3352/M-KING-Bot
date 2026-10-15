@@ -19,7 +19,7 @@ async function urbanCommand(sock, chatId, message) {
             `╰━━━━━━━━━━━━━━━━━━━━━╯\n\n` +
             `📖 *Definition:*\n${def}\n\n` +
             `${ex ? `💬 *Example:*\n_${ex}_\n\n` : ''}` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: `❌ Urban Dictionary lookup failed for "*${word}*".` }, { quoted: message });

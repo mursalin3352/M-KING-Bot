@@ -9,7 +9,7 @@ async function poemCommand(sock, chatId, message) {
         const lines = poem.lines?.slice(0, 20).join('\n') || 'No lines.';
         const truncated = poem.lines?.length > 20 ? '\n_...poem continues_' : '';
         await sock.sendMessage(chatId, {
-            text: `📜 *POEM*\n\n*${poem.title}*\n_by ${poem.author}_\n\n${lines}${truncated}\n\n_Daratech_ ⚡`
+            text: `📜 *POEM*\n\n*${poem.title}*\n_by ${poem.author}_\n\n${lines}${truncated}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch { await sock.sendMessage(chatId, { text: '❌ Could not fetch a poem.' }, { quoted: message }); }
 }
@@ -24,7 +24,7 @@ async function animequoteCommand(sock, chatId, message) {
         const character = q?.character || 'Unknown';
         const show      = q?.show      || 'Unknown';
         await sock.sendMessage(chatId, {
-            text: `🎌 *ANIME QUOTE*\n\n"${quote}"\n\n— *${character}* from _${show}_\n\n_Daratech_ ⚡`
+            text: `🎌 *ANIME QUOTE*\n\n"${quote}"\n\n— *${character}* from _${show}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch { await sock.sendMessage(chatId, { text: '❌ Could not fetch anime quote.' }, { quoted: message }); }
 }
@@ -33,7 +33,7 @@ async function kanyeCommand(sock, chatId, message) {
     try {
         const { data } = await axios.get('https://api.kanye.rest/', { timeout: 8000 });
         await sock.sendMessage(chatId, {
-            text: `🎤 *KANYE WEST SAID:*\n\n"${data.quote}"\n\n— Kanye West\n\n_Daratech_ ⚡`
+            text: `🎤 *KANYE WEST SAID:*\n\n"${data.quote}"\n\n— Kanye West\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch { await sock.sendMessage(chatId, { text: '❌ Kanye is busy rapping. Try again.' }, { quoted: message }); }
 }

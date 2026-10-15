@@ -61,7 +61,7 @@ async function demoteCommand(sock, chatId, mentionedJids, message) {
                 ...lines,
                 '━━━━━━━━━━━━━━━━━━━━',
                 '',
-                '_Daratech V2_ ⚡'
+                '_M-KING V2_ ⚡'
             ].join('\n'),
             mentions: mentionList
         }, { quoted: message });

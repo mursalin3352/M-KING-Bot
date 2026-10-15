@@ -47,7 +47,7 @@ module.exports = {
             if (!data?.success || !data?.result?.image_url) throw new Error(data?.message || 'No result returned');
             await sock.sendMessage(chatId, {
                 image: { url: data.result.image_url },
-                caption: '✨ *Background Removed!*\n\n_Daratech_ ⚡'
+                caption: '✨ *Background Removed!*\n\n_M-KING_ ⚡'
             }, { quoted: message });
         } catch (e) {
             console.error('[removebg]', e.message);

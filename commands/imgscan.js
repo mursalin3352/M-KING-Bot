@@ -70,7 +70,7 @@ async function imgscanCommand(sock, chatId, message) {
 
         if (!dlMsg) {
             return sock.sendMessage(chatId, {
-                text: '🔍 *IMAGE IDENTIFIER*\n\nUsage:\n• Reply to an image with *$identify*\n• Send an image with caption *$identify*\n\nExample:\n• *$identify what breed of dog is this?*\n\n_Daratech_ ⚡',
+                text: '🔍 *IMAGE IDENTIFIER*\n\nUsage:\n• Reply to an image with *$identify*\n• Send an image with caption *$identify*\n\nExample:\n• *$identify what breed of dog is this?*\n\n_M-KING_ ⚡',
             }, { quoted: message });
         }
 
@@ -148,7 +148,7 @@ async function imgscanCommand(sock, chatId, message) {
                 '│',
                 '╰━━━━━━━━━━━━━━━━━━━━━━━━━━╯',
                 '',
-                '⚡ *Daratech Bot*',
+                '⚡ *M-KING Bot*',
             ].join('\n'),
         }, { quoted: message });
 
@@ -156,7 +156,7 @@ async function imgscanCommand(sock, chatId, message) {
         console.error('[imgscan]', err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ *Image identification failed*\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ *Image identification failed*\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }

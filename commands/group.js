@@ -250,7 +250,7 @@ async function svcontactCommand(sock, chatId, message) {
 
         for (const p of participants) {
             const number = p.id.split('@')[0];
-            let name = p.notify || p.pushName || `Daratech-${number}`;
+            let name = p.notify || p.pushName || `M-KING-${number}`;
             name = name.replace(/[;,]/g, '').trim();
             vcfData += `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL;TYPE=CELL:+${number}\nEND:VCARD\n`;
         }
@@ -331,7 +331,7 @@ async function creategcCommand(sock, chatId, senderId, userMessage, message) {
         const groupName = userMessage.slice(9).trim();
         if (!groupName) {
             return sock.sendMessage(chatId, {
-                text: `🏗️ *CREATE GROUP*\n\n▸ Usage: *$creategc <group name>*\n▸ Example: *$creategc Daratech Squad*\n\n_Daratech_ ⚡`
+                text: `🏗️ *CREATE GROUP*\n\n▸ Usage: *$creategc <group name>*\n▸ Example: *$creategc M-KING Squad*\n\n_M-KING_ ⚡`
             }, { quoted: message });
         }
 
@@ -355,14 +355,14 @@ async function creategcCommand(sock, chatId, senderId, userMessage, message) {
                   `┃ 🔗 *Link:* ${invite}\n` +
                   `┃\n` +
                   `╰━━━━━━━━━━━━━━━━━━━━━\n\n` +
-                  `_Daratech_ ⚡`
+                  `_M-KING_ ⚡`
         }, { quoted: message });
 
     } catch (err) {
         console.error('[creategc]', err);
         await sock.sendMessage(chatId, { react: { text: '❌', key: message.key } });
         await sock.sendMessage(chatId, {
-            text: `❌ *Failed to create group*\n\n▸ ${err.message}\n\n_Daratech_ ⚡`
+            text: `❌ *Failed to create group*\n\n▸ ${err.message}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }

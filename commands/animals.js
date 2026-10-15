@@ -44,7 +44,7 @@ async function flickrImg(keyword) {
 async function catfactCommand(sock, chatId, message) {
     try {
         const { data } = await axios.get('https://catfact.ninja/fact', { timeout: 8000 });
-        await sock.sendMessage(chatId, { text: `🐱 *CAT FACT*\n\n${data.fact}\n\n_Daratech_ ⚡` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `🐱 *CAT FACT*\n\n${data.fact}\n\n_M-KING_ ⚡` }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not fetch cat fact.' }, { quoted: message });
     }
@@ -62,7 +62,7 @@ async function catimageCommand(sock, chatId, message) {
         }
         await sock.sendMessage(chatId, {
             image: imgBuf,
-            caption: `🐱 *RANDOM CAT* 🐱${fact ? `\n\n💡 ${fact}` : ''}\n\n_Daratech_ ⚡`
+            caption: `🐱 *RANDOM CAT* 🐱${fact ? `\n\n💡 ${fact}` : ''}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not fetch cat image.' }, { quoted: message });
@@ -72,7 +72,7 @@ async function catimageCommand(sock, chatId, message) {
 async function dogfactCommand(sock, chatId, message) {
     try {
         const { data } = await axios.get(`${SRA}/dog`, { timeout: 10000, headers: SRA_HEADERS });
-        await sock.sendMessage(chatId, { text: `🐶 *DOG FACT*\n\n${data.fact}\n\n_Daratech_ ⚡` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `🐶 *DOG FACT*\n\n${data.fact}\n\n_M-KING_ ⚡` }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not fetch dog fact.' }, { quoted: message });
     }
@@ -92,7 +92,7 @@ async function dogimageCommand(sock, chatId, message) {
         }
         await sock.sendMessage(chatId, {
             image: imgBuf,
-            caption: `🐶 *RANDOM DOG* 🐶${fact ? `\n\n💡 ${fact}` : ''}\n\n_Daratech_ ⚡`
+            caption: `🐶 *RANDOM DOG* 🐶${fact ? `\n\n💡 ${fact}` : ''}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not fetch dog image.' }, { quoted: message });
@@ -112,7 +112,7 @@ async function foxImageCommand(sock, chatId, message) {
         }
         await sock.sendMessage(chatId, {
             image: imgBuf,
-            caption: `🦊 *RANDOM FOX*${fact ? `\n\n💡 ${fact}` : ''}\n\n_Daratech_ ⚡`
+            caption: `🦊 *RANDOM FOX*${fact ? `\n\n💡 ${fact}` : ''}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not fetch fox image.' }, { quoted: message });
@@ -134,7 +134,7 @@ async function pandaImageCommand(sock, chatId, message) {
         }
         await sock.sendMessage(chatId, {
             image: imgBuf,
-            caption: `🐼 *RANDOM PANDA*${fact ? `\n\n💡 ${fact}` : ''}\n\n_Daratech_ ⚡`
+            caption: `🐼 *RANDOM PANDA*${fact ? `\n\n💡 ${fact}` : ''}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not fetch panda image.' }, { quoted: message });
@@ -153,7 +153,7 @@ async function koalaImageCommand(sock, chatId, message) {
         }
         await sock.sendMessage(chatId, {
             image: imgBuf,
-            caption: `🐨 *RANDOM KOALA*${fact ? `\n\n💡 ${fact}` : ''}\n\n_Daratech_ ⚡`
+            caption: `🐨 *RANDOM KOALA*${fact ? `\n\n💡 ${fact}` : ''}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not fetch koala image.' }, { quoted: message });
@@ -174,7 +174,7 @@ async function birbCommand(sock, chatId, message) {
         }
         await sock.sendMessage(chatId, {
             image: imgBuf,
-            caption: `🐦 *RANDOM BIRD*\n\n_Daratech_ ⚡`
+            caption: `🐦 *RANDOM BIRD*\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not fetch bird image.' }, { quoted: message });
@@ -196,7 +196,7 @@ async function raccoonCommand(sock, chatId, message) {
         }
         await sock.sendMessage(chatId, {
             image: imgBuf,
-            caption: `🦝 *RANDOM RACCOON*${fact ? `\n\n💡 ${fact}` : ''}\n\n_Daratech_ ⚡`
+            caption: `🦝 *RANDOM RACCOON*${fact ? `\n\n💡 ${fact}` : ''}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not fetch raccoon image.' }, { quoted: message });

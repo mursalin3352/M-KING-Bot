@@ -8,7 +8,7 @@ async function adviceCommand(sock, chatId, message) {
         const text = data?.result;
         if (!text || typeof text !== 'string') throw new Error('Empty');
         await sock.sendMessage(chatId, {
-            text: `💡 *ADVICE*\n\n"${text}"\n\n_Daratech_ ⚡`
+            text: `💡 *ADVICE*\n\n"${text}"\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch { await sock.sendMessage(chatId, { text: '❌ Could not fetch advice.' }, { quoted: message }); }
 }
@@ -38,7 +38,7 @@ const WYR = [
 
 async function wouldyouCommand(sock, chatId, message) {
     const q = WYR[Math.floor(Math.random() * WYR.length)];
-    await sock.sendMessage(chatId, { text: `🤔 *WOULD YOU RATHER?*\n\n${q}\n\nReply A or B!\n\n_Daratech_ ⚡` }, { quoted: message });
+    await sock.sendMessage(chatId, { text: `🤔 *WOULD YOU RATHER?*\n\n${q}\n\nReply A or B!\n\n_M-KING_ ⚡` }, { quoted: message });
 }
 
 async function yesnoCommand(sock, chatId, message) {
@@ -46,11 +46,11 @@ async function yesnoCommand(sock, chatId, message) {
         const { data } = await axios.get('https://yesno.wtf/api', { timeout: 8000 });
         await sock.sendMessage(chatId, {
             image: { url: data.image },
-            caption: `🎱 *YES OR NO?*\n\n*${data.answer.toUpperCase()}*\n\n_Daratech_ ⚡`
+            caption: `🎱 *YES OR NO?*\n\n*${data.answer.toUpperCase()}*\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         const ans = Math.random() > 0.5 ? 'YES' : 'NO';
-        await sock.sendMessage(chatId, { text: `🎱 *YES OR NO?*\n\n*${ans}*\n\n_Daratech_ ⚡` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `🎱 *YES OR NO?*\n\n*${ans}*\n\n_M-KING_ ⚡` }, { quoted: message });
     }
 }
 
@@ -73,7 +73,7 @@ async function neverhaveieverCommand(sock, chatId, message) {
         "Never have I ever said 'I'm on my way' when I hadn't even started getting ready.",
     ];
     const p = prompts[Math.floor(Math.random() * prompts.length)];
-    await sock.sendMessage(chatId, { text: `🙋 *NEVER HAVE I EVER*\n\n${p}\n\n👍 = I have  |  👎 = I haven't\n\n_Daratech_ ⚡` }, { quoted: message });
+    await sock.sendMessage(chatId, { text: `🙋 *NEVER HAVE I EVER*\n\n${p}\n\n👍 = I have  |  👎 = I haven't\n\n_M-KING_ ⚡` }, { quoted: message });
 }
 
 module.exports = { adviceCommand, wouldyouCommand, yesnoCommand, neverhaveieverCommand };

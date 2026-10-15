@@ -22,7 +22,7 @@ async function restartCommand(sock, chatId, message, senderId) {
     } catch { /* ignore */ }
 
     await sock.sendMessage(chatId, {
-        text: `╭─〔 🔄 *RESTARTING* 〕─╮\n│\n│  ⚡ *DaraTech Bot is rebooting…*\n│  ⏳ _Please wait a few seconds._\n│\n╰─────────────────────────╯\n\n_Daratech_ ⚡`
+        text: `╭─〔 🔄 *RESTARTING* 〕─╮\n│\n│  ⚡ *M-KING Bot is rebooting…*\n│  ⏳ _Please wait a few seconds._\n│\n╰─────────────────────────╯\n\n_M-KING_ ⚡`
     }, { quoted: message });
 
     setTimeout(() => {

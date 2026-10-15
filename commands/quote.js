@@ -7,7 +7,7 @@ module.exports = async function quoteCommand(sock, chatId, message) {
         const text = data?.result;
         if (!text || typeof text !== 'string') throw new Error('Empty response');
         await sock.sendMessage(chatId, {
-            text: `╭━═『 *DAILY WISDOM* 』━╮\n╰━━━━━━━━━━━━━━━╯\n\n"${text}"\n\n_Daratech_ ⚡`,
+            text: `╭━═『 *DAILY WISDOM* 』━╮\n╰━━━━━━━━━━━━━━━╯\n\n"${text}"\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (e) {
         console.error('[quote]', e.message);

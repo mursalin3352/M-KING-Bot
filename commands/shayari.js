@@ -7,7 +7,7 @@ async function shayariCommand(sock, chatId, message) {
         const text = data?.result;
         if (!text || typeof text !== 'string') throw new Error('Empty response');
         await sock.sendMessage(chatId, {
-            text: `🌹 *SHAYARI / POETRY*\n\n"${text}"\n\n_Daratech_ ⚡`,
+            text: `🌹 *SHAYARI / POETRY*\n\n"${text}"\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (e) {
         console.error('[shayari]', e.message);

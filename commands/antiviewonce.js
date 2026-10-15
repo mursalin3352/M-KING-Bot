@@ -99,7 +99,7 @@ async function handleAntiViewOnceCommand(sock, chatId, message, match) {
                   `┃\n` +
                   `╰━━━━━━━━━━━━━━━━━━━━━\n\n` +
                   `_Every view-once sent in any chat will be forwarded to your DM instantly._\n\n` +
-                  `_Daratech_ ⚡`
+                  `_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -110,7 +110,7 @@ async function handleAntiViewOnceCommand(sock, chatId, message, match) {
         saveConfig(cfg);
         await sock.sendMessage(chatId, { react: { text: '✅', key: message.key } });
         return sock.sendMessage(chatId, {
-            text: `╭━━━「 👁️ *ANTI-VIEWONCE* 」━━━\n┃\n┃ ✅ *Enabled successfully*\n┃ All view-once media will be\n┃ forwarded to your DM.\n┃\n╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+            text: `╭━━━「 👁️ *ANTI-VIEWONCE* 」━━━\n┃\n┃ ✅ *Enabled successfully*\n┃ All view-once media will be\n┃ forwarded to your DM.\n┃\n╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -121,7 +121,7 @@ async function handleAntiViewOnceCommand(sock, chatId, message, match) {
         saveConfig(cfg);
         await sock.sendMessage(chatId, { react: { text: '✅', key: message.key } });
         return sock.sendMessage(chatId, {
-            text: `╭━━━「 👁️ *ANTI-VIEWONCE* 」━━━\n┃\n┃ ❌ *Disabled*\n┃ View-once media will no longer\n┃ be forwarded to your DM.\n┃\n╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+            text: `╭━━━「 👁️ *ANTI-VIEWONCE* 」━━━\n┃\n┃ ❌ *Disabled*\n┃ View-once media will no longer\n┃ be forwarded to your DM.\n┃\n╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -181,7 +181,7 @@ async function handleAntiViewOnce(sock, message) {
             (origCaption ? `┃ 📝 *Caption:* ${origCaption}\n` : '') +
             `┃\n` +
             `╰━━━━━━━━━━━━━━━━━━━━━\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
 
         // ── Download using downloadMediaMessage (handles all viewonce wrappers) ──
         let buffer;

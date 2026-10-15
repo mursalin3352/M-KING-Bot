@@ -62,7 +62,7 @@ async function flivescoreCommand(sock, chatId, message) {
             text += '\n';
         });
 
-        text += `_Daratech_ ⚡`;
+        text += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -86,7 +86,7 @@ async function fnewsCommand(sock, chatId, message) {
             if (n.summary) text += `   ${n.summary.slice(0, 100)}…\n`;
             text += '\n';
         });
-        text += `_Daratech_ ⚡`;
+        text += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -110,7 +110,7 @@ async function fleaguesCommand(sock, chatId, message) {
             if (l.endpoints?.length) text += `  📋 ${l.endpoints.join(' · ')}\n`;
             text += '\n';
         });
-        text += `_Use $eplstand / $laligastand / $bundesstand for standings_\n_Daratech_ ⚡`;
+        text += `_Use $eplstand / $laligastand / $bundesstand for standings_\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -142,7 +142,7 @@ async function fstreamCommand(sock, chatId, message) {
             text += '\n';
         });
 
-        text += `_Daratech_ ⚡`;
+        text += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -177,10 +177,10 @@ async function fplayerCommand(sock, chatId, message) {
         if (p.thumbnail) {
             await sock.sendMessage(chatId, {
                 image: { url: p.thumbnail },
-                caption: text + '\n_Daratech_ ⚡',
+                caption: text + '\n_M-KING_ ⚡',
             }, { quoted: message });
         } else {
-            await sock.sendMessage(chatId, { text: text + '\n_Daratech_ ⚡' }, { quoted: message });
+            await sock.sendMessage(chatId, { text: text + '\n_M-KING_ ⚡' }, { quoted: message });
         }
 
         if (results.length > 1) {
@@ -225,10 +225,10 @@ async function fteamCommand(sock, chatId, message) {
         if (logo) {
             await sock.sendMessage(chatId, {
                 image: { url: logo },
-                caption: text + '\n_Daratech_ ⚡',
+                caption: text + '\n_M-KING_ ⚡',
             }, { quoted: message });
         } else {
-            await sock.sendMessage(chatId, { text: text + '\n_Daratech_ ⚡' }, { quoted: message });
+            await sock.sendMessage(chatId, { text: text + '\n_M-KING_ ⚡' }, { quoted: message });
         }
         await react(sock, message, '✅');
     } catch (err) {
@@ -262,10 +262,10 @@ async function fvenueCommand(sock, chatId, message) {
         if (img) {
             await sock.sendMessage(chatId, {
                 image: { url: img },
-                caption: text + '\n_Daratech_ ⚡',
+                caption: text + '\n_M-KING_ ⚡',
             }, { quoted: message });
         } else {
-            await sock.sendMessage(chatId, { text: text + '\n_Daratech_ ⚡' }, { quoted: message });
+            await sock.sendMessage(chatId, { text: text + '\n_M-KING_ ⚡' }, { quoted: message });
         }
         await react(sock, message, '✅');
     } catch (err) {
@@ -298,7 +298,7 @@ function leagueStandingsCommand(leagueId, leagueName) {
                 const pts  = String(r.points ?? 0);
                 text += `${pos} ${team} ${p} ${w} ${d} ${l} ${pts}\n`;
             });
-            text += `\n_Daratech_ ⚡`;
+            text += `\n_M-KING_ ⚡`;
             await sock.sendMessage(chatId, { text }, { quoted: message });
             await react(sock, message, '✅');
         } catch (err) {
@@ -329,7 +329,7 @@ function leagueMatchesCommand(leagueId, leagueName, sub = 'matches') {
                 if (m.matchday)  text += `   📋 Matchday ${m.matchday}\n`;
                 text += '\n';
             });
-            text += `_Daratech_ ⚡`;
+            text += `_M-KING_ ⚡`;
             await sock.sendMessage(chatId, { text }, { quoted: message });
             await react(sock, message, '✅');
         } catch (err) {
@@ -354,7 +354,7 @@ async function bliveCommand(sock, chatId, message) {
             if (m.league) text += `   🏆 ${m.league}\n`;
             text += '\n';
         });
-        text += `_Daratech_ ⚡`;
+        text += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {

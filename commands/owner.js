@@ -10,7 +10,7 @@ const { getOwnerNumbers } = require('../lib/isOwner');
  * number or a hardcoded contact.
  */
 async function ownerCommand(sock, chatId) {
-    const botOwner = settings.botOwner || 'Daratech';
+    const botOwner = settings.botOwner || 'M-KING';
     const ownerNumbers = getOwnerNumbers();
     const contacts = ownerNumbers.map((ownerNumber, index) => {
         const contactName = ownerNumbers.length === 1

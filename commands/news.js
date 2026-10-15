@@ -13,7 +13,7 @@ async function newsCommand(sock, chatId, message) {
             txt += `📅 _${art.pubDate || 'Recently'}_\n`;
             txt += `🔗 _${(art.link || '').substring(0, 50)}..._\n\n`;
         });
-        txt += `🚀 *Daratech Bot*`;
+        txt += `🚀 *M-KING Bot*`;
 
         const firstImage = (data.articles || []).find(a => a.image)?.image;
         if (firstImage) {

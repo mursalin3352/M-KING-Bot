@@ -30,7 +30,7 @@ async function facebookCommand(sock, chatId, message) {
                       `┃ ▸ *Usage:* $facebook <URL>\n` +
                       `┃ ▸ Supports videos & reels\n` +
                       `┃\n` +
-                      `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                      `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
             }, { quoted: message });
         }
 
@@ -71,13 +71,13 @@ async function facebookCommand(sock, chatId, message) {
             await sock.sendMessage(chatId, {
                 video:    vidBuf,
                 mimetype: 'video/mp4',
-                caption:  `📘 *Facebook Video*\n\n_Daratech_ ⚡`,
+                caption:  `📘 *Facebook Video*\n\n_M-KING_ ⚡`,
             }, { quoted: message });
         } else {
             await sock.sendMessage(chatId, {
                 video:    { url: dl },
                 mimetype: 'video/mp4',
-                caption:  `📘 *Facebook Video*\n\n_Daratech_ ⚡`,
+                caption:  `📘 *Facebook Video*\n\n_M-KING_ ⚡`,
             }, { quoted: message });
         }
 
@@ -85,7 +85,7 @@ async function facebookCommand(sock, chatId, message) {
         console.error('[facebook]', err.message);
         await sock.sendMessage(chatId, { react: { text: '❌', key: message.key } });
         await sock.sendMessage(chatId, {
-            text: '❌ *Facebook download failed.*\n\nMake sure the link is a valid public Facebook video.\n\n_Daratech_ ⚡'
+            text: '❌ *Facebook download failed.*\n\nMake sure the link is a valid public Facebook video.\n\n_M-KING_ ⚡'
         }, { quoted: message });
     }
 }

@@ -35,7 +35,7 @@ async function tiktokCommand(sock, chatId, message) {
         const buf = await toBuffer(dl);
         await sock.sendMessage(chatId, {
             video: buf, mimetype: 'video/mp4',
-            caption: `🎵 *${title}*\n\n_Daratech_ ⚡`,
+            caption: `🎵 *${title}*\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (err) {
         console.error('[tiktok]', err.message);

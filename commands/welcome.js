@@ -59,7 +59,7 @@ async function handleJoinEvent(sock, id, participants) {
                     `👤 *Member:* @${phone}\n` +
                     `👥 *Count:*  #${memberCount}\n` +
                     (groupDesc ? `\n📋 ${groupDesc}\n` : '') +
-                    `\n_Daratech_ ⚡`;
+                    `\n_M-KING_ ⚡`;
             }
 
             // ── 4. Fetch profile picture directly (fast, no 3rd-party API) ──

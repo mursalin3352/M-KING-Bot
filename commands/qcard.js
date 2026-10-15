@@ -139,7 +139,7 @@ async function toSticker(imgBuf) {
         const img  = new webp.Image();
         await img.load(webpBuf);
 
-        const meta   = { 'sticker-pack-id': crypto.randomBytes(32).toString('hex'), 'sticker-pack-name': 'Daratech', emojis: ['💬'] };
+        const meta   = { 'sticker-pack-id': crypto.randomBytes(32).toString('hex'), 'sticker-pack-name': 'M-KING', emojis: ['💬'] };
         const attr   = Buffer.from([0x49,0x49,0x2A,0x00,0x08,0x00,0x00,0x00,0x01,0x00,0x41,0x57,0x07,0x00,0x00,0x00,0x00,0x00,0x16,0x00,0x00,0x00]);
         const jBuf   = Buffer.from(JSON.stringify(meta), 'utf8');
         const exif   = Buffer.concat([attr, jBuf]);

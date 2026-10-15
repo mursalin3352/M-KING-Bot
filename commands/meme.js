@@ -9,7 +9,7 @@ async function memeCommand(sock, chatId, message) {
         const imgRes = await axios.get(url, { responseType: 'arraybuffer', timeout: 15000, headers: { 'User-Agent': 'Mozilla/5.0' } });
         await sock.sendMessage(chatId, {
             image: Buffer.from(imgRes.data),
-            caption: `😂 *${data.title || 'MEME'}*\n\n_Daratech_ ⚡`,
+            caption: `😂 *${data.title || 'MEME'}*\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (e) {
         console.error('[meme]', e.message);

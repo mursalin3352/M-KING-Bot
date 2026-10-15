@@ -88,8 +88,8 @@ async function takeallCommand(sock, chatId, message) {
     const batchSize = requestedBatchSize ||
         (stickers.length > DEFAULT_BATCH_SIZE ? LARGE_BATCH_SIZE : DEFAULT_BATCH_SIZE);
     const totalBatches = Math.ceil(stickers.length / batchSize);
-    const author = settings.botOwner || settings.botName || 'Daratech';
-    const basePackName = settings.packname || 'Daratech';
+    const author = settings.botOwner || settings.botName || 'M-KING';
+    const basePackName = settings.packname || 'M-KING';
 
     await sock.sendMessage(chatId, {
         text: `📦 Found *${stickers.length}* stickers.\n` +
@@ -105,7 +105,7 @@ async function takeallCommand(sock, chatId, message) {
         const packName = totalBatches === 1
             ? `${basePackName} TakeAll`
             : `${basePackName} TakeAll ${batchIndex + 1}`;
-        const packId = `daratech-takeall-${Date.now()}-${crypto.randomBytes(5).toString('hex')}-${batchIndex + 1}`;
+        const packId = `m-king-takeall-${Date.now()}-${crypto.randomBytes(5).toString('hex')}-${batchIndex + 1}`;
         let batchSent = 0;
 
         for (const storedMessage of batch) {

@@ -70,7 +70,7 @@ async function twitterDlCommand(sock, chatId, message) {
         const buf = await toBuffer(dl);
         await sock.sendMessage(chatId, {
             video: buf, mimetype: 'video/mp4',
-            caption: `🐦 *Twitter / X*\n${data?.result?.title || ''}\n\n_Daratech_ ⚡`,
+            caption: `🐦 *Twitter / X*\n${data?.result?.title || ''}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch { await sendErr(sock, chatId, message, 'Twitter/X'); }
 }
@@ -94,11 +94,11 @@ async function igdlCommand(sock, chatId, message) {
         if (isVideo) {
             await sock.sendMessage(chatId, {
                 video: buf, mimetype: 'video/mp4',
-                caption: `📸 *Instagram*\n\n_Daratech_ ⚡`,
+                caption: `📸 *Instagram*\n\n_M-KING_ ⚡`,
             }, { quoted: message });
         } else {
             await sock.sendMessage(chatId, {
-                image: buf, caption: `📸 *Instagram*\n\n_Daratech_ ⚡`,
+                image: buf, caption: `📸 *Instagram*\n\n_M-KING_ ⚡`,
             }, { quoted: message });
         }
     } catch { await sendErr(sock, chatId, message, 'Instagram'); }
@@ -153,7 +153,7 @@ async function pinterestDlCommand(sock, chatId, message) {
 
         const title  = pinData.title  || '';
         const author = pinData.author || '';
-        const caption = `📌 *Pinterest*${title ? `\n${title}` : ''}${author ? `\n👤 ${author}` : ''}\n\n_Daratech_ ⚡`;
+        const caption = `📌 *Pinterest*${title ? `\n${title}` : ''}${author ? `\n👤 ${author}` : ''}\n\n_M-KING_ ⚡`;
 
         if (isVideo) {
             await sock.sendMessage(chatId, {
@@ -186,7 +186,7 @@ async function douyinCommand(sock, chatId, message) {
         const buf = await toBuffer(dl);
         await sock.sendMessage(chatId, {
             video: buf, mimetype: 'video/mp4',
-            caption: `🎵 *Douyin*\n${data?.result?.title || ''}\n\n_Daratech_ ⚡`,
+            caption: `🎵 *Douyin*\n${data?.result?.title || ''}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch { await sendErr(sock, chatId, message, 'Douyin'); }
 }
@@ -228,7 +228,7 @@ async function snackVideoCommand(sock, chatId, message) {
         const buf = await toBuffer(dl);
         await sock.sendMessage(chatId, {
             video: buf, mimetype: 'video/mp4',
-            caption: `🍿 *SnackVideo*${title ? `\n${title}` : ''}\n\n_Daratech_ ⚡`,
+            caption: `🍿 *SnackVideo*${title ? `\n${title}` : ''}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch { await sendErr(sock, chatId, message, 'SnackVideo'); }
 }
@@ -322,7 +322,7 @@ async function videyCommand(sock, chatId, message) {
         const buf = await toBuffer(dl);
         await sock.sendMessage(chatId, {
             video: buf, mimetype: 'video/mp4',
-            caption: '📹 *Videy*\n\n_Daratech_ ⚡',
+            caption: '📹 *Videy*\n\n_M-KING_ ⚡',
         }, { quoted: message });
     } catch (err) {
         await sock.sendMessage(chatId, { text: `❌ Videy download failed.\n${err.message}` }, { quoted: message });
@@ -343,11 +343,11 @@ async function webDlCommand(sock, chatId, message) {
         const lower = url.toLowerCase().split('?')[0];
         if (/\.(jpe?g|png|webp|gif)$/.test(lower)) {
             await sock.sendMessage(chatId,
-                { image: buf, caption: '🌐 *WebDL*\n\n_Daratech_ ⚡' },
+                { image: buf, caption: '🌐 *WebDL*\n\n_M-KING_ ⚡' },
                 { quoted: message });
         } else if (/\.(mp4|webm|mov|avi|mkv)$/.test(lower)) {
             await sock.sendMessage(chatId,
-                { video: buf, mimetype: 'video/mp4', caption: '🌐 *WebDL*\n\n_Daratech_ ⚡' },
+                { video: buf, mimetype: 'video/mp4', caption: '🌐 *WebDL*\n\n_M-KING_ ⚡' },
                 { quoted: message });
         } else if (/\.(mp3|ogg|flac|wav|m4a|aac)$/.test(lower)) {
             await sock.sendMessage(chatId,
@@ -395,7 +395,7 @@ async function aioCommand(sock, chatId, message) {
         } else {
             await sock.sendMessage(chatId, {
                 video: buf, mimetype: 'video/mp4',
-                caption: `🔗 *AIO Download*\n${data?.result?.title || ''}\n\n_Daratech_ ⚡`,
+                caption: `🔗 *AIO Download*\n${data?.result?.title || ''}\n\n_M-KING_ ⚡`,
             }, { quoted: message });
         }
     } catch { await sendErr(sock, chatId, message, 'AIO'); }

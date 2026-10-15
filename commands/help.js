@@ -136,7 +136,7 @@ async function sendOverview(sock, chatId, message) {
         ``,
         `${ICONS.back} *$menu*  •  back to menu`,
         ``,
-        `${ICONS.fire}  Daratech  ⚡`,
+        `${ICONS.fire}  M-KING  ⚡`,
     ].join('\n');
 
     await sendWithImage(sock, chatId, message, body);
@@ -225,7 +225,7 @@ async function sendCategoryHelp(sock, chatId, message, input) {
         ``,
         tipText,
         ``,
-        `${ICONS.fire}  Daratech  ⚡`,
+        `${ICONS.fire}  M-KING  ⚡`,
     ].join('\n');
 
     await sendWithImage(sock, chatId, message, body);

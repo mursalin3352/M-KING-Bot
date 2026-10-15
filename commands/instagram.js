@@ -57,7 +57,7 @@ async function instagramCommand(sock, chatId, message) {
                 text: '📸 *Instagram Downloader*\n\n' +
                       'Usage: *$ig <Instagram URL>*\n\n' +
                       'Supports: Posts, Reels, TV, Stories\n\n' +
-                      '_Daratech_ ⚡',
+                      '_M-KING_ ⚡',
             }, { quoted: message });
         }
 
@@ -100,11 +100,11 @@ async function instagramCommand(sock, chatId, message) {
 
         if (!mediaItems.length) {
             return sock.sendMessage(chatId, {
-                text: '❌ No media found. The post may be private or the link is invalid.\n\n_Daratech_ ⚡',
+                text: '❌ No media found. The post may be private or the link is invalid.\n\n_M-KING_ ⚡',
             }, { quoted: message });
         }
 
-        const caption  = `📸 *Instagram*\n\n_Daratech_ ⚡`;
+        const caption  = `📸 *Instagram*\n\n_M-KING_ ⚡`;
         const isReel   = url.includes('/reel/') || url.includes('/tv/');
         const toSend   = mediaItems.slice(0, 20); // max 20 items
 
@@ -158,7 +158,7 @@ async function instagramCommand(sock, chatId, message) {
     } catch (err) {
         console.error('[instagram]', err.message);
         await sock.sendMessage(chatId, {
-            text: '❌ An error occurred while downloading Instagram media. Please try again.\n\n_Daratech_ ⚡',
+            text: '❌ An error occurred while downloading Instagram media. Please try again.\n\n_M-KING_ ⚡',
         }, { quoted: message });
     }
 }

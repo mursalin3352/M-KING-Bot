@@ -57,7 +57,7 @@ async function gsearchCommand(sock, chatId, message) {
             if (r.description) txt += `   ${r.description.slice(0, 120)}${r.description.length > 120 ? '…' : ''}\n`;
             txt += `   🔗 ${r.link}\n\n`;
         });
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -83,7 +83,7 @@ async function gimageCommand(sock, chatId, message) {
         const imgRes = await axios.get(imgUrl, { responseType: 'arraybuffer', timeout: 20000, headers: { 'User-Agent': 'Mozilla/5.0' } });
         await sock.sendMessage(chatId, {
             image: Buffer.from(imgRes.data),
-            caption: `🖼️ *GOOGLE IMAGES — "${q}"*\n\n_${data.results.length} results found_\n\n_Daratech_ ⚡`,
+            caption: `🖼️ *GOOGLE IMAGES — "${q}"*\n\n_${data.results.length} results found_\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -117,7 +117,7 @@ async function ttsearchCommand(sock, chatId, message) {
         if (author)       txt += `▸ 👤 *Author:* ${author}\n`;
         if (r.playCount)  txt += `▸ ▶️ *Plays:* ${Number(r.playCount).toLocaleString()}\n`;
         if (r.likeCount)  txt += `▸ ❤️ *Likes:* ${Number(r.likeCount).toLocaleString()}\n`;
-        txt += `\n_Daratech_ ⚡`;
+        txt += `\n_M-KING_ ⚡`;
 
         if (videoUrl && videoUrl.startsWith('http')) {
             // Download and send as actual video
@@ -164,7 +164,7 @@ async function chordCommand(sock, chatId, message) {
         if (r.url) txt += `▸ 🔗 ${r.url}\n`;
         txt += `${'─'.repeat(28)}\n\n`;
         txt += `${body}${(r.lyrics || '').length > 3500 ? '\n…(truncated)' : ''}\n\n`;
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -193,7 +193,7 @@ async function hearthisCommand(sock, chatId, message) {
             if (r.url) txt += `   🔗 ${r.url}\n`;
             txt += '\n';
         });
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
         const thumb = top[0]?.thumbnail;
         if (thumb && thumb.startsWith('http')) {
             await sock.sendMessage(chatId, { image: { url: thumb }, caption: txt }, { quoted: message });
@@ -230,7 +230,7 @@ async function npmpkgCommand(sock, chatId, message) {
         if (r.homepage) txt += `▸ 🌐 *Homepage:* ${r.homepage}\n`;
         if (r.packageLink) txt += `▸ 🔗 *NPM:* ${r.packageLink}\n`;
         if (r.downloadLink) txt += `▸ 📥 *Download:* ${r.downloadLink}\n`;
-        txt += `\n_Daratech_ ⚡`;
+        txt += `\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -261,7 +261,7 @@ async function slyricsCommand(sock, chatId, message) {
             if (r.lyricsUrl) txt += `   📝 Lyrics: ${r.lyricsUrl}\n`;
             txt += '\n';
         });
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
         const thumb = top[0]?.thumbnail;
         if (thumb && thumb.startsWith('http')) {
             await sock.sendMessage(chatId, { image: { url: thumb }, caption: txt }, { quoted: message });
@@ -299,7 +299,7 @@ async function happymodCommand(sock, chatId, message) {
             if (r.url) txt += `   🔗 ${r.url}\n`;
             txt += '\n';
         });
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -328,7 +328,7 @@ async function scsearchCommand(sock, chatId, message) {
             if (r.url) txt += `   🔗 ${r.url}\n`;
             txt += '\n';
         });
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -358,7 +358,7 @@ async function wattpadCommand(sock, chatId, message) {
             if (r.link) txt += `   🔗 ${r.link}\n`;
             txt += '\n';
         });
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
         const thumb = top[0]?.thumbnail;
         if (thumb && thumb.startsWith('http')) {
             await sock.sendMessage(chatId, { image: { url: thumb }, caption: txt }, { quoted: message });
@@ -388,7 +388,7 @@ async function stickersearchCommand(sock, chatId, message) {
         if (!imgUrl) throw new Error('No valid sticker URL');
         await sock.sendMessage(chatId, {
             image: { url: imgUrl },
-            caption: `🎭 *STICKER SEARCH — "${q}"*\n\n_${data.results.length} stickers found_\n\n_Daratech_ ⚡`,
+            caption: `🎭 *STICKER SEARCH — "${q}"*\n\n_${data.results.length} stickers found_\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {

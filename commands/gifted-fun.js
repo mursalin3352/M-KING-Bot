@@ -18,7 +18,7 @@ async function funSend(sock, chatId, message, endpoint, emoji, title) {
         const text = data?.result;
         if (!text || typeof text !== 'string') throw new Error('Empty response');
         await sock.sendMessage(chatId, {
-            text: `${emoji} *${title}*\n\n${text}\n\n_Daratech_ ⚡`,
+            text: `${emoji} *${title}*\n\n${text}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (err) {
         console.error(`[gifted-fun:${endpoint}]`, err.message);

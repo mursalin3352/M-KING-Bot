@@ -33,7 +33,7 @@ const settings = {
   commandMode: "private",
   maxStoreMessages: 20,
   storeWriteInterval: 10000,
-  description: "Daratech - a multi-purpose WhatsApp bot with 1000+ commands.",
+  description: "M-KING - a multi-purpose WhatsApp bot with 1000+ commands.",
   version: "1.0.0",
   // GitHub personal access token — used by $savedoc to read/write files
   // Generate one at: https://github.com/settings/tokens (needs repo scope)

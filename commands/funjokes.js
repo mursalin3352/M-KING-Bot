@@ -4,14 +4,14 @@ const axios = require('axios');
 async function dadjoke(sock, chatId, message) {
     try {
         const { data } = await axios.get('https://icanhazdadjoke.com/', { headers: { Accept: 'application/json' }, timeout: 8000 });
-        await sock.sendMessage(chatId, { text: `😂 *DAD JOKE*\n\n${data.joke}\n\n_Daratech_ ⚡` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `😂 *DAD JOKE*\n\n${data.joke}\n\n_M-KING_ ⚡` }, { quoted: message });
     } catch { await sock.sendMessage(chatId, { text: '❌ Could not fetch a dad joke.' }, { quoted: message }); }
 }
 
 async function chuckCommand(sock, chatId, message) {
     try {
         const { data } = await axios.get('https://api.chucknorris.io/jokes/random', { timeout: 8000 });
-        await sock.sendMessage(chatId, { text: `💪 *CHUCK NORRIS JOKE*\n\n${data.value}\n\n_Daratech_ ⚡` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `💪 *CHUCK NORRIS JOKE*\n\n${data.value}\n\n_M-KING_ ⚡` }, { quoted: message });
     } catch { await sock.sendMessage(chatId, { text: '❌ Could not fetch a Chuck Norris joke.' }, { quoted: message }); }
 }
 
@@ -19,7 +19,7 @@ async function programmingJokeCommand(sock, chatId, message) {
     try {
         const { data } = await axios.get('https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,racist', { timeout: 8000 });
         const text = data.type === 'twopart' ? `${data.setup}\n\n${data.delivery}` : data.joke;
-        await sock.sendMessage(chatId, { text: `💻 *PROGRAMMING JOKE*\n\n${text}\n\n_Daratech_ ⚡` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `💻 *PROGRAMMING JOKE*\n\n${text}\n\n_M-KING_ ⚡` }, { quoted: message });
     } catch { await sock.sendMessage(chatId, { text: '❌ Could not fetch a programming joke.' }, { quoted: message }); }
 }
 
@@ -42,14 +42,14 @@ async function yomammaCommand(sock, chatId, message) {
         'Yo mama so unlucky, even her imaginary friends unfollowed her.',
     ];
     const joke = jokes[Math.floor(Math.random() * jokes.length)];
-    await sock.sendMessage(chatId, { text: `😆 *YO MAMA JOKE*\n\n${joke}\n\n_Daratech_ ⚡` }, { quoted: message });
+    await sock.sendMessage(chatId, { text: `😆 *YO MAMA JOKE*\n\n${joke}\n\n_M-KING_ ⚡` }, { quoted: message });
 }
 
 async function darkJokeCommand(sock, chatId, message) {
     try {
         const { data } = await axios.get('https://v2.jokeapi.dev/joke/Dark?blacklistFlags=racist', { timeout: 8000 });
         const text = data.type === 'twopart' ? `${data.setup}\n\n${data.delivery}` : data.joke;
-        await sock.sendMessage(chatId, { text: `🌑 *DARK JOKE*\n\n${text}\n\n_Daratech_ ⚡` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `🌑 *DARK JOKE*\n\n${text}\n\n_M-KING_ ⚡` }, { quoted: message });
     } catch { await sock.sendMessage(chatId, { text: '❌ Could not fetch a dark joke.' }, { quoted: message }); }
 }
 

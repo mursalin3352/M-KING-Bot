@@ -13,7 +13,7 @@ async function createqrCommand(sock, chatId, message) {
         const imgUrl = buildUrl('/tools/createqr', { query: data });
         await sock.sendMessage(chatId, {
             image: { url: imgUrl },
-            caption: `📱 *QR CODE*\n\n▸ 🔤 *Data:* ${data.slice(0, 60)}${data.length > 60 ? '...' : ''}\n\n_Daratech_ ⚡`,
+            caption: `📱 *QR CODE*\n\n▸ 🔤 *Data:* ${data.slice(0, 60)}${data.length > 60 ? '...' : ''}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (err) {
         console.error('[createqr]', err.message);

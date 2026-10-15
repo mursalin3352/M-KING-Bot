@@ -56,7 +56,7 @@
  *   - "$manga dls"  → same picker, but for up to 5 chapters at once
  *     (range "<from> <to>" or list "n1,n2,n3,..."); each chapter is always
  *     sent as its own separate file, never merged into one archive
- *   File named "Manga Title-Ch. X-DaraTechBot.zip" / "...pdf"
+ *   File named "Manga Title-Ch. X-M-KINGBot.zip" / "...pdf"
  * Requires the `jszip` package (`npm i jszip`) for the zip path, and
  * `pdfkit` (`npm i pdfkit`) for the PDF path; either one missing falls
  * back gracefully (PDF → ZIP → photo albums).
@@ -83,7 +83,7 @@ const MANGA_KEY  = process.env.APIMOVIE_KEY || '';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * mangaFetch — GET from the DaraTech MangaDex API.
+ * mangaFetch — GET from the M-KING MangaDex API.
  * @param {string} path - API path, e.g. '/search?q=chainsaw+man'
  */
 async function mangaFetch(path) {
@@ -579,7 +579,7 @@ async function resolveChapterLabel(chapterId, knownMeta = null) {
 
 function buildMangaFileName(mangaTitle, chapterPart, ext = 'zip') {
     const safe = str => (str || '').replace(/[^\w\s.-]/g, '').trim().replace(/\s+/g, '.');
-    return [safe(mangaTitle) || 'Manga', safe(chapterPart) || 'Chapter', 'DaraTechBot'].filter(Boolean).join('-') + `.${ext}`;
+    return [safe(mangaTitle) || 'Manga', safe(chapterPart) || 'Chapter', 'M-KINGBot'].filter(Boolean).join('-') + `.${ext}`;
 }
 
 // ─── Image download helpers ────────────────────────────────────────────────

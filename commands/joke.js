@@ -14,7 +14,7 @@ async function jokeCommand(sock, chatId, message) {
             throw new Error('Unexpected response');
         }
         await sock.sendMessage(chatId, {
-            text: `😂 *JOKE OF THE DAY*\n\n${text}\n\n_Daratech_ ⚡`,
+            text: `😂 *JOKE OF THE DAY*\n\n${text}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (err) {
         console.error('[joke]', err.message);

@@ -18,7 +18,7 @@ async function loremCommand(sock, chatId, message) {
     ];
     const n = Math.min(Math.max(count, 1), 10);
     const result = Array.from({ length: n }, (_, i) => sentences[i % sentences.length]).join(' ');
-    await sock.sendMessage(chatId, { text: `📝 *LOREM IPSUM* (${n} sentence${n > 1 ? 's' : ''})\n\n${result}\n\n_Daratech_ ⚡` }, { quoted: message });
+    await sock.sendMessage(chatId, { text: `📝 *LOREM IPSUM* (${n} sentence${n > 1 ? 's' : ''})\n\n${result}\n\n_M-KING_ ⚡` }, { quoted: message });
 }
 
 async function fakenameCommand(sock, chatId, message) {
@@ -42,7 +42,7 @@ async function fakenameCommand(sock, chatId, message) {
                 `▸ 📧 *Email:* ${email}\n` +
                 `▸ 📞 *Phone:* ${phone}\n` +
                 `▸ 📍 *Location:* ${location}\n\n` +
-                `⚠️ _This is a randomly generated fake identity._\n\n_Daratech_ ⚡`
+                `⚠️ _This is a randomly generated fake identity._\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not generate a fake name.' }, { quoted: message });
@@ -58,7 +58,7 @@ async function genemailCommand(sock, chatId, message) {
     const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
     const email = `${name}${suffix}@${domain}`;
     await sock.sendMessage(chatId, {
-        text: `📧 *GENERATED EMAIL*\n\n\`${email}\`\n\n⚠️ _This is a generated email, not a real account._\n\n_Daratech_ ⚡`
+        text: `📧 *GENERATED EMAIL*\n\n\`${email}\`\n\n⚠️ _This is a generated email, not a real account._\n\n_M-KING_ ⚡`
     }, { quoted: message });
 }
 
@@ -70,20 +70,20 @@ async function randomnumCommand(sock, chatId, message) {
     if (min >= max) return sock.sendMessage(chatId, { text: '🎲 Usage: $randomnum <min> <max>\nExample: $randomnum 1 100' }, { quoted: message });
     const result = Math.floor(Math.random() * (max - min + 1)) + min;
     await sock.sendMessage(chatId, {
-        text: `🎲 *RANDOM NUMBER*\n\nRange: ${min} – ${max}\nResult: *${result}*\n\n_Daratech_ ⚡`
+        text: `🎲 *RANDOM NUMBER*\n\nRange: ${min} – ${max}\nResult: *${result}*\n\n_M-KING_ ⚡`
     }, { quoted: message });
 }
 
 async function coinflipCommand(sock, chatId, message) {
     const result = Math.random() > 0.5 ? '🪙 HEADS' : '🪙 TAILS';
-    await sock.sendMessage(chatId, { text: `🪙 *COIN FLIP*\n\n*${result}*\n\n_Daratech_ ⚡` }, { quoted: message });
+    await sock.sendMessage(chatId, { text: `🪙 *COIN FLIP*\n\n*${result}*\n\n_M-KING_ ⚡` }, { quoted: message });
 }
 
 async function dicerollCommand(sock, chatId, message) {
     const text = message.message?.conversation || message.message?.extendedTextMessage?.text || '';
     const sides = parseInt(text.split(' ')[1]) || 6;
     const result = Math.floor(Math.random() * sides) + 1;
-    await sock.sendMessage(chatId, { text: `🎲 *DICE ROLL* (d${sides})\n\nYou rolled: *${result}*\n\n_Daratech_ ⚡` }, { quoted: message });
+    await sock.sendMessage(chatId, { text: `🎲 *DICE ROLL* (d${sides})\n\nYou rolled: *${result}*\n\n_M-KING_ ⚡` }, { quoted: message });
 }
 
 module.exports = { loremCommand, fakenameCommand, genemailCommand, randomnumCommand, coinflipCommand, dicerollCommand };

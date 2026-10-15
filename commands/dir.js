@@ -65,7 +65,7 @@ async function showFile(sock, chatId, message, absPath, relPath) {
 
     if (isBinary(ext)) {
         return sock.sendMessage(chatId, {
-            text: `${header}\n\n_Binary file — content not displayed._\n\n_Daratech_ ⚡`,
+            text: `${header}\n\n_Binary file — content not displayed._\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     }
 
@@ -74,7 +74,7 @@ async function showFile(sock, chatId, message, absPath, relPath) {
         raw = fs.readFileSync(absPath, 'utf8');
     } catch (e) {
         return sock.sendMessage(chatId, {
-            text: `${header}\n\n_(could not read: ${e.message})_\n\n_Daratech_ ⚡`,
+            text: `${header}\n\n_(could not read: ${e.message})_\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     }
 
@@ -85,12 +85,12 @@ async function showFile(sock, chatId, message, absPath, relPath) {
             document: Buffer.from(raw, 'utf8'),
             mimetype: 'text/plain',
             fileName: `${name}.txt`,
-            caption: `📄 *${name}* — full file\n\n_Daratech_ ⚡`,
+            caption: `📄 *${name}* — full file\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         return;
     }
 
-    const text = `${header}\n\n📝 *CONTENT :*\n${'─'.repeat(28)}\n\`\`\`\n${raw}\n\`\`\`\n\n_Daratech_ ⚡`;
+    const text = `${header}\n\n📝 *CONTENT :*\n${'─'.repeat(28)}\n\`\`\`\n${raw}\n\`\`\`\n\n_M-KING_ ⚡`;
     await sock.sendMessage(chatId, { text }, { quoted: message });
 }
 
@@ -127,7 +127,7 @@ async function showDir(sock, chatId, message, absPath, relPath) {
         `*📂 Contents:*`,
         lines.join('\n') || '_Empty folder_',
         ``,
-        `_Daratech_ ⚡`,
+        `_M-KING_ ⚡`,
     ].join('\n');
 
     await sock.sendMessage(chatId, { text }, { quoted: message });
@@ -214,7 +214,7 @@ async function showFullDir(sock, chatId, message) {
 // ─── $dir search <query> — find commands by name ──────────────────────────────
 async function searchDirCommand(sock, chatId, message, query) {
     if (!query) return sock.sendMessage(chatId, {
-        text: '🔍 *CMD SEARCH*\n\nUsage: *$dir search <command>*\nExample: $dir search tiktok\n\nSearches all commands.\n\n_Daratech_ ⚡',
+        text: '🔍 *CMD SEARCH*\n\nUsage: *$dir search <command>*\nExample: $dir search tiktok\n\nSearches all commands.\n\n_M-KING_ ⚡',
     }, { quoted: message });
 
     const q       = query.toLowerCase().replace(/^\$/, '');
@@ -312,7 +312,7 @@ async function searchDirCommand(sock, chatId, message, query) {
 
     if (results.length === 0) {
         return sock.sendMessage(chatId, {
-            text: '🔍 No commands found matching *"' + query + '"*.\n\n_Daratech_ ⚡',
+            text: '🔍 No commands found matching *"' + query + '"*.\n\n_M-KING_ ⚡',
         }, { quoted: message });
     }
 
@@ -327,7 +327,7 @@ async function searchDirCommand(sock, chatId, message, query) {
         outLines.push('│  📂 ' + file);
         outLines.push('│');
     }
-    outLines.push('_Daratech_ ⚡');
+    outLines.push('_M-KING_ ⚡');
     await sock.sendMessage(chatId, { text: outLines.join('\n') }, { quoted: message });
 }
 

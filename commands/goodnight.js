@@ -6,7 +6,7 @@ async function goodnightCommand(sock, chatId, message) {
         const data = await funGet('goodnight');
         const text = data?.result;
         if (!text || typeof text !== 'string') throw new Error('Empty response');
-        await sock.sendMessage(chatId, { text: `🌙 *GOODNIGHT*\n\n${text}\n\n_Daratech_ ⚡` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `🌙 *GOODNIGHT*\n\n${text}\n\n_M-KING_ ⚡` }, { quoted: message });
     } catch (e) {
         console.error('[goodnight]', e.message);
         await sock.sendMessage(chatId, { text: '❌ Failed to get goodnight message. Try again!' }, { quoted: message });

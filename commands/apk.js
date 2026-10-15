@@ -19,7 +19,7 @@ async function apkCommand(sock, chatId, message) {
             `▸ 📂 *App:* ${r.appname || query}\n` +
             `▸ 👨‍💻 *Dev:* ${r.developer || 'Unknown'}\n` +
             `▸ 📦 *Size:* ${r.size || 'Unknown'}\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         if (r.appicon) {
             await sock.sendMessage(chatId, { image: { url: r.appicon }, caption }, { quoted: message });
         }

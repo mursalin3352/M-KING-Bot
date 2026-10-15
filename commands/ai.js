@@ -55,7 +55,7 @@ async function aiCommand(sock, chatId, message, userMessage) {
             }
             await sock.sendMessage(chatId, {
                 image: { url: imgUrl },
-                caption: `🎨 *${query}*\n\n_Daratech_ ⚡`,
+                caption: `🎨 *${query}*\n\n_M-KING_ ⚡`,
             }, { quoted: message });
             await sock.sendMessage(chatId, { react: { text: '✅', key: message.key } });
         } catch (err) {
@@ -83,7 +83,7 @@ async function aiCommand(sock, chatId, message, userMessage) {
             : data.result?.answer || JSON.stringify(data.result);
 
         await sock.sendMessage(chatId, {
-            text: `🤖 *${modelName}*\n\n${response.trim()}\n\n_Daratech_ ⚡`,
+            text: `🤖 *${modelName}*\n\n${response.trim()}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await sock.sendMessage(chatId, { react: { text: '✅', key: message.key } });
     } catch (err) {

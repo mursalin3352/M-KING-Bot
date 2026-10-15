@@ -4,9 +4,9 @@ const path = require('path');
 async function githubCommand(sock, chatId, message) {
     try {
         let txt = `*Dara Studio Bot REPO* \n\n`;
-        txt += `\`\`\`Repo : https://github.com/adtelecominfo-png/DaraTech-Bot-V1\`\`\`\n\n`;
+        txt += `\`\`\`Repo : https://github.com/adtelecominfo-png/M-KING-Bot-V1\`\`\`\n\n`;
         txt += `\`\`\`Kindly fork and star the repo ⭐\`\`\`\n\n`;
-        txt += `> DEV : Daratech SHOP ✪`;
+        txt += `> DEV : M-KING SHOP ✪`;
 
         const possiblePaths = [
             path.join(__dirname, '../assets/repo_image.jpg'),
@@ -30,7 +30,7 @@ async function githubCommand(sock, chatId, message) {
     } catch (error) {
         console.error('Error in github command:', error);
         await sock.sendMessage(chatId, {
-            text: `*DaraTech Bot V1 REPO*\n\n\`\`\`https://github.com/adtelecominfo-png/DaraTech-Bot-V1\`\`\`\n\n> DEV : Daratech SHOP ✪`
+            text: `*M-KING Bot V1 REPO*\n\n\`\`\`https://github.com/adtelecominfo-png/M-KING-Bot-V1\`\`\`\n\n> DEV : M-KING SHOP ✪`
         }, { quoted: message });
     }
 }

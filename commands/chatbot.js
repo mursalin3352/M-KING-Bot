@@ -153,7 +153,7 @@ function buildPrompt(userMessage, context) {
 
     let identity = '';
     if (context?.isOwner) {
-        identity = `You are talking to Daratech — your summoner and ally who bound your power into this WhatsApp realm. Treat him with high respect and friendly banter.`;
+        identity = `You are talking to M-KING — your summoner and ally who bound your power into this WhatsApp realm. Treat him with high respect and friendly banter.`;
     } else {
         const parts = [];
         if (userCtx.name)     parts.push(`Their name is ${userCtx.name}.`);

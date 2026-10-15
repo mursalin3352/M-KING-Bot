@@ -5,7 +5,7 @@ const { davidGet } = require('../lib/gifted');
 async function sportsCommand(sock, chatId, message) {
     try {
         await sock.sendMessage(chatId, {
-            text: `📡 *LIVE SCORES* · Daratech\n\n⏳ Fetching live games...`,
+            text: `📡 *LIVE SCORES* · M-KING\n\n⏳ Fetching live games...`,
         }, { quoted: message });
         const data = await davidGet('/sports/live');
         if (!data?.success) return sock.sendMessage(chatId, { text: '❌ Failed to fetch live sports data.' }, { quoted: message });
@@ -35,7 +35,7 @@ async function sportsCommand(sock, chatId, message) {
         if (txt === `🏟️ *LIVE SCOREBOARD*\n\n`) {
             txt += '📭 No live games right now. Check back later!';
         }
-        txt += `\n_Daratech_ ⚡`;
+        txt += `\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
     } catch (err) {
         console.error('[sports]', err.message);
@@ -58,7 +58,7 @@ async function sportsTeamCommand(sock, chatId, message) {
             `▸ 🏙️ *Location:* ${t.location || '-'}\n` +
             `▸ 🏅 *League:* ${t.league || t.sport || '-'}\n` +
             `▸ 🎨 *Colors:* ${(t.color ? '#' + t.color : '-')}\n` +
-            `\n_Daratech_ ⚡`;
+            `\n_M-KING_ ⚡`;
         const logo = t.logo || t.logos?.[0]?.href;
         if (logo) {
             await sock.sendMessage(chatId, { image: { url: logo }, caption: txt }, { quoted: message });
@@ -88,7 +88,7 @@ async function sportsPlayerCommand(sock, chatId, message) {
             `▸ 📍 *Position:* ${p.position?.displayName || p.position || '-'}\n` +
             `▸ 🎂 *DOB:* ${p.dateOfBirth || p.dob || '-'}\n` +
             `▸ 🌎 *Nationality:* ${p.citizenship || p.nationality || '-'}\n` +
-            `\n_Daratech_ ⚡`;
+            `\n_M-KING_ ⚡`;
         const headshot = p.headshot?.href || p.image;
         if (headshot) {
             await sock.sendMessage(chatId, { image: { url: headshot }, caption: txt }, { quoted: message });
@@ -120,7 +120,7 @@ async function standingsCommand(sock, chatId, message, league) {
             txt += `*${i + 1}.* ${team.team || team.name || team.displayName || '-'} — ${w}W / ${l}L\n`;
         });
         if (!standings.length) txt += '📭 No standings data available right now.\n';
-        txt += `\n_Daratech_ ⚡`;
+        txt += `\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
     } catch (err) {
         console.error(`[${league}standings]`, err.message);

@@ -15,7 +15,7 @@ async function wallpaperCommand(sock, chatId, message) {
         for (const res of results) {
             await sock.sendMessage(chatId, {
                 image: { url: res.image },
-                caption: `🖼 *${res.title || q}*\n\n_Daratech_ ⚡`,
+                caption: `🖼 *${res.title || q}*\n\n_M-KING_ ⚡`,
             }, { quoted: message });
         }
     } catch (err) {

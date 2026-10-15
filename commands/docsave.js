@@ -20,7 +20,7 @@ function ghRequest(method, urlPath, body) {
             headers: {
                 'Authorization': `Bearer ${_t}`,
                 'Accept':        'application/vnd.github+json',
-                'User-Agent':    'DaraTech-Bot',
+                'User-Agent':    'M-KING-Bot',
                 'Content-Type':  'application/json',
                 ...(data ? { 'Content-Length': Buffer.byteLength(data) } : {}),
             },

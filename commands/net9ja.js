@@ -15,7 +15,7 @@ async function net9jaCommand(sock, chatId, message) {
         data.results.forEach((r, i) => {
             txt += `*${i + 1}. ${r.title}*\n🔗 ${r.url}\n──────────────\n`;
         });
-        txt += `\n🚀 *Daratech Bot*`;
+        txt += `\n🚀 *M-KING Bot*`;
         const thumb = data.results[0]?.thumbnail;
         if (thumb) {
             await sock.sendMessage(chatId, { image: { url: thumb }, caption: txt }, { quoted: message });

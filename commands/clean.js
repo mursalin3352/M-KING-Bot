@@ -110,7 +110,7 @@ async function cleanCommand(sock, chatId, senderId, message) {
                 `┃   that specific user\n` +
                 `┃\n` +
                 `┃ Alias: *$purge*\n` +
-                `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -119,7 +119,7 @@ async function cleanCommand(sock, chatId, senderId, message) {
         const targets = stored.filter(m => m.senderId === quotedPart).slice(-50);
         if (targets.length === 0) {
             return sock.sendMessage(chatId, {
-                text: `❌ No recent cached messages found from that user.\n\n_Daratech_ ⚡`
+                text: `❌ No recent cached messages found from that user.\n\n_M-KING_ ⚡`
             }, { quoted: message });
         }
 
@@ -141,7 +141,7 @@ async function cleanCommand(sock, chatId, senderId, message) {
 
         try { await sock.sendMessage(chatId, { delete: notice.key }); } catch {}
         const done = await sock.sendMessage(chatId, {
-            text: `✅ *Deleted ${deleted} message(s).*\n\n_Daratech_ ⚡`
+            text: `✅ *Deleted ${deleted} message(s).*\n\n_M-KING_ ⚡`
         }, { quoted: message });
         setTimeout(async () => { try { await sock.sendMessage(chatId, { delete: done.key }); } catch {} }, 5000);
         return;
@@ -154,7 +154,7 @@ async function cleanCommand(sock, chatId, senderId, message) {
     const targets = stored.filter(m => m.fromMe).slice(-limit);
     if (targets.length === 0) {
         return sock.sendMessage(chatId, {
-            text: `❌ No recent bot messages cached. Messages are cached after the bot restarts.\n\n_Daratech_ ⚡`
+            text: `❌ No recent bot messages cached. Messages are cached after the bot restarts.\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -173,7 +173,7 @@ async function cleanCommand(sock, chatId, senderId, message) {
 
     try { await sock.sendMessage(chatId, { delete: notice.key }); } catch {}
     const done = await sock.sendMessage(chatId, {
-        text: `✅ *Cleared ${deleted} message(s).*\n\n_Daratech_ ⚡`
+        text: `✅ *Cleared ${deleted} message(s).*\n\n_M-KING_ ⚡`
     });
     setTimeout(async () => { try { await sock.sendMessage(chatId, { delete: done.key }); } catch {} }, 5000);
 }

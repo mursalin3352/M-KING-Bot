@@ -27,7 +27,7 @@ async function membercountCommand(sock, chatId, message) {
             `▸ 👤 *Members:*       ${members}\n` +
             `▸ 📅 *Created:*       ${createdAt}\n` +
             (meta.desc ? `\n📝 *Description:*\n${meta.desc.slice(0, 200)}\n` : '') +
-            `\n_Daratech_ ⚡`;
+            `\n_M-KING_ ⚡`;
 
         await sock.sendMessage(chatId, { text: msg }, { quoted: message });
 

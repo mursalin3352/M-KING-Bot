@@ -22,7 +22,7 @@ async function handleSsCommand(sock, chatId, message, match) {
         if (buf.length < 1000) throw new Error('Screenshot failed or empty response');
         await sock.sendMessage(chatId, {
             image: buf,
-            caption: `📸 *SCREENSHOT (HD)*\n🔗 ${url}\n\n_Daratech_ ⚡`,
+            caption: `📸 *SCREENSHOT (HD)*\n🔗 ${url}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await sock.sendMessage(message.key.remoteJid, {
             react: { text: '✅', key: message.key },

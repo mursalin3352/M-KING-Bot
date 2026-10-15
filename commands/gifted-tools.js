@@ -60,7 +60,7 @@ async function ttpCommand(sock, chatId, message) {
         });
         await sock.sendMessage(chatId, {
             image: Buffer.from(imgRes.data),
-            caption: `🖼️ *TEXT TO IMAGE*\n"${q}"\n\n_Daratech_ ⚡`,
+            caption: `🖼️ *TEXT TO IMAGE*\n"${q}"\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -105,11 +105,11 @@ async function canvasCommand(sock, chatId, message) {
 
     await processing(sock, message, chatId, '🎨 Creating canvas card……');
     try {
-        const buf = await toolsBuf('canvas', { title, type, text: 'Now Playing', watermark: 'Daratech' });
+        const buf = await toolsBuf('canvas', { title, type, text: 'Now Playing', watermark: 'M-KING' });
         if (buf.length < 200) throw new Error('Canvas generation failed');
         await sock.sendMessage(chatId, {
             image: buf,
-            caption: `🎨 *CANVAS CARD* [${type.toUpperCase()}]\n${title}\n\n_Daratech_ ⚡`,
+            caption: `🎨 *CANVAS CARD* [${type.toUpperCase()}]\n${title}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -135,8 +135,8 @@ async function topdfCommand(sock, chatId, message) {
         await sock.sendMessage(chatId, {
             document: buf,
             mimetype: 'application/pdf',
-            fileName: 'daratech-document.pdf',
-            caption: `📄 *PDF GENERATED*\n${label}\n\n_Daratech_ ⚡`,
+            fileName: 'm-king-document.pdf',
+            caption: `📄 *PDF GENERATED*\n${label}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -164,7 +164,7 @@ async function web2zipCommand(sock, chatId, message) {
             `▸ 🔗 *Site:* ${r.siteUrl}\n` +
             `▸ 📁 *Files Copied:* ${r.copiedFilesAmount || 1}\n\n` +
             `📥 *Download Link:*\n${r.download_url}\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -184,7 +184,7 @@ async function proxyCommand(sock, chatId, message) {
             const lock = p.https === 'yes' ? ' 🔒' : '';
             return `${i + 1}. \`${p.ip}:${p.port}\` — ${p.country} [${p.anonymity}]${lock}`;
         }).join('\n');
-        const txt = `🌐 *FRESH PROXY LIST*\n\n${list}\n\n_Last checked: a few seconds ago_\n\n_Daratech_ ⚡`;
+        const txt = `🌐 *FRESH PROXY LIST*\n\n${list}\n\n_Last checked: a few seconds ago_\n\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -237,7 +237,7 @@ async function obfuscateCommand(sock, chatId, message) {
         // Local fallback (javascript-obfuscator package)
         if (!result) result = localObfuscate(q);
         if (!result) throw new Error('Obfuscation failed — try again shortly');
-        const txt = `🔐 *JS OBFUSCATOR*\n\n\`\`\`\n${result.slice(0, 3000)}${result.length > 3000 ? '\n…(truncated)' : ''}\n\`\`\`\n\n_Daratech_ ⚡`;
+        const txt = `🔐 *JS OBFUSCATOR*\n\n\`\`\`\n${result.slice(0, 3000)}${result.length > 3000 ? '\n…(truncated)' : ''}\n\`\`\`\n\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -268,7 +268,7 @@ async function dnsCommand(sock, chatId, message) {
         const lines = Object.entries(grouped).map(([type, vals]) =>
             `▸ *${type}:* ${vals.slice(0, 3).join(', ')}`
         ).join('\n');
-        const txt = `🔍 *DNS RECORDS — ${q}*\n\n${lines || 'No records found.'}\n\n_Daratech_ ⚡`;
+        const txt = `🔍 *DNS RECORDS — ${q}*\n\n${lines || 'No records found.'}\n\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -289,7 +289,7 @@ async function headersCommand(sock, chatId, message) {
         const data = await toolsGet('http-headers', { url: q });
         if (!data?.success || !data?.result) throw new Error(data?.message || 'Headers fetch failed');
         const raw = typeof data.result === 'string' ? data.result : JSON.stringify(data.result, null, 2);
-        const txt = `📡 *HTTP HEADERS — ${q}*\n\n\`\`\`\n${raw.slice(0, 3000)}${raw.length > 3000 ? '\n…' : ''}\n\`\`\`\n\n_Daratech_ ⚡`;
+        const txt = `📡 *HTTP HEADERS — ${q}*\n\n\`\`\`\n${raw.slice(0, 3000)}${raw.length > 3000 ? '\n…' : ''}\n\`\`\`\n\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -317,7 +317,7 @@ async function servercheckCommand(sock, chatId, message) {
             `▸ 🔗 *URL:* ${r.link || q}\n` +
             `▸ ${statusIcon} *Status:* ${r.status || (isUp ? 'Online' : 'Offline')}\n` +
             `▸ 📊 *HTTP Code:* ${r.http_code}\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -340,7 +340,7 @@ async function _screenshotViewport(sock, chatId, message, endpoint, label) {
         if (buf.length < 500) throw new Error('Screenshot failed or empty response');
         await sock.sendMessage(chatId, {
             image: buf,
-            caption: `📸 *SCREENSHOT (${label})*\n🔗 ${q}\n\n_Daratech_ ⚡`,
+            caption: `📸 *SCREENSHOT (${label})*\n🔗 ${q}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -376,7 +376,7 @@ async function fantextCommand(sock, chatId, message) {
         const data = await toolsGet('fancy', { text: q });
         if (!data?.success || !Array.isArray(data?.results)) throw new Error(data?.message || 'No styles returned');
         const lines = data.results.slice(0, 10).map(s => `▸ *${s.name}:* ${s.result}`).join('\n');
-        const txt = `✨ *FANCY TEXT — "${q}"*\n\n${lines}\n\n_Daratech_ ⚡`;
+        const txt = `✨ *FANCY TEXT — "${q}"*\n\n${lines}\n\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -395,7 +395,7 @@ async function fantext2Command(sock, chatId, message) {
         const data = await toolsGet('fancyv2', { text: q });
         if (!data?.success || !Array.isArray(data?.results)) throw new Error(data?.message || 'No styles returned');
         const lines = data.results.slice(0, 10).map(s => `▸ *${s.name}:* ${s.result}`).join('\n');
-        const txt = `✨ *FANCY TEXT V2 — "${q}"*\n\n${lines}\n\n_Daratech_ ⚡`;
+        const txt = `✨ *FANCY TEXT V2 — "${q}"*\n\n${lines}\n\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -467,7 +467,7 @@ async function rcCommand(sock, chatId, message) {
         if (!data?.success || !data?.result?.imageUrl) throw new Error(data?.message || 'RC generation failed');
         await sock.sendMessage(chatId, {
             image: { url: data.result.imageUrl },
-            caption: `👙 *AI CLOTH REMOVER*\n\n_Daratech_ ⚡`,
+            caption: `👙 *AI CLOTH REMOVER*\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -517,7 +517,7 @@ async function whoisCommand(sock, chatId, message) {
             `▸ 🔄 *Updated:* ${updated}\n` +
             `▸ 🔒 *DNSSEC:* ${r.dnssec || 'N/A'}\n` +
             `▸ 🖧 *Name Servers:* ${ns}\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -553,7 +553,7 @@ async function obfuscate2Command(sock, chatId, message) {
         // Local fallback (javascript-obfuscator package)
         if (!result) result = localObfuscate(q);
         if (!result) throw new Error('Obfuscation failed — try again shortly');
-        const txt = `🔐 *JS OBFUSCATOR V2*\n\n\`\`\`\n${result.slice(0, 3000)}${result.length > 3000 ? '\n…(truncated)' : ''}\n\`\`\`\n\n_Daratech_ ⚡`;
+        const txt = `🔐 *JS OBFUSCATOR V2*\n\n\`\`\`\n${result.slice(0, 3000)}${result.length > 3000 ? '\n…(truncated)' : ''}\n\`\`\`\n\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -616,7 +616,7 @@ function makeShortener(service) {
             const label = service === 'ssur' ? 'TinyURL (ssur.cc fallback)' : SHORTENERS[service].label;
             const txt = `🔗 *URL SHORTENER — ${label}*\n\n`
                 + `📎 Original:\n${q}\n\n`
-                + `✂️ Shortened:\n*${shortened}*\n\n_Daratech_ ⚡`;
+                + `✂️ Shortened:\n*${shortened}*\n\n_M-KING_ ⚡`;
             await sock.sendMessage(chatId, { text: txt }, { quoted: message });
             await react(sock, message, '✅');
         } catch (err) {
@@ -656,7 +656,7 @@ const CODE_AI_HELP = `
 │  Java, C++, Go, Rust, PHP, SQL
 │
 ╰────────────────────────────────────╯
-_Daratech_ ⚡`.trim();
+_M-KING_ ⚡`.trim();
 
 async function codeaiCommand(sock, chatId, message, userMessage) {
     const raw = userMessage.slice(7).trim(); // strip "$codeai"
@@ -711,7 +711,7 @@ async function codeaiCommand(sock, chatId, message, userMessage) {
 
         // WhatsApp limit is ~65536 chars — stay well under it
         const WA_MAX = 58000;
-        const body = `\`\`\`\n${code}\n\`\`\`\n\n_Daratech_ ⚡`;
+        const body = `\`\`\`\n${code}\n\`\`\`\n\n_M-KING_ ⚡`;
         if ((header + '\n' + body).length <= WA_MAX) {
             // Everything in one message; WhatsApp shows "read more" automatically for long ones
             await sock.sendMessage(chatId, {
@@ -727,7 +727,7 @@ async function codeaiCommand(sock, chatId, message, userMessage) {
                 document: Buffer.from(code, 'utf8'),
                 mimetype: 'text/plain',
                 fileName: `codeai_${Date.now()}.${ext}`,
-                caption: `📄 Full generated code — _Daratech_ ⚡`,
+                caption: `📄 Full generated code — _M-KING_ ⚡`,
             }, { quoted: message });
         }
 

@@ -10,7 +10,7 @@ async function apodCommand(sock, chatId, message) {
             `┃ 📅 *Date:* ${data.date}\n` +
             `╰━━━━━━━━━━━━━━━━━━╯\n\n` +
             `${(data.explanation || '').slice(0, 600)}${data.explanation?.length > 600 ? '...' : ''}\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         const imgUrl = data.url;
         if (imgUrl && (imgUrl.endsWith('$jpg') || imgUrl.endsWith('$png') || imgUrl.endsWith('$jpeg'))) {
             await sock.sendMessage(chatId, { image: { url: imgUrl }, caption: txt }, { quoted: message });
@@ -31,7 +31,7 @@ async function issLocationCommand(sock, chatId, message) {
             `📍 *Latitude:* ${parseFloat(latitude).toFixed(4)}°\n` +
             `📍 *Longitude:* ${parseFloat(longitude).toFixed(4)}°\n` +
             `🗺️ *Map:* https://maps.google.com/?q=${latitude},${longitude}\n\n` +
-            `_The ISS orbits Earth every ~90 minutes at ~28,000 km/h_\n\n_Daratech_ ⚡`;
+            `_The ISS orbits Earth every ~90 minutes at ~28,000 km/h_\n\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not fetch ISS location.' }, { quoted: message });
@@ -57,7 +57,7 @@ async function spacefactCommand(sock, chatId, message) {
         'The temperature on the Moon swings from -173°C at night to 127°C during the day.',
     ];
     const fact = facts[Math.floor(Math.random() * facts.length)];
-    await sock.sendMessage(chatId, { text: `🌌 *SPACE FACT*\n\n${fact}\n\n_Daratech_ ⚡` }, { quoted: message });
+    await sock.sendMessage(chatId, { text: `🌌 *SPACE FACT*\n\n${fact}\n\n_M-KING_ ⚡` }, { quoted: message });
 }
 
 module.exports = { apodCommand, issLocationCommand, spacefactCommand };

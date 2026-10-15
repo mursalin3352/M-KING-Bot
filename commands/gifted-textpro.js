@@ -93,9 +93,9 @@ async function textproCommand(sock, chatId, message) {
             text:
                 `✨ *TEXTPRO STYLES*\n\n` +
                 `Usage: *$textpro <style> <your text>*\n` +
-                `Example: *$textpro neon Daratech*\n\n` +
+                `Example: *$textpro neon M-KING*\n\n` +
                 `*Available styles:*\n${STYLE_MENU}\n\n` +
-                `_Daratech_ ⚡`,
+                `_M-KING_ ⚡`,
         }, { quoted: message });
     }
 
@@ -123,7 +123,7 @@ async function textproCommand(sock, chatId, message) {
             if (!data?.success || !data?.result?.image_url) throw new Error(data?.error || 'No image returned');
             await sock.sendMessage(chatId, {
                 image: await (async () => { const r = await require('axios').get(data.result.image_url, { responseType: 'arraybuffer', timeout: 20000, headers: { 'User-Agent': 'Mozilla/5.0' } }); return Buffer.from(r.data); })(),
-                caption: `✨ *${rawEndpoint.toUpperCase()}*\n"${text}"\n\n_Daratech_ ⚡`,
+                caption: `✨ *${rawEndpoint.toUpperCase()}*\n"${text}"\n\n_M-KING_ ⚡`,
             }, { quoted: message });
             await react(sock, message, '✅');
         } catch (err) {
@@ -136,7 +136,7 @@ async function textproCommand(sock, chatId, message) {
     const text = parts.slice(1).join(' ').trim();
     if (!text) {
         return sock.sendMessage(chatId, {
-            text: `✨ Usage: $textpro ${alias} <your text>\nExample: $textpro ${alias} Daratech`,
+            text: `✨ Usage: $textpro ${alias} <your text>\nExample: $textpro ${alias} M-KING`,
         }, { quoted: message });
     }
 
@@ -146,7 +146,7 @@ async function textproCommand(sock, chatId, message) {
         if (!data?.success || !data?.result?.image_url) throw new Error(data?.error || 'No image returned');
         await sock.sendMessage(chatId, {
             image: await (async () => { const r = await require('axios').get(data.result.image_url, { responseType: 'arraybuffer', timeout: 20000, headers: { 'User-Agent': 'Mozilla/5.0' } }); return Buffer.from(r.data); })(),
-            caption: `✨ *TEXTPRO — ${alias.toUpperCase()}*\n"${text}"\n\n_Daratech_ ⚡`,
+            caption: `✨ *TEXTPRO — ${alias.toUpperCase()}*\n"${text}"\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {

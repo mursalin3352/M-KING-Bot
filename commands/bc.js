@@ -178,7 +178,7 @@ module.exports = {
                     
                     // Send broadcast message (comes from bot, just like "Connected")
                     await sock.sendMessage(userId, {
-                        text: `📢 *BROADCAST MESSAGE*\n\n${broadcastMessage}\n\n─\n_This is an automated broadcast from Daratech bot._`
+                        text: `📢 *BROADCAST MESSAGE*\n\n${broadcastMessage}\n\n─\n_This is an automated broadcast from M-KING bot._`
                     });
                     
                     successCount++;

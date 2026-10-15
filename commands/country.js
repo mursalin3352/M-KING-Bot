@@ -153,7 +153,7 @@ async function countryCommand(sock, chatId, message) {
             `┃ 🏙️ *Capital:* ${c.capital || '-'}\n` +
             `┃ 💰 *Currency:* ${c.currency || '-'}\n` +
             `┃ 📞 *Dial Code:* +${c.dialCode || '-'}\n` +
-            `╰━━━━━━━━━━━━━━━━━━━╯\n\n_Daratech_ ⚡`;
+            `╰━━━━━━━━━━━━━━━━━━━╯\n\n_M-KING_ ⚡`;
 
         const flagBuf = await fetchFlagBuffer(c.iso2);
         if (flagBuf) {
@@ -182,7 +182,7 @@ async function capitalCommand(sock, chatId, message) {
         if (!c || !c.capital) throw new Error('not found');
 
         const flagBuf = await fetchFlagBuffer(c.iso2);
-        const txt = `🏙️ The capital of *${c.name}* is *${c.capital}*\n\n_Daratech_ ⚡`;
+        const txt = `🏙️ The capital of *${c.name}* is *${c.capital}*\n\n_M-KING_ ⚡`;
         if (flagBuf) {
             await sock.sendMessage(chatId, { image: flagBuf, caption: txt }, { quoted: message });
         } else {
@@ -213,7 +213,7 @@ async function flagCommand(sock, chatId, message) {
 
         await sock.sendMessage(chatId, {
             image: flagBuf,
-            caption: `🚩 *Flag of ${c.name}*\n\n_Daratech_ ⚡`
+            caption: `🚩 *Flag of ${c.name}*\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, {
@@ -238,7 +238,7 @@ async function timezoneCountryCommand(sock, chatId, message) {
         const tz = TZ_MAP[c.iso2?.toUpperCase()];
         if (!tz) {
             return sock.sendMessage(chatId, {
-                text: `🕐 *${c.name}*\n\n❔ Timezone not available for this country.\n\n_Daratech_ ⚡`
+                text: `🕐 *${c.name}*\n\n❔ Timezone not available for this country.\n\n_M-KING_ ⚡`
             }, { quoted: message });
         }
 
@@ -266,7 +266,7 @@ async function timezoneCountryCommand(sock, chatId, message) {
                 `┃ 🕰️ *Timezone:* ${tz}\n` +
                 `┃ 🔢 *Offset:* ${utcOffset}\n` +
                 `┃ 📅 *Local Time:* ${localTime}\n` +
-                `╰━━━━━━━━━━━━━━━━━━━╯\n\n_Daratech_ ⚡`
+                `╰━━━━━━━━━━━━━━━━━━━╯\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, {

@@ -31,7 +31,7 @@ async function konachanCommand(sock, chatId, message) {
         if (!url || typeof url !== 'string') throw new Error('No image returned');
         await sock.sendMessage(chatId, {
             image: { url },
-            caption: `🖼️ *KONACHAN WALLPAPER*\n\n_Random anime wallpaper_ ✨\n\n_Daratech_ ⚡`,
+            caption: `🖼️ *KONACHAN WALLPAPER*\n\n_Random anime wallpaper_ ✨\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -67,7 +67,7 @@ async function kusonimeCommand(sock, chatId, message) {
             text += '\n';
         });
 
-        text += `_Daratech_ ⚡`;
+        text += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -98,7 +98,7 @@ async function animenewCommand(sock, chatId, message) {
             text += '\n';
         });
 
-        text += `_Daratech_ ⚡`;
+        text += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -124,7 +124,7 @@ async function charquoteCommand(sock, chatId, message) {
 
         const text = `💬 *${r.character || q.toUpperCase()}*`
             + (r.show ? `\n🎌 _${r.show}_` : '')
-            + `\n${'─'.repeat(30)}\n\n"${r.quote}"\n\n_Daratech_ ⚡`;
+            + `\n${'─'.repeat(30)}\n\n"${r.quote}"\n\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -150,7 +150,7 @@ async function showquoteCommand(sock, chatId, message) {
 
         const text = `💬 *${r.show || q.toUpperCase()}*`
             + (r.character ? `\n👤 _${r.character}_` : '')
-            + `\n${'─'.repeat(30)}\n\n"${r.quote}"\n\n_Daratech_ ⚡`;
+            + `\n${'─'.repeat(30)}\n\n"${r.quote}"\n\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {

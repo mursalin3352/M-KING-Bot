@@ -94,7 +94,7 @@ async function jarvisCommand(sock, chatId, message) {
                   `▸ $jarvis Good morning, sir\n` +
                   `▸ $jarvis Power at 400% capacity\n` +
                   `▸ $jarvis Shall I prepare the suit?\n\n` +
-                  `_Daratech_ ⚡`
+                  `_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -119,7 +119,7 @@ async function jarvisCommand(sock, chatId, message) {
         console.error('[jarvis]', err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ JARVIS failed.\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ JARVIS failed.\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }

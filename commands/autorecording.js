@@ -56,19 +56,19 @@ async function handleAutoRecordingCommand(sock, chatId, senderId, message) {
                   `┃ ▸ *$autorecording off* — Disable\n` +
                   `┃\n` +
                   `╰━━━━━━━━━━━━━━━━━━━━━\n\n` +
-                  `_Shows "recording…" on every message._\n\n_Daratech_ ⚡`
+                  `_Shows "recording…" on every message._\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
     if (match === 'on') {
         if (cfg.enabled) return sock.sendMessage(chatId, { text: '⚠️ Already *enabled*.' }, { quoted: message });
         cfg.enabled = true; saveConfig(cfg);
-        return sock.sendMessage(chatId, { text: '✅ *Auto Recording enabled!*\n\n_Daratech_ ⚡' }, { quoted: message });
+        return sock.sendMessage(chatId, { text: '✅ *Auto Recording enabled!*\n\n_M-KING_ ⚡' }, { quoted: message });
     }
     if (match === 'off') {
         if (!cfg.enabled) return sock.sendMessage(chatId, { text: '⚠️ Already *disabled*.' }, { quoted: message });
         cfg.enabled = false; saveConfig(cfg);
-        return sock.sendMessage(chatId, { text: '❌ *Auto Recording disabled.*\n\n_Daratech_ ⚡' }, { quoted: message });
+        return sock.sendMessage(chatId, { text: '❌ *Auto Recording disabled.*\n\n_M-KING_ ⚡' }, { quoted: message });
     }
 
     return sock.sendMessage(chatId,

@@ -191,7 +191,7 @@ function downloadFile(url, dest, visited = new Set()) {
             if (visited.has(url) || visited.size > 5) return reject(new Error('Too many redirects'));
             visited.add(url);
             const client = url.startsWith('https://') ? require('https') : require('http');
-            const req = client.get(url, { headers: { 'User-Agent': 'Daratech-Updater/1.0', 'Accept': '*/*' } }, res => {
+            const req = client.get(url, { headers: { 'User-Agent': 'M-KING-Updater/1.0', 'Accept': '*/*' } }, res => {
                 if ([301, 302, 303, 307, 308].includes(res.statusCode)) {
                     const next = new URL(res.headers.location, url).toString();
                     res.resume();

@@ -34,7 +34,7 @@ async function animegenCommand(sock, chatId, message) {
     const prompt = getPrompt(message);
     if (!prompt) {
         return sock.sendMessage(chatId, {
-            text: '🎌 *ANIME GEN*\n\nUsage: *$animegen <prompt>*\n\nExample: $animegen a samurai girl in cherry blossoms\n\n_Daratech_ ⚡'
+            text: '🎌 *ANIME GEN*\n\nUsage: *$animegen <prompt>*\n\nExample: $animegen a samurai girl in cherry blossoms\n\n_M-KING_ ⚡'
         }, { quoted: message });
     }
 
@@ -57,13 +57,13 @@ async function animegenCommand(sock, chatId, message) {
         await react(sock, message, '✅');
         await sock.sendMessage(chatId, {
             image:   buf,
-            caption: `🎌 *ANIME GEN*\n\n_Prompt:_ ${prompt}\n\n_Daratech_ ⚡`
+            caption: `🎌 *ANIME GEN*\n\n_Prompt:_ ${prompt}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch (err) {
         console.error('[animegen]', err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ Generation failed.\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ Generation failed.\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }
@@ -73,7 +73,7 @@ async function artgenCommand(sock, chatId, message) {
     const prompt = getPrompt(message);
     if (!prompt) {
         return sock.sendMessage(chatId, {
-            text: '🎨 *ART GEN*\n\nUsage: *$artgen <prompt>*\n\nExample: $artgen a surreal landscape oil painting\n\n_Daratech_ ⚡'
+            text: '🎨 *ART GEN*\n\nUsage: *$artgen <prompt>*\n\nExample: $artgen a surreal landscape oil painting\n\n_M-KING_ ⚡'
         }, { quoted: message });
     }
 
@@ -94,13 +94,13 @@ async function artgenCommand(sock, chatId, message) {
         await react(sock, message, '✅');
         await sock.sendMessage(chatId, {
             image:   buf,
-            caption: `🎨 *ART GEN*\n\n_Prompt:_ ${prompt}\n\n_Daratech_ ⚡`
+            caption: `🎨 *ART GEN*\n\n_Prompt:_ ${prompt}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch (err) {
         console.error('[artgen]', err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ Generation failed.\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ Generation failed.\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }
@@ -110,7 +110,7 @@ async function realgenCommand(sock, chatId, message) {
     const prompt = getPrompt(message);
     if (!prompt) {
         return sock.sendMessage(chatId, {
-            text: '📷 *REAL GEN*\n\nUsage: *$realgen <prompt>*\n\nExample: $realgen a woman in Paris, golden hour photography\n\n_Daratech_ ⚡'
+            text: '📷 *REAL GEN*\n\nUsage: *$realgen <prompt>*\n\nExample: $realgen a woman in Paris, golden hour photography\n\n_M-KING_ ⚡'
         }, { quoted: message });
     }
 
@@ -131,13 +131,13 @@ async function realgenCommand(sock, chatId, message) {
         await react(sock, message, '✅');
         await sock.sendMessage(chatId, {
             image:   buf,
-            caption: `📷 *REAL GEN*\n\n_Prompt:_ ${prompt}\n\n_Daratech_ ⚡`
+            caption: `📷 *REAL GEN*\n\n_Prompt:_ ${prompt}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch (err) {
         console.error('[realgen]', err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ Generation failed.\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ Generation failed.\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }
@@ -159,7 +159,7 @@ async function visionCommand(sock, chatId, message) {
 
     if (!imgMsg) {
         return sock.sendMessage(chatId, {
-            text: `👁️ *VISION AI*\n\nReply to an *image* with *$vision* to analyze it.\n\nOptionally add a question:\n$vision what country is this?\n\n_Daratech_ ⚡`
+            text: `👁️ *VISION AI*\n\nReply to an *image* with *$vision* to analyze it.\n\nOptionally add a question:\n$vision what country is this?\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -213,14 +213,14 @@ async function visionCommand(sock, chatId, message) {
 
         await react(sock, message, '✅');
         await sock.sendMessage(chatId, {
-            text: `👁️ *VISION AI*\n\n${result.trim()}\n\n_Daratech_ ⚡`
+            text: `👁️ *VISION AI*\n\n${result.trim()}\n\n_M-KING_ ⚡`
         }, { quoted: message });
 
     } catch (err) {
         console.error('[vision]', err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ Vision analysis failed.\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ Vision analysis failed.\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }

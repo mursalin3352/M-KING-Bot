@@ -11,7 +11,7 @@ async function animeinfoCommand(sock, chatId, message) {
 
     if (!query) {
         return sock.sendMessage(chatId, {
-            text: '🎌 *ANIME INFO*\n\nUsage: $animeinfo <anime name>\nExample: $animeinfo Attack on Titan\n\n_Daratech_ ⚡',
+            text: '🎌 *ANIME INFO*\n\nUsage: $animeinfo <anime name>\nExample: $animeinfo Attack on Titan\n\n_M-KING_ ⚡',
         }, { quoted: message });
     }
 
@@ -39,7 +39,7 @@ async function animeinfoCommand(sock, chatId, message) {
             `┃ 🏢 *Studios:* ${studios}\n` +
             `┃ 🔗 *MAL:* ${anime.url || '-'}\n` +
             `╰━━━━━━━━━━━━━━━━━━╯\n\n` +
-            `📝 *Synopsis:*\n${synopsis}\n\n_Daratech_ ⚡`;
+            `📝 *Synopsis:*\n${synopsis}\n\n_M-KING_ ⚡`;
 
         const imgUrl = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url;
         if (imgUrl) {
@@ -71,7 +71,7 @@ async function trendingAnimeCommand(sock, chatId, message) {
             txt += `*${i + 1}.* ${a.title}\n`;
             txt += `   ⭐ ${a.score || '-'} | 📺 ${a.type || '-'} | 🎬 ${a.episodes || '?'} eps\n\n`;
         });
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
 
         const imgUrl = list[0]?.images?.jpg?.large_image_url;
         if (imgUrl) {
@@ -97,7 +97,7 @@ async function animeIndoCommand(sock, chatId, message) {
 
     if (!query) {
         return sock.sendMessage(chatId, {
-            text: '🎌 *ANIME INDO*\n\nUsage: $animeindo <anime name>\nExample: $animeindo Naruto\n\n_Daratech_ ⚡',
+            text: '🎌 *ANIME INDO*\n\nUsage: $animeindo <anime name>\nExample: $animeindo Naruto\n\n_M-KING_ ⚡',
         }, { quoted: message });
     }
 
@@ -117,7 +117,7 @@ async function animeIndoCommand(sock, chatId, message) {
             if (a.episode) txt += `   🎬 ${a.episode}\n`;
             txt += '\n';
         });
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
 
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
     } catch (err) {

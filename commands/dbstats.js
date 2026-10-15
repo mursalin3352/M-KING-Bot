@@ -126,14 +126,14 @@ async function dbstatsCommand(sock, chatId, senderId, message) {
             `┃ economy.json        : *${ecoSize} KB*\n` +
             `┃ JSON files total    : *${dataFiles.length}*\n` +
             `┃\n` +
-            `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`;
+            `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`;
 
         return sock.sendMessage(chatId, { text }, { quoted: message });
 
     } catch (err) {
         console.error('[dbstats]', err.message);
         return sock.sendMessage(chatId, {
-            text: `❌ Error reading data stats.\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ Error reading data stats.\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }

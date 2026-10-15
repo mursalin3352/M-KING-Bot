@@ -22,7 +22,7 @@ async function soraCommand(sock, chatId, message) {
         const imgUrl = getImageUrl(prompt, 'flux', 1280, 720);
         await sock.sendMessage(chatId, {
             image: { url: imgUrl },
-            caption: `🎬 *${prompt}*\n\n✨ *Daratech Bot*`
+            caption: `🎬 *${prompt}*\n\n✨ *M-KING Bot*`
         }, { quoted: message });
 
     } catch (err) {

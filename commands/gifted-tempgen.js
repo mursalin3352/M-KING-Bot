@@ -50,7 +50,7 @@ async function tempphoneCommand(sock, chatId, message) {
             `💡 Check incoming SMS:\n` +
             `*$smsinbox* — uses your saved number\n` +
             `*$smsinbox <number>* — specific number\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -79,7 +79,7 @@ async function smsinboxCommand(sock, chatId, message) {
 
         if (!msgs.length) {
             return sock.sendMessage(chatId, {
-                text: `📭 *SMS INBOX — ${number}*\n\nNo messages yet. Share this number to receive SMS.\n\n_Daratech_ ⚡`,
+                text: `📭 *SMS INBOX — ${number}*\n\nNo messages yet. Share this number to receive SMS.\n\n_M-KING_ ⚡`,
             }, { quoted: message });
         }
 
@@ -91,7 +91,7 @@ async function smsinboxCommand(sock, chatId, message) {
             if (m.time || m.date) txt += `   *Time:* ${m.time || m.date}\n`;
             txt += '\n';
         });
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {

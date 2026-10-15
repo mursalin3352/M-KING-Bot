@@ -92,7 +92,7 @@ async function emojimixCommand(sock, chatId, msg) {
                 `╭━═『 *EMOJI MIX* 』═━╮\n` +
                 `┃ 😂 *Emoji 1:* ${emoji1}\n` +
                 `┃ 🙄 *Emoji 2:* ${emoji2}\n` +
-                `╰━━━━━━━━━━━━━━━━━━╯\n\n_Daratech_ ⚡`,
+                `╰━━━━━━━━━━━━━━━━━━╯\n\n_M-KING_ ⚡`,
         }, { quoted: msg });
 
     } catch (err) {

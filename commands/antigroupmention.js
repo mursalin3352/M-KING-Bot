@@ -103,7 +103,7 @@ async function antigroupmentionCommand(sock, chatId, senderId, message) {
                   `┃\n` +
                   `┃ Protects against members tagging\n` +
                   `┃ this group in their WhatsApp Status.\n` +
-                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -112,7 +112,7 @@ async function antigroupmentionCommand(sock, chatId, senderId, message) {
         if (isOn) return sock.sendMessage(chatId, { text: '⚠️ Anti-status mention is already *enabled*.' }, { quoted: message });
         setGroupFlags(chatId, { antigroupmention: true, antigroupmentionAction: action });
         return sock.sendMessage(chatId, {
-            text: `✅ *Anti Status Mention enabled!*\n\nIf anyone tags this group in their WhatsApp Status, the notification will be *${action}d*.\n\n_Daratech_ ⚡`
+            text: `✅ *Anti Status Mention enabled!*\n\nIf anyone tags this group in their WhatsApp Status, the notification will be *${action}d*.\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -120,7 +120,7 @@ async function antigroupmentionCommand(sock, chatId, senderId, message) {
     if (sub === 'off') {
         if (!isOn) return sock.sendMessage(chatId, { text: '⚠️ Anti-status mention is already *disabled*.' }, { quoted: message });
         setGroupFlags(chatId, { antigroupmention: false });
-        return sock.sendMessage(chatId, { text: `✅ *Anti Status Mention disabled.*\n\n_Daratech_ ⚡` }, { quoted: message });
+        return sock.sendMessage(chatId, { text: `✅ *Anti Status Mention disabled.*\n\n_M-KING_ ⚡` }, { quoted: message });
     }
 
     // ── set ────────────────────────────────────────────────────────────────────
@@ -128,16 +128,16 @@ async function antigroupmentionCommand(sock, chatId, senderId, message) {
         const newAction = args[1];
         if (!newAction || !['delete', 'kick'].includes(newAction)) {
             return sock.sendMessage(chatId, {
-                text: `❌ Invalid action.\n\nUse:\n▸ *$antigroupmention set delete*\n▸ *$antigroupmention set kick*\n\n_Daratech_ ⚡`
+                text: `❌ Invalid action.\n\nUse:\n▸ *$antigroupmention set delete*\n▸ *$antigroupmention set kick*\n\n_M-KING_ ⚡`
             }, { quoted: message });
         }
         setGroupFlags(chatId, { antigroupmentionAction: newAction, antigroupmention: true });
         return sock.sendMessage(chatId, {
-            text: `✅ *Anti Status Mention action set to ${newAction} and enabled!*\n\n_Daratech_ ⚡`
+            text: `✅ *Anti Status Mention action set to ${newAction} and enabled!*\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
-    return sock.sendMessage(chatId, { text: `❓ Unknown option. Use *$antigroupmention* to see usage.\n\n_Daratech_ ⚡` }, { quoted: message });
+    return sock.sendMessage(chatId, { text: `❓ Unknown option. Use *$antigroupmention* to see usage.\n\n_M-KING_ ⚡` }, { quoted: message });
 }
 
 // ── Detection ─────────────────────────────────────────────────────────────────
@@ -272,7 +272,7 @@ async function handleAntigroupmentionMessage(sock, message) {
             try {
                 await sock.groupParticipantsUpdate(chatId, [senderId], 'remove');
                 await sock.sendMessage(chatId, {
-                    text: `🚫 *Anti Status Mention*\n\n${tag} was kicked for tagging this group in their WhatsApp Status.\n\n_Daratech_ ⚡`,
+                    text: `🚫 *Anti Status Mention*\n\n${tag} was kicked for tagging this group in their WhatsApp Status.\n\n_M-KING_ ⚡`,
                     mentions: [senderId],
                 });
             } catch (kickErr) {
@@ -280,7 +280,7 @@ async function handleAntigroupmentionMessage(sock, message) {
             }
         } else {
             await sock.sendMessage(chatId, {
-                text: `⚠️ *Anti Status Mention*\n\n${tag}, tagging this group in your WhatsApp Status is not allowed here.\n\n_Daratech_ ⚡`,
+                text: `⚠️ *Anti Status Mention*\n\n${tag}, tagging this group in your WhatsApp Status is not allowed here.\n\n_M-KING_ ⚡`,
                 mentions: [senderId],
             });
         }

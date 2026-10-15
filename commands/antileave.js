@@ -70,7 +70,7 @@ async function handleAntiLeaveCommand(sock, chatId, senderId, message) {
                   `┃\n` +
                   `╰━━━━━━━━━━━━━━━━━━━━━\n\n` +
                   `_Posts a farewell message when someone leaves._\n\n` +
-                  `_Daratech_ ⚡`
+                  `_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -80,7 +80,7 @@ async function handleAntiLeaveCommand(sock, chatId, senderId, message) {
         cfg[chatId] = { enabled: true };
         saveConfig(cfg);
         return sock.sendMessage(chatId, {
-            text: `✅ *Anti-Leave enabled!*\n\nA farewell message will be sent whenever someone leaves.\n\n_Daratech_ ⚡`
+            text: `✅ *Anti-Leave enabled!*\n\nA farewell message will be sent whenever someone leaves.\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -90,7 +90,7 @@ async function handleAntiLeaveCommand(sock, chatId, senderId, message) {
         cfg[chatId] = { enabled: false };
         saveConfig(cfg);
         return sock.sendMessage(chatId, {
-            text: `❌ *Anti-Leave disabled.*\n\n_Daratech_ ⚡`
+            text: `❌ *Anti-Leave disabled.*\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -125,7 +125,7 @@ async function handleAntiLeave(sock, groupId, participants) {
                       `┃ We'll miss you 💔\n` +
                       `┃\n` +
                       `╰━━━━━━━━━━━━━━━━━━━━━\n\n` +
-                      `_Daratech_ ⚡`,
+                      `_M-KING_ ⚡`,
                 mentions: [clean]
             });
         }

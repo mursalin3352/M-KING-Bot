@@ -56,7 +56,7 @@ async function ttstalkCommand(sock, chatId, message) {
             (r.verified ? `▸ ✅ *Verified*\n` : '') +
             (r.private ? `▸ 🔒 *Private Account*\n` : '') +
             `\n📝 *Bio:* ${r.bio || 'No bio set.'}\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         if (r.avatar) {
             await sock.sendMessage(chatId, { image: { url: r.avatar }, caption: txt }, { quoted: message });
         } else {
@@ -92,7 +92,7 @@ async function ghstalkCommand(sock, chatId, message) {
             (r.blog ? `▸ 🔗 *Website:* ${r.blog}\n` : '') +
             `▸ 🔗 *Profile:* ${r.html_url}\n` +
             (r.bio ? `\n📝 *Bio:* ${r.bio}\n` : '') +
-            `\n_Daratech_ ⚡`;
+            `\n_M-KING_ ⚡`;
         if (r.avatar_url) {
             await sock.sendMessage(chatId, { image: { url: r.avatar_url }, caption: txt }, { quoted: message });
         } else {
@@ -126,7 +126,7 @@ async function igstalkCommand(sock, chatId, message) {
             (r.verified ? `▸ ✅ *Verified*\n` : '') +
             (r.private ? `▸ 🔒 *Private Account*\n` : '') +
             (r.bio || r.biography ? `\n📝 *Bio:* ${r.bio || r.biography}\n` : '') +
-            `\n_Daratech_ ⚡`;
+            `\n_M-KING_ ⚡`;
         const pic = r.profile_pic || r.avatar || r.pp;
         if (pic && pic.startsWith('http')) {
             await sock.sendMessage(chatId, { image: { url: pic }, caption: txt }, { quoted: message });
@@ -162,7 +162,7 @@ async function twstalkCommand(sock, chatId, message) {
             (r.joined ? `▸ 📅 *Joined:* ${r.joined}\n` : '') +
             (r.website ? `▸ 🔗 *Website:* ${r.website}\n` : '') +
             (r.bio ? `\n📝 *Bio:* ${r.bio}\n` : '') +
-            `\n_Daratech_ ⚡`;
+            `\n_M-KING_ ⚡`;
         if (r.profilePic && r.profilePic.startsWith('http')) {
             await sock.sendMessage(chatId, { image: { url: r.profilePic }, caption: txt }, { quoted: message });
         } else {
@@ -192,7 +192,7 @@ async function wachannelCommand(sock, chatId, message) {
             `▸ 📛 *Name:* ${r.title || '-'}\n` +
             `▸ 👥 *Followers:* ${r.followers || '-'}\n` +
             (r.description ? `\n📝 *Description:* ${r.description}\n` : '') +
-            `\n_Daratech_ ⚡`;
+            `\n_M-KING_ ⚡`;
         if (r.img && r.img.startsWith('http')) {
             await sock.sendMessage(chatId, { image: { url: r.img }, caption: txt }, { quoted: message });
         } else {
@@ -228,7 +228,7 @@ async function ipstalkCommand(sock, chatId, message) {
             `▸ 🔢 *ASN:* ${r.asn || '-'}\n` +
             `▸ ⏰ *Timezone:* ${r.timezone || '-'}\n` +
             (r.loc ? `▸ 🗾 *Coords:* ${r.loc}\n` : '') +
-            `\n_Daratech_ ⚡`;
+            `\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -260,7 +260,7 @@ async function npmstalkCommand(sock, chatId, message) {
             `▸ 🔗 *npm:* ${r.packageLink || '-'}\n` +
             (keywords !== '-' ? `▸ 🔖 *Keywords:* ${keywords}\n` : '') +
             (r.description ? `\n📝 *Description:* ${r.description}\n` : '') +
-            `\n_Daratech_ ⚡`;
+            `\n_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -288,7 +288,7 @@ async function steamstalkCommand(sock, chatId, message) {
             `▸ 🎮 *Games Owned:* ${p.gamecount || '-'}\n` +
             `▸ 📅 *Member Since:* ${p.timecreated ? new Date(p.timecreated * 1000).toDateString() : '-'}\n` +
             `▸ 🟢 *Status:* ${['Offline','Online','Busy','Away','Snooze','Looking to Trade','Looking to Play'][p.personastate] || '-'}\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         const avatar = p.avatarfull || p.avatarmedium;
         if (avatar) {
             await sock.sendMessage(chatId, { image: { url: avatar }, caption: txt }, { quoted: message });

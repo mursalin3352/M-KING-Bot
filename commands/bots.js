@@ -75,7 +75,7 @@ async function botsCommand(sock, chatId, senderId, message) {
             `┃ Total: *${bots.length}* account(s) registered`,
             `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
             ``,
-            `_Daratech_ ⚡`,
+            `_M-KING_ ⚡`,
         ].join('\n');
 
         return sock.sendMessage(chatId, { text }, { quoted: message });

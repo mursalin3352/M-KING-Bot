@@ -14,7 +14,7 @@ function formatLocalRecipe(r) {
         `🧂 *Ingredients:*\n${r.ingredients.map(i => `▸ ${i}`).join('\n')}\n\n` +
         `📋 *Instructions:*\n${r.instructions}\n\n` +
         (r.youtube ? `▶️ ${r.youtube}\n\n` : '') +
-        `_Daratech_ ⚡`
+        `_M-KING_ ⚡`
     );
 }
 
@@ -28,7 +28,7 @@ async function googleRecipeSearch(query) {
         `╭━═『 🍽️ *RECIPE: ${query.toUpperCase()}* 』═━╮\n` +
         `┃ ℹ️ Showing web results\n` +
         `╰━━━━━━━━━━━━━━━━━━━━╯\n\n` +
-        lines.join('\n\n') + '\n\n_Daratech_ ⚡'
+        lines.join('\n\n') + '\n\n_M-KING_ ⚡'
     );
 }
 
@@ -54,7 +54,7 @@ async function randomRecipeCommand(sock, chatId, message) {
             `🧂 *Ingredients:*\n${ingredients.slice(0, 10).map(i => `▸ ${i}`).join('\n')}\n\n` +
             `📋 *Instructions:*\n${instructions}\n\n` +
             `${m.strYoutube ? `▶️ ${m.strYoutube}\n\n` : ''}` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         const img = m.strMealThumb;
         if (img) {
             await sock.sendMessage(chatId, { image: { url: img }, caption: txt }, { quoted: message });
@@ -104,7 +104,7 @@ async function searchRecipeCommand(sock, chatId, message) {
             `🧂 *Ingredients:*\n${ingredients.slice(0, 10).map(i => `▸ ${i}`).join('\n')}\n\n` +
             `📋 *Instructions:*\n${instructions}\n\n` +
             `${m.strYoutube ? `▶️ ${m.strYoutube}\n\n` : ''}` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         const img = m.strMealThumb;
         if (img) {
             await sock.sendMessage(chatId, { image: { url: img }, caption: txt }, { quoted: message });
@@ -142,7 +142,7 @@ async function cocktailCommand(sock, chatId, message) {
             `╰━━━━━━━━━━━━━━━━━╯\n\n` +
             `🧂 *Ingredients:*\n${ingredients.map(i => `▸ ${i}`).join('\n')}\n\n` +
             `📋 *Instructions:*\n${(d.strInstructions || 'N/A').slice(0, 400)}\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         if (d.strDrinkThumb) {
             await sock.sendMessage(chatId, { image: { url: d.strDrinkThumb }, caption: txt }, { quoted: message });
         } else {

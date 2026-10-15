@@ -150,7 +150,7 @@ async function sendOverview(sock, chatId, message) {
         `  $menu ai  $menu movies  $menu download`,
         `  $menu manga  $menu sports  $menu tools`,
         ``,
-        `${ICONS.fire}  Daratech  ⚡`,
+        `${ICONS.fire}  M-KING  ⚡`,
     ].join('\n');
 
     await sendWithImage(sock, chatId, message, body);
@@ -307,7 +307,7 @@ async function sendCategoryMenu(sock, chatId, message, input) {
         ]),
         slugHint,
         ``,
-        `${ICONS.fire}  Daratech  ⚡`,
+        `${ICONS.fire}  M-KING  ⚡`,
     ].join('\n');
 
     await sendWithImage(sock, chatId, message, body);
@@ -357,7 +357,7 @@ async function sendCategoryBrowser(sock, chatId, message) {
             `🏠  $menu  •  back`,
         ]),
         ``,
-        `${ICONS.fire}  Daratech  ⚡`
+        `${ICONS.fire}  M-KING  ⚡`
     );
 
     await sendWithImage(sock, chatId, message, lines.join('\n'));

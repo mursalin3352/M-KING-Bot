@@ -27,7 +27,7 @@ async function consolelogCommand(sock, chatId, senderId, message, userMessage) {
     if (arg === 'clear') {
         clearLogBuffer();
         return sock.sendMessage(chatId,
-            { text: '🗑️ *Console log buffer cleared.*\n\n_Daratech_ ⚡' },
+            { text: '🗑️ *Console log buffer cleared.*\n\n_M-KING_ ⚡' },
             { quoted: message }
         );
     }
@@ -41,7 +41,7 @@ async function consolelogCommand(sock, chatId, senderId, message, userMessage) {
 
     if (!lines.length) {
         return sock.sendMessage(chatId,
-            { text: '📭 *No log entries captured yet.*\n\n_Daratech_ ⚡' },
+            { text: '📭 *No log entries captured yet.*\n\n_M-KING_ ⚡' },
             { quoted: message }
         );
     }
@@ -58,7 +58,7 @@ async function consolelogCommand(sock, chatId, senderId, message, userMessage) {
         .map((l, i) => `┃ *${String(i + 1).padStart(2, '0')}* ${breakUrls(l)}`)
         .join('\n');
 
-    const footer = `\n┃\n╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`;
+    const footer = `\n┃\n╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`;
 
     return sock.sendMessage(chatId,
         { text: header + body + footer },

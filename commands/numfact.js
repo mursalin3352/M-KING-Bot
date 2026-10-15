@@ -7,7 +7,7 @@ async function numfactCommand(sock, chatId, message) {
     try {
         const { data } = await axios.get(`http://numbersapi.com/${num}?json=true`, { timeout: 8000 });
         await sock.sendMessage(chatId, {
-            text: `🔢 *NUMBER FACT — ${num}*\n\n${data.text}\n\n_Daratech_ ⚡`
+            text: `🔢 *NUMBER FACT — ${num}*\n\n${data.text}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: `❌ Could not fetch a fact for ${num}.` }, { quoted: message });
@@ -24,7 +24,7 @@ async function datefactCommand(sock, chatId, message) {
     try {
         const { data } = await axios.get(`http://numbersapi.com/${month}/${day}/date?json=true`, { timeout: 8000 });
         await sock.sendMessage(chatId, {
-            text: `📅 *DATE FACT — ${month}/${day}*\n\n${data.text}\n\n_Daratech_ ⚡`
+            text: `📅 *DATE FACT — ${month}/${day}*\n\n${data.text}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: '❌ Could not fetch date fact.' }, { quoted: message });
@@ -37,7 +37,7 @@ async function yearfactCommand(sock, chatId, message) {
     try {
         const { data } = await axios.get(`http://numbersapi.com/${year}/year?json=true`, { timeout: 8000 });
         await sock.sendMessage(chatId, {
-            text: `📆 *YEAR FACT — ${year}*\n\n${data.text}\n\n_Daratech_ ⚡`
+            text: `📆 *YEAR FACT — ${year}*\n\n${data.text}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: `❌ Could not fetch year fact for ${year}.` }, { quoted: message });
@@ -50,7 +50,7 @@ async function mathfactCommand(sock, chatId, message) {
     try {
         const { data } = await axios.get(`http://numbersapi.com/${num}/math?json=true`, { timeout: 8000 });
         await sock.sendMessage(chatId, {
-            text: `➕ *MATH FACT — ${num}*\n\n${data.text}\n\n_Daratech_ ⚡`
+            text: `➕ *MATH FACT — ${num}*\n\n${data.text}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: `❌ Could not fetch math fact for ${num}.` }, { quoted: message });

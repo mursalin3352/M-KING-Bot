@@ -44,7 +44,7 @@ async function shazamCommand(sock, chatId, message) {
                 `┃\n` +
                 `┃ The bot will identify the track for you!\n` +
                 `┃\n` +
-                `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -87,7 +87,7 @@ async function shazamCommand(sock, chatId, message) {
                 txt += `\n🍎 *Apple Music:* ${song.apple_music.url}`;
             }
 
-            txt += `\n\n_Daratech_ ⚡`;
+            txt += `\n\n_M-KING_ ⚡`;
 
             // Prefer Spotify album art (direct CDN JPEG), fall back to Apple Music artwork
             const spotifyImg = song.spotify?.album?.images?.[0]?.url || null;
@@ -121,7 +121,7 @@ async function shazamCommand(sock, chatId, message) {
         } else {
             await react(sock, message, '❌');
             await sock.sendMessage(chatId, {
-                text: `❌ *No match found.*\n\nThe clip might be too short, too noisy, or not in the database.\n\n_Daratech_ ⚡`
+                text: `❌ *No match found.*\n\nThe clip might be too short, too noisy, or not in the database.\n\n_M-KING_ ⚡`
             }, { quoted: message });
         }
 
@@ -129,7 +129,7 @@ async function shazamCommand(sock, chatId, message) {
         console.error('[shazam]', err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ *Shazam failed:* ${err.message}\n\n_Daratech_ ⚡`
+            text: `❌ *Shazam failed:* ${err.message}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }

@@ -65,7 +65,7 @@ async function handleAutoReactStatusCommand(sock, chatId, senderId, message) {
                   `┃ ▸ *$autoreactstatus off*       — Disable\n` +
                   `┃ ▸ *$autoreactstatus emoji 😍* — Change emoji\n` +
                   `┃\n` +
-                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -74,17 +74,17 @@ async function handleAutoReactStatusCommand(sock, chatId, senderId, message) {
         if (emoji) cfg.emoji = emoji;
         saveConfig(cfg);
         return sock.sendMessage(chatId, {
-            text: `✅ *Auto React Status enabled!*\nReacting with: ${cfg.emoji}\n\n_Daratech_ ⚡`
+            text: `✅ *Auto React Status enabled!*\nReacting with: ${cfg.emoji}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
     if (match === 'off') {
         cfg.enabled = false; saveConfig(cfg);
-        return sock.sendMessage(chatId, { text: '❌ *Auto React Status disabled.*\n\n_Daratech_ ⚡' }, { quoted: message });
+        return sock.sendMessage(chatId, { text: '❌ *Auto React Status disabled.*\n\n_M-KING_ ⚡' }, { quoted: message });
     }
     if (match === 'emoji' && emoji) {
         cfg.emoji = emoji; saveConfig(cfg);
         return sock.sendMessage(chatId, {
-            text: `✅ *Reaction emoji set to:* ${emoji}\n\n_Daratech_ ⚡`
+            text: `✅ *Reaction emoji set to:* ${emoji}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 

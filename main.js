@@ -300,7 +300,7 @@ const docsaveCommand = require('./commands/docsave');
 const restartCommand = require('./commands/restart');
 // Global settings
 global.packname = settings.packname;
-global.ytch = "Daratech";
+global.ytch = "M-KING";
 
 // channelInfo is kept as empty object — spreading it is a no-op (no newsletter)
 const channelInfo = {};
@@ -458,7 +458,7 @@ async function handleMessages(sock, messageUpdate, printLog) {
             // Only respond occasionally to avoid spam
             if (Math.random() < 0.1) {
                 await sock.sendMessage(chatId, {
-                    text: '❌ You are banned from using Daratech. Contact an admin to get unbanned.',
+                    text: '❌ You are banned from using M-KING. Contact an admin to get unbanned.',
                     ...channelInfo
                 });
             }
@@ -699,7 +699,7 @@ if (checkAFK(senderId)) {
                         `┃`,
                         `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━`,
                         ``,
-                        `> _Powered by Daratech_ ⚡`,
+                        `> _Powered by M-KING_ ⚡`,
                     ].join('\n')
                 }, { quoted: message });
                 commandExecuted = true;
@@ -1316,7 +1316,7 @@ case userMessage.startsWith('$bssensi'):
                 break;
             case userMessage === '$unknown':
             case userMessage === '$unknownofrun':
-            case userMessage === '$daratechbot':
+            case userMessage === '$m-kingbot':
                 await githubCommand(sock, chatId, message);
                 break;
             case userMessage.startsWith('$antibadword'):
@@ -2052,7 +2052,7 @@ case userMessage.startsWith('$bssensi'):
                 break;
             case userMessage === '$apimovie':
                 await sock.sendMessage(chatId, {
-                    text: `╭─〔 🎬 MOVIE API 〕─╮\n│\n│  🌐 *Daratech Movie API*\n│\n│  Access our full movie database,\n│  streaming links, and download\n│  endpoints via the API below:\n│\n│  🔗 https://movieapi.runflix.name.ng\n│\n│or 🔗 https://apimovie.runflix.name.ng\n│\n╰────────────────────────────────────╯\n\n_Daratech_ ⚡
+                    text: `╭─〔 🎬 MOVIE API 〕─╮\n│\n│  🌐 *M-KING Movie API*\n│\n│  Access our full movie database,\n│  streaming links, and download\n│  endpoints via the API below:\n│\n│  🔗 https://movieapi.runflix.name.ng\n│\n│or 🔗 https://apimovie.runflix.name.ng\n│\n╰────────────────────────────────────╯\n\n_M-KING_ ⚡
 `,
                 }, { quoted: message });
                 commandExecuted = true;

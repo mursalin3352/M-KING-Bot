@@ -31,7 +31,7 @@ async function snapchatCommand(sock, chatId, message) {
                   `┃ Example:\n` +
                   `┃ $snap https://www.snapchat.com/...\n` +
                   `┃\n` +
-                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -82,7 +82,7 @@ async function snapchatCommand(sock, chatId, message) {
     if (!dlUrl) {
         await react(sock, message, '❌');
         return sock.sendMessage(chatId, {
-            text: '❌ *Snapchat download failed.*\n\nMake sure the link is a *public* Snapchat Spotlight video.\nPrivate stories and locked content cannot be downloaded.\n\n_Daratech_ ⚡'
+            text: '❌ *Snapchat download failed.*\n\nMake sure the link is a *public* Snapchat Spotlight video.\nPrivate stories and locked content cannot be downloaded.\n\n_M-KING_ ⚡'
         }, { quoted: message });
     }
 
@@ -95,12 +95,12 @@ async function snapchatCommand(sock, chatId, message) {
         await sock.sendMessage(chatId, {
             video:    vidBuf,
             mimetype: 'video/mp4',
-            caption:  `👻 *Snapchat*\n\n_Daratech_ ⚡`,
+            caption:  `👻 *Snapchat*\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (err) {
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ Failed to send media.\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ Failed to send media.\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }

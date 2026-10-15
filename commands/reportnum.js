@@ -130,7 +130,7 @@ async function reportnumCommand(sock, chatId, senderId, message) {
                     `┃ ▸ *$reportnum <number> mass <n>*\n` +
                     `┃   (n reports, max 20)\n` +
                     `┃\n` +
-                    `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                    `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
             }, { quoted: message });
         }
 
@@ -177,7 +177,7 @@ async function reportnumCommand(sock, chatId, senderId, message) {
                     `┃ ❌ This number is *NOT on WhatsApp*.\n` +
                     `┃    Cannot report.\n` +
                     `┃\n` +
-                    `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                    `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
             }, { quoted: message });
         }
 
@@ -191,7 +191,7 @@ async function reportnumCommand(sock, chatId, senderId, message) {
                 `┃ 🔧 Mode   : ${modeLabel}\n` +
                 `┃ ⏳ Status : Sending report(s)…\n` +
                 `┃\n` +
-                `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
 
         let successCount = 0;
@@ -225,7 +225,7 @@ async function reportnumCommand(sock, chatId, senderId, message) {
                 `┃ ⚠️ _This reports the number to\n` +
                 `┃    WhatsApp as spam/abuse._\n` +
                 `┃\n` +
-                `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
 
     } catch (err) {

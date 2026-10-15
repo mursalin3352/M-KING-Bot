@@ -16,7 +16,7 @@ async function ytsearchCommand(sock, chatId, message) {
             txt += `▸ 📅 ${v.ago}\n`;
             txt += `▸ 🔗 ${v.url}\n\n`;
         });
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
         const thumb = results.videos[0]?.thumbnail;
         if (thumb) {
             await sock.sendMessage(chatId, { image: { url: thumb }, caption: txt }, { quoted: message });

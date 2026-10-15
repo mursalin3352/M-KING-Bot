@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Movie / Entertainment Command — powered by DaraTech Movieapi
+ * Movie / Entertainment Command — powered by M-KING Movieapi
  * (apimovie.runflix.name.ng/v1)
  */
 
@@ -131,7 +131,7 @@ function buildFileName(title, epLabel) {
     const safe = str => (str || '').replace(/[^\w\s.-]/g, '').trim().replace(/\s+/g, '.');
     const parts = [safe(title) || 'Video'];
     if (epLabel) parts.push(epLabel.replace(/\s+/g, ''));
-    parts.push('Daratech');
+    parts.push('M-KING');
     return parts.filter(Boolean).join('.') + '.mp4';
 }
 
@@ -209,7 +209,7 @@ async function sendMedia(sock, chatId, message, dlUrl, title, quality, epLabel, 
         epLabel ? `📺 *Episode:* ${epLabel}` : '',
         `🎞 *Quality:* ${quality || 'Unknown'}`,
         ``,
-        `_Downloaded by Daratech_ ⚡`,
+        `_Downloaded by M-KING_ ⚡`,
     ].filter(l => l !== undefined).join('\n').replace(/\n\n\n+/g, '\n\n');
 
     const fileName = buildFileName(title, epLabel);
@@ -434,7 +434,7 @@ async function doTrailer(sock, chatId, message, rawArg, typeKey) {
     return sock.sendMessage(chatId, {
         video: { url: trailerUrl },
         mimetype: 'video/mp4',
-        caption: `🎬 *${title}* — Trailer\n\n_Daratech_ ⚡`,
+        caption: `🎬 *${title}* — Trailer\n\n_M-KING_ ⚡`,
     }, { quoted: message });
 }
 
@@ -742,7 +742,7 @@ async function doDownload(sock, chatId, message, rawArg, tokens, typeKey) {
 }
 
 // ─── Help text ──────────────────────────────────────────────────────────────
-const HELP_TEXT = `🎬 *DARATECH MOVIE BOT COMMANDS*
+const HELP_TEXT = `🎬 *M-KING MOVIE BOT COMMANDS*
 
 *🔍 Search*
 ▸ *$movie <title>* — movies
@@ -936,7 +936,7 @@ async function doCaptions(sock, chatId, message, rawArg, typeKey, tokens) {
             document: Buffer.from(resp.data),
             mimetype: 'text/plain',
             fileName,
-            caption: `📜 *${fullTitle}*\n🗣 *Language:* ${sub.lang}\n\n_Daratech_ ⚡`,
+            caption: `📜 *${fullTitle}*\n🗣 *Language:* ${sub.lang}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -969,7 +969,7 @@ async function doStills(sock, chatId, message, rawArg, typeKey) {
         try {
             await sock.sendMessage(chatId, {
                 image: { url: stillUrl },
-                caption: `🖼 *${title}* — Screenshot ${sent + 1}\n\n_Daratech_ ⚡`,
+                caption: `🖼 *${title}* — Screenshot ${sent + 1}\n\n_M-KING_ ⚡`,
             }, { quoted: message });
             sent++;
         } catch { /* skip */ }
@@ -1041,7 +1041,7 @@ async function doLiveTV(sock, chatId, message, page = 1) {
     if (currPage < totalPages) {
         text += `\n\n➡️ *$more* — Next page`;
     }
-    text += `\n\n💡 *$livetvstream <number or id>* — Watch channel\n💡 *$livetvsearch <name>* — Search channel\n\n_Daratech_ ⚡`;
+    text += `\n\n💡 *$livetvstream <number or id>* — Watch channel\n💡 *$livetvsearch <name>* — Search channel\n\n_M-KING_ ⚡`;
 
     return sock.sendMessage(chatId, { text }, { quoted: message });
 }
@@ -1081,7 +1081,7 @@ async function doLiveTVStream(sock, chatId, message, rawArg) {
     } else {
         msg += `⚠️ Channel stream URL is currently offline or unavailable.`;
     }
-    msg += `\n\n_Daratech_ ⚡`;
+    msg += `\n\n_M-KING_ ⚡`;
     if (data.logo) {
         try { return await sock.sendMessage(chatId, { image: { url: data.logo }, caption: msg }, { quoted: message }); } catch { /* ignore */ }
     }
@@ -1155,7 +1155,7 @@ async function doMatchList(sock, chatId, message, endpoint, title, emoji, page =
     if (currPage < totalPages) {
         text += `\n\n➡️ *$more* — Next page`;
     }
-    text += `\n\n💡 *$matchstream <number or id>* — Stream link\n💡 *$matchdetails <number or id>* — Match info\n\n_Daratech_ ⚡`;
+    text += `\n\n💡 *$matchstream <number or id>* — Stream link\n💡 *$matchdetails <number or id>* — Match info\n\n_M-KING_ ⚡`;
 
     return sock.sendMessage(chatId, { text }, { quoted: message });
 }
@@ -1207,7 +1207,7 @@ async function doMatchLeagues(sock, chatId, message, rawQuery, page = 1) {
     if (currPage < totalPages) {
         text += `\n\n➡️ *$more* — Next page`;
     }
-    text += `\n\n_Daratech_ ⚡`;
+    text += `\n\n_M-KING_ ⚡`;
 
     return sock.sendMessage(chatId, { text }, { quoted: message });
 }
@@ -1220,7 +1220,7 @@ async function doMatchStream(sock, chatId, message, rawArg) {
     const hlsUrl = data.hlsUrl || data.url || data.streamUrl;
     if (!hlsUrl) return sock.sendMessage(chatId, { text: '⚠️ No stream URL available for this match.' }, { quoted: message });
     return sock.sendMessage(chatId, {
-        text: `📺 *Match Stream Link*\n\n🔗 ${hlsUrl}\n\n_Open in VLC or HLS-compatible player._\n\n_Daratech_ ⚡`
+        text: `📺 *Match Stream Link*\n\n🔗 ${hlsUrl}\n\n_Open in VLC or HLS-compatible player._\n\n_M-KING_ ⚡`
     }, { quoted: message });
 }
 
@@ -1248,7 +1248,7 @@ async function doMatchDetails(sock, chatId, message, rawArg) {
     } else {
         msg += `\n💡 *$matchstream ${resolved.id}* — Stream link`;
     }
-    msg += `\n\n_Daratech_ ⚡`;
+    msg += `\n\n_M-KING_ ⚡`;
     return sock.sendMessage(chatId, { text: msg }, { quoted: message });
 }
 

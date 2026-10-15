@@ -7,7 +7,7 @@ async function flirtCommand(sock, chatId, message) {
         const text = data?.result;
         if (!text || typeof text !== 'string') throw new Error('Empty response');
         await sock.sendMessage(chatId, {
-            text: `💘 *FLIRT LINE*\n\n${text}\n\n_Daratech_ ⚡`,
+            text: `💘 *FLIRT LINE*\n\n${text}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (e) {
         console.error('[flirt]', e.message);

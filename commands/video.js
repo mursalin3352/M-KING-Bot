@@ -59,7 +59,7 @@ async function ytvideoCommand(sock, chatId, message) {
         await sock.sendMessage(chatId, {
             video:    { url: dl },
             mimetype: 'video/mp4',
-            caption:  `🎬 *${vtitle}*\n📊 ${quality}\n\n_Daratech_ ⚡`,
+            caption:  `🎬 *${vtitle}*\n📊 ${quality}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (err) {
         console.error('[ytvideo]', err.message);

@@ -139,7 +139,7 @@ async function ephotoCommand(sock, chatId, message) {
         return sock.sendMessage(chatId, {
             text: `🎨 *EPHOTO TEXT EFFECTS*\n\n`
                 + `Usage: *$ephoto <style> <text>*\n`
-                + `Example: *$ephoto neon DARATECH*\n\n`
+                + `Example: *$ephoto neon M-KING*\n\n`
                 + `*Available styles:*\n${styleList}\n\n`
                 + `_For dual-text styles use $ephoto2_`,
         }, { quoted: message });
@@ -164,7 +164,7 @@ async function ephotoCommand(sock, chatId, message) {
 
         await sock.sendMessage(chatId, {
             image:   { url: imgUrl },
-            caption: `🎨 *${style.toUpperCase()}* — ${text}\n_Daratech_ ⚡`,
+            caption: `🎨 *${style.toUpperCase()}* — ${text}\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -186,7 +186,7 @@ async function ephoto2Command(sock, chatId, message) {
         return sock.sendMessage(chatId, {
             text: `🎨 *EPHOTO DUAL-TEXT EFFECTS*\n\n`
                 + `Usage: *$ephoto2 <style> <text1> | <text2>*\n`
-                + `Example: *$ephoto2 deadpool DARATECH | BOT*\n\n`
+                + `Example: *$ephoto2 deadpool M-KING | BOT*\n\n`
                 + `*Available styles:*\n${styleList}`,
         }, { quoted: message });
     }
@@ -205,7 +205,7 @@ async function ephoto2Command(sock, chatId, message) {
 
     if (!t1 || !t2) {
         return sock.sendMessage(chatId, {
-            text: `❌ Provide both texts separated by *|*\nExample: *$ephoto2 ${style} DARATECH | BOT*`,
+            text: `❌ Provide both texts separated by *|*\nExample: *$ephoto2 ${style} M-KING | BOT*`,
         }, { quoted: message });
     }
 
@@ -217,7 +217,7 @@ async function ephoto2Command(sock, chatId, message) {
 
         await sock.sendMessage(chatId, {
             image:   { url: imgUrl },
-            caption: `🎨 *${style.toUpperCase()}* — ${t1} | ${t2}\n_Daratech_ ⚡`,
+            caption: `🎨 *${style.toUpperCase()}* — ${t1} | ${t2}\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -237,7 +237,7 @@ async function ephotolistCommand(sock, chatId, message) {
         + `${'─'.repeat(32)}\n\n`
         + `*Single-text ($ephoto <style> <text>):*\n${single}\n\n`
         + `*Dual-text ($ephoto2 <style> <t1> | <t2>):*\n${dual}\n\n`
-        + `_Daratech_ ⚡`;
+        + `_M-KING_ ⚡`;
     await sock.sendMessage(chatId, { text }, { quoted: message });
 }
 

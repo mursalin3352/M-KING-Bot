@@ -80,7 +80,7 @@ async function pendingCommand(sock, chatId, message) {
             ``,
             `_Use *$accept all*, *$reject all*, or *$accept 1,2,5* to manage._`,
             ``,
-            `_Daratech_ ⚡`,
+            `_M-KING_ ⚡`,
         ].join('\n'),
         mentions,
     }, { quoted: message });
@@ -135,7 +135,7 @@ async function acceptCommand(sock, chatId, message, userMessage) {
                     ``,
                     jids.map(j => `• @${j.split('@')[0]}`).join('\n'),
                     ``,
-                    `_Daratech_ ⚡`,
+                    `_M-KING_ ⚡`,
                 ].join('\n'),
                 mentions: jids,
             }, { quoted: message });
@@ -168,7 +168,7 @@ async function acceptCommand(sock, chatId, message, userMessage) {
                 successLines.join('\n'),
                 invalidNote,
                 ``,
-                `_Daratech_ ⚡`,
+                `_M-KING_ ⚡`,
             ].join('\n'),
             mentions: targetJids,
         }, { quoted: message });
@@ -227,7 +227,7 @@ async function rejectCommand(sock, chatId, message, userMessage) {
                     ``,
                     jids.map(j => `• @${j.split('@')[0]}`).join('\n'),
                     ``,
-                    `_Daratech_ ⚡`,
+                    `_M-KING_ ⚡`,
                 ].join('\n'),
                 mentions: jids,
             }, { quoted: message });
@@ -260,7 +260,7 @@ async function rejectCommand(sock, chatId, message, userMessage) {
                 successLines.join('\n'),
                 invalidNote,
                 ``,
-                `_Daratech_ ⚡`,
+                `_M-KING_ ⚡`,
             ].join('\n'),
             mentions: targetJids,
         }, { quoted: message });

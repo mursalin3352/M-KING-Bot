@@ -16,7 +16,7 @@ async function carbonCommand(sock, chatId, message) {
         const r = data.result;
         await sock.sendMessage(chatId, {
             image: { url: r.image },
-            caption: `💻 *CODE SCREENSHOT*\n\n▸ 🖋️ *Font:* ${r.font || 'default'}\n▸ 🎨 *Theme:* ${r.theme || 'default'}\n\n_Daratech_ ⚡`,
+            caption: `💻 *CODE SCREENSHOT*\n\n▸ 🖋️ *Font:* ${r.font || 'default'}\n▸ 🎨 *Theme:* ${r.theme || 'default'}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (err) {
         console.error('[carbon]', err.message);

@@ -78,19 +78,19 @@ function makeToggleCommand(key, label, emoji, description) {
                       `┃ ▸ *$${key} off* — Disable\n` +
                       `┃\n` +
                       `╰━━━━━━━━━━━━━━━━━━━━━\n\n` +
-                      `_${description}_\n\n_Daratech_ ⚡`
+                      `_${description}_\n\n_M-KING_ ⚡`
             }, { quoted: message });
         }
 
         if (match === 'on') {
             if (on) return sock.sendMessage(chatId, { text: `⚠️ ${label} is already *enabled*.` }, { quoted: message });
             setGroupFlag(chatId, key, true);
-            return sock.sendMessage(chatId, { text: `✅ *${label} enabled!*\n\n_${description}_\n\n_Daratech_ ⚡` }, { quoted: message });
+            return sock.sendMessage(chatId, { text: `✅ *${label} enabled!*\n\n_${description}_\n\n_M-KING_ ⚡` }, { quoted: message });
         }
         if (match === 'off') {
             if (!on) return sock.sendMessage(chatId, { text: `⚠️ ${label} is already *disabled*.` }, { quoted: message });
             setGroupFlag(chatId, key, false);
-            return sock.sendMessage(chatId, { text: `❌ *${label} disabled.*\n\n_Daratech_ ⚡` }, { quoted: message });
+            return sock.sendMessage(chatId, { text: `❌ *${label} disabled.*\n\n_M-KING_ ⚡` }, { quoted: message });
         }
 
         return sock.sendMessage(chatId,
@@ -217,7 +217,7 @@ async function banlistCommand(sock, chatId, message) {
         const banPath = path.join(__dirname, '../data/ban.json');
         if (!fs.existsSync(banPath)) {
             return sock.sendMessage(chatId, {
-                text: '📋 *BAN LIST*\n\nNo banned members in this group.\n\n_Daratech_ ⚡'
+                text: '📋 *BAN LIST*\n\nNo banned members in this group.\n\n_M-KING_ ⚡'
             }, { quoted: message });
         }
 
@@ -226,19 +226,19 @@ async function banlistCommand(sock, chatId, message) {
 
         if (!bans.length) {
             return sock.sendMessage(chatId, {
-                text: '📋 *BAN LIST*\n\nNo banned members in this group.\n\n_Daratech_ ⚡'
+                text: '📋 *BAN LIST*\n\nNo banned members in this group.\n\n_M-KING_ ⚡'
             }, { quoted: message });
         }
 
         const list = bans.map((jid, i) => `${i + 1}. @${jid.split('@')[0]}`).join('\n');
         await sock.sendMessage(chatId, {
-            text: `╭━━━「 🚫 *BAN LIST* 」━━━\n┃\n┃ ${bans.length} banned member(s):\n┃\n${list}\n┃\n╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`,
+            text: `╭━━━「 🚫 *BAN LIST* 」━━━\n┃\n┃ ${bans.length} banned member(s):\n┃\n${list}\n┃\n╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`,
             mentions: bans
         }, { quoted: message });
 
     } catch (err) {
         console.error('[banlist]', err.message);
-        await sock.sendMessage(chatId, { text: '❌ Failed to load ban list.\n\n_Daratech_ ⚡' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '❌ Failed to load ban list.\n\n_M-KING_ ⚡' }, { quoted: message });
     }
 }
 
@@ -254,7 +254,7 @@ async function gctimeCommand(sock, chatId, message) {
 
         if (!createdAt) {
             return sock.sendMessage(chatId, {
-                text: '❌ Could not retrieve group creation date.\n\n_Daratech_ ⚡'
+                text: '❌ Could not retrieve group creation date.\n\n_M-KING_ ⚡'
             }, { quoted: message });
         }
 
@@ -286,12 +286,12 @@ async function gctimeCommand(sock, chatId, message) {
                   `┃ 🗓️ Age:     ${age}\n` +
                   `┃ 📊 Members: ${meta.participants.length}\n` +
                   `┃\n` +
-                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
 
     } catch (err) {
         console.error('[gctime]', err.message);
-        await sock.sendMessage(chatId, { text: '❌ Could not fetch group info.\n\n_Daratech_ ⚡' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '❌ Could not fetch group info.\n\n_M-KING_ ⚡' }, { quoted: message });
     }
 }
 

@@ -39,7 +39,7 @@ function ayahCard(en, ar) {
         `*English (Asad):*`,
         en.text,
         ``,
-        `_Daratech_ ⚡`,
+        `_M-KING_ ⚡`,
     ].join('\n');
 }
 
@@ -90,7 +90,7 @@ async function quranCommand(sock, chatId, message) {
                 `_Use *$quran ${surahNum}:1* to read the first verse._`,
                 `_Use *$quran ${surahNum}:<ayah>* to read any verse._`,
                 ``,
-                `_Daratech_ ⚡`,
+                `_M-KING_ ⚡`,
             ].join('\n');
             return sock.sendMessage(chatId, { text }, { quoted: message });
         } catch {
@@ -136,7 +136,7 @@ async function dailyAyahCommand(sock, chatId, message) {
             `*English (Asad):*`,
             en.text,
             ``,
-            `_Daratech_ ⚡`,
+            `_M-KING_ ⚡`,
         ].join('\n');
         return sock.sendMessage(chatId, { text }, { quoted: message });
     } catch {

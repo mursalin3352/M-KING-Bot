@@ -28,7 +28,7 @@ async function gitcloneCommand(sock, chatId, message) {
                     document: { url: zipUrl },
                     mimetype: 'application/zip',
                     fileName: `${repoPath.replace(/\//g, '_')}_${branch}.zip`,
-                    caption: `*GitHub Repo Downloaded!*\n🐙 *Repo:* ${repoPath}\n🌿 *Branch:* ${branch}\n\n🚀 *Daratech Bot*`,
+                    caption: `*GitHub Repo Downloaded!*\n🐙 *Repo:* ${repoPath}\n🌿 *Branch:* ${branch}\n\n🚀 *M-KING Bot*`,
                 }, { quoted: message });
                 sent = true;
                 break;

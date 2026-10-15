@@ -17,7 +17,7 @@ const os   = require('os');
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-const TMP = path.join(os.tmpdir(), 'daratech-convert');
+const TMP = path.join(os.tmpdir(), 'm-king-convert');
 if (!fs.existsSync(TMP)) fs.mkdirSync(TMP, { recursive: true });
 
 function tmpFile(ext) {
@@ -95,7 +95,7 @@ async function toaudioCommand(sock, chatId, message) {
         const result = await downloadQuotedMedia(sock, message);
         if (!result || !['video', 'audio'].includes(result.mediaType)) {
             return sock.sendMessage(chatId, {
-                text: '🎵 *TO AUDIO*\n\nReply to a *video* or *audio* message with *$toaudio* to convert it to an MP3 file.\n\n_Daratech_ ⚡'
+                text: '🎵 *TO AUDIO*\n\nReply to a *video* or *audio* message with *$toaudio* to convert it to an MP3 file.\n\n_M-KING_ ⚡'
             }, { quoted: message });
         }
 
@@ -126,7 +126,7 @@ async function toaudioCommand(sock, chatId, message) {
         console.error('[toaudio]', err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ Conversion failed.\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ Conversion failed.\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }
@@ -137,7 +137,7 @@ async function tovideoCommand(sock, chatId, message) {
         const result = await downloadQuotedMedia(sock, message);
         if (!result || result.mediaType !== 'audio') {
             return sock.sendMessage(chatId, {
-                text: '🎬 *TO VIDEO*\n\nReply to an *audio* message with *$tovideo* to convert it to an MP4 video.\n\n_Daratech_ ⚡'
+                text: '🎬 *TO VIDEO*\n\nReply to an *audio* message with *$tovideo* to convert it to an MP4 video.\n\n_M-KING_ ⚡'
             }, { quoted: message });
         }
 
@@ -166,14 +166,14 @@ async function tovideoCommand(sock, chatId, message) {
         await react(sock, message, '✅');
         await sock.sendMessage(chatId, {
             video: mp4, mimetype: 'video/mp4',
-            caption: `🎬 *Video file*\n\n_Daratech_ ⚡`
+            caption: `🎬 *Video file*\n\n_M-KING_ ⚡`
         }, { quoted: message });
 
     } catch (err) {
         console.error('[tovideo]', err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ Conversion failed.\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ Conversion failed.\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }
@@ -184,7 +184,7 @@ async function togifCommand(sock, chatId, message) {
         const result = await downloadQuotedMedia(sock, message);
         if (!result || !['video', 'gif', 'sticker'].includes(result.mediaType)) {
             return sock.sendMessage(chatId, {
-                text: '🎞️ *TO GIF*\n\nReply to a *video*, *gif*, or *sticker* with *$togif* to convert it to an animated GIF.\n\n_Daratech_ ⚡'
+                text: '🎞️ *TO GIF*\n\nReply to a *video*, *gif*, or *sticker* with *$togif* to convert it to an animated GIF.\n\n_M-KING_ ⚡'
             }, { quoted: message });
         }
 
@@ -221,14 +221,14 @@ async function togifCommand(sock, chatId, message) {
         await sock.sendMessage(chatId, {
             video: mp4Buf,
             gifPlayback: true,
-            caption: `🎞️ *GIF*\n\n_Daratech_ ⚡`
+            caption: `🎞️ *GIF*\n\n_M-KING_ ⚡`
         }, { quoted: message });
 
     } catch (err) {
         console.error('[togif]', err);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ GIF conversion failed.\n\n_${err.message || err}_\n\n_Daratech_ ⚡`
+            text: `❌ GIF conversion failed.\n\n_${err.message || err}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }
@@ -239,7 +239,7 @@ async function toimageCommand(sock, chatId, message) {
         const result = await downloadQuotedMedia(sock, message);
         if (!result || result.mediaType !== 'video') {
             return sock.sendMessage(chatId, {
-                text: '🖼️ *TO IMAGE*\n\nReply to a *video* with *$toimage* to extract its thumbnail frame as an image.\n\n_Daratech_ ⚡'
+                text: '🖼️ *TO IMAGE*\n\nReply to a *video* with *$toimage* to extract its thumbnail frame as an image.\n\n_M-KING_ ⚡'
             }, { quoted: message });
         }
 
@@ -258,14 +258,14 @@ async function toimageCommand(sock, chatId, message) {
         await react(sock, message, '✅');
         await sock.sendMessage(chatId, {
             image: img,
-            caption: `🖼️ *Video thumbnail*\n\n_Daratech_ ⚡`
+            caption: `🖼️ *Video thumbnail*\n\n_M-KING_ ⚡`
         }, { quoted: message });
 
     } catch (err) {
         console.error('[toimage]', err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ Frame extraction failed.\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ Frame extraction failed.\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }

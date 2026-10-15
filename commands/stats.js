@@ -19,7 +19,7 @@ async function statsCommand(sock, chatId, message) {
             `▸ ⏱️ *Uptime:*    ${formatUptime(uptime)}\n` +
             `▸ 💾 *Memory:*    ${memoryUsed} MB\n` +
             `▸ ⚙️ *Node:*      ${process.version}\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
 
         await sock.sendMessage(chatId, { text: statsMessage }, { quoted: message });
     } catch (error) {

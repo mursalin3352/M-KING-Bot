@@ -10,7 +10,7 @@ async function aliveCommand(sock, chatId, message) {
         const mode = settings.commandMode || 'public';
 
         const msg = [
-            `⚡ *DARATECH BOT* ⚡`,
+            `⚡ *M-KING BOT* ⚡`,
             `🤖 Alive & Running!\n`,
             `▸ ✅ *Status:*  Online`,
             `▸ ⏱️ *Uptime:*  ${h}h ${m}m ${s}s`,
@@ -22,23 +22,23 @@ async function aliveCommand(sock, chatId, message) {
             `📖 Descriptions  →  *$help*\n`,
             `👥 *Join our Community:*`,
             `https://chat.whatsapp.com/D1OaGKmTvrOGfb5E7w8nZJ\n`,
-            `_Daratech_ ⚡`,
+            `_M-KING_ ⚡`,
         ].join('\n');
 
         await sock.sendMessage(chatId, { text: msg }, { quoted: message });
     } catch (error) {
         console.error('Error in alive command:', error);
-        await sock.sendMessage(chatId, { text: '✅ Daratech is alive and running!' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '✅ M-KING is alive and running!' }, { quoted: message });
     }
 }
 
 async function communityCommand(sock, chatId, message) {
     await sock.sendMessage(chatId, {
         text:
-            `👥 *DARATECH COMMUNITY*\n\n` +
+            `👥 *M-KING COMMUNITY*\n\n` +
             `Join our WhatsApp community to get updates, tips, and connect with other users!\n\n` +
             `🔗 *Link:*\nhttps://chat.whatsapp.com/D1OaGKmTvrOGfb5E7w8nZJ\n\n` +
-            `_Daratech_ ⚡`,
+            `_M-KING_ ⚡`,
     }, { quoted: message });
 }
 

@@ -30,7 +30,7 @@ async function pinterestCommand(sock, chatId, message) {
                 });
                 await sock.sendMessage(chatId, {
                     image: Buffer.from(imgRes.data),
-                    caption: `📌 *Pinterest* — ${q}\n\n_Daratech_ ⚡`,
+                    caption: `📌 *Pinterest* — ${q}\n\n_M-KING_ ⚡`,
                 }, { quoted: message });
                 sent++;
             } catch {}

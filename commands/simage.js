@@ -39,14 +39,14 @@ const convertStickerToImage = async (sock, quotedMessage, chatId) => {
             const pngBuffer = await img.getBufferAsync(Jimp.MIME_PNG);
             return sock.sendMessage(chatId, {
                 image:   pngBuffer,
-                caption: '🖼 Here is your converted image!\n\n_Daratech_ ⚡',
+                caption: '🖼 Here is your converted image!\n\n_M-KING_ ⚡',
             });
         } catch (_jimpErr) {
             // Jimp failed (e.g. animated webp) — send raw WebP, WhatsApp handles it fine
             return sock.sendMessage(chatId, {
                 image:   buffer,
                 mimetype: 'image/webp',
-                caption: '🖼 Here is your sticker as an image!\n\n_Daratech_ ⚡',
+                caption: '🖼 Here is your sticker as an image!\n\n_M-KING_ ⚡',
             });
         }
     } catch (error) {

@@ -40,7 +40,7 @@ async function spotifyPlaylistCommand(sock, chatId, message) {
                 `┃ $spotifyplaylist alan walker\n` +
                 `┃ $spotifyplaylist chill vibes\n` +
                 `┃\n` +
-                `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -61,7 +61,7 @@ async function spotifyPlaylistCommand(sock, chatId, message) {
         if (!data?.success || !Array.isArray(data.results) || !data.results.length) {
             await react(sock, message, '❌');
             return sock.sendMessage(chatId, {
-                text: `❌ *No playlists found for:* _${query}_\n\nTry a different search term.\n\n_Daratech_ ⚡`
+                text: `❌ *No playlists found for:* _${query}_\n\nTry a different search term.\n\n_M-KING_ ⚡`
             }, { quoted: message });
         }
 
@@ -70,7 +70,7 @@ async function spotifyPlaylistCommand(sock, chatId, message) {
         console.error('[spotifyplaylist]', err.message);
         await react(sock, message, '❌');
         return sock.sendMessage(chatId, {
-            text: `❌ *Failed to fetch playlists.* Please try again.\n\n_Daratech_ ⚡`
+            text: `❌ *Failed to fetch playlists.* Please try again.\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -89,7 +89,7 @@ async function spotifyPlaylistCommand(sock, chatId, message) {
         `┃ 📋 Found: *${results.length}* playlist(s)\n` +
         `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
         lines.join('\n\n') +
-        `\n\n_Daratech_ ⚡`;
+        `\n\n_M-KING_ ⚡`;
 
     // Try to send with the first result's cover thumbnail
     const thumbnail = results[0]?.thumbnail;

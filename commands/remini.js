@@ -10,7 +10,7 @@ async function reminiCommand(sock, chatId, message) {
 
         if (!imageMsg) {
             return sock.sendMessage(chatId, {
-                text: '📸 *REMINI / ENHANCE*\n\nReply to an image with *$remini* to enhance/upscale it.\n\n_Daratech_ ⚡',
+                text: '📸 *REMINI / ENHANCE*\n\nReply to an image with *$remini* to enhance/upscale it.\n\n_M-KING_ ⚡',
             }, { quoted: message });
         }
 
@@ -46,7 +46,7 @@ async function reminiCommand(sock, chatId, message) {
         const imgRes = await axios.get(resultUrl, { responseType: 'arraybuffer', timeout: 30000 });
         await sock.sendMessage(chatId, {
             image: Buffer.from(imgRes.data),
-            caption: `✨ *ENHANCED IMAGE*\n\n_Daratech_ ⚡`,
+            caption: `✨ *ENHANCED IMAGE*\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (err) {
         console.error('[remini]', err.message);

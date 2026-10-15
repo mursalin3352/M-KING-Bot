@@ -34,8 +34,8 @@ async function pairCommand(sock, chatId, message, q) {
 
         await sock.sendMessage(chatId, {
             text:
-                `🔐 *DARATECH SESSION GENERATOR*\n\n` +
-                `Generate your SESSION_ID to run Daratech Bot.\n\n` +
+                `🔐 *M-KING SESSION GENERATOR*\n\n` +
+                `Generate your SESSION_ID to run M-KING Bot.\n\n` +
                 `╭── *Step 1 — Visit the website*\n` +
                 `│ 🌐 ${SESSION_SITE}\n` +
                 `╰─────────────────────\n\n` +

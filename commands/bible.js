@@ -21,7 +21,7 @@ async function bibleCommand(sock, chatId, message) {
         const verses = data.verses || [];
         const verseText = verses.map(v => `[${v.verse}] ${v.text.trim()}`).join('\n') || data.text?.trim() || 'No text found.';
         await sock.sendMessage(chatId, {
-            text: `╭━═『 📖 *BIBLE* 』═━╮\n┃ 📜 *${data.reference}*\n┃ 📚 *Translation:* ${data.translation_name || 'WEB'}\n╰━━━━━━━━━━━━━━━╯\n\n${verseText}\n\n_Daratech_ ⚡`
+            text: `╭━═『 📖 *BIBLE* 』═━╮\n┃ 📜 *${data.reference}*\n┃ 📚 *Translation:* ${data.translation_name || 'WEB'}\n╰━━━━━━━━━━━━━━━╯\n\n${verseText}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch { await sock.sendMessage(chatId, { text: `❌ Could not fetch verse for "${ref}".` }, { quoted: message }); }
 }
@@ -34,7 +34,7 @@ async function dailyVerseCommand(sock, chatId, message) {
         const { data } = await axios.get(`https://bible-api.com/${encodeURIComponent(ref)}`, { timeout: 10000 });
         const verseText = (data.verses || []).map(v => v.text.trim()).join(' ') || data.text?.trim() || 'No text found.';
         await sock.sendMessage(chatId, {
-            text: `╭━═『 📅 *VERSE OF THE DAY* 』━╮\n┃ 📜 *${data.reference}*\n╰━━━━━━━━━━━━━━━━━━━╯\n\n"${verseText}"\n\n_Daratech_ ⚡`
+            text: `╭━═『 📅 *VERSE OF THE DAY* 』━╮\n┃ 📜 *${data.reference}*\n╰━━━━━━━━━━━━━━━━━━━╯\n\n"${verseText}"\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch { await sock.sendMessage(chatId, { text: '❌ Could not fetch daily verse.' }, { quoted: message }); }
 }

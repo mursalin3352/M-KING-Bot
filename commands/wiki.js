@@ -9,7 +9,7 @@ async function wikiCommand(sock, chatId, message) {
         await sock.sendMessage(chatId, { text: '📚 Searching Wikipedia……' }, { quoted: message });
         const { data } = await axios.get(
             `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`,
-            { timeout: 12000, headers: { 'User-Agent': 'DaratechBot/1.0' } }
+            { timeout: 12000, headers: { 'User-Agent': 'M-KINGBot/1.0' } }
         );
         if (data.type === 'disambiguation') {
             return sock.sendMessage(chatId, { text: `⚠️ "*${query}*" is ambiguous. Try a more specific term.\n\n${data.extract?.slice(0, 300) || ''}` }, { quoted: message });
@@ -20,7 +20,7 @@ async function wikiCommand(sock, chatId, message) {
             `┃ 📖 *${data.title}*\n` +
             `╰━━━━━━━━━━━━━━━━━━╯\n\n` +
             `${summary}\n\n` +
-            `🔗 ${data.content_urls?.desktop?.page || ''}\n\n_Daratech_ ⚡`;
+            `🔗 ${data.content_urls?.desktop?.page || ''}\n\n_M-KING_ ⚡`;
         const imgUrl = data.thumbnail?.source;
         if (imgUrl) {
             await sock.sendMessage(chatId, { image: { url: imgUrl }, caption: txt }, { quoted: message });

@@ -1,6 +1,6 @@
 'use strict';
 /**
- * Economy System — Daratech Bot
+ * Economy System — M-KING Bot
  * Commands: register, balance, daily, work, mine, fish, rob, pay, deposit,
  *           withdraw, gamble, slots, coinflip, leaderboard, profile, gift,
  *           store, buy, inventory, equip, sell, upgrade, use, battle, estats,
@@ -303,7 +303,7 @@ async function registerCommand(sock, chatId, message, q) {
 
     await sock.sendMessage(chatId, {
         text:
-            `🎉 *Welcome to the Daratech Economy!*\n\n` +
+            `🎉 *Welcome to the M-KING Economy!*\n\n` +
             `╭──────────────────\n` +
             `│ 👤 Name   : *${name}*\n` +
             `│ 💰 Wallet : *🪙 1,000* (starter bonus!)\n` +
@@ -811,7 +811,7 @@ async function storeCommand(sock, chatId, message) {
     };
     await sock.sendMessage(chatId, {
         text:
-            `🏪 *DARATECH STORE*\n\n` +
+            `🏪 *M-KING STORE*\n\n` +
             section('⚔️ WEAPONS', categories.weapon) + '\n\n' +
             section('🛡️ ARMORS', categories.armor) + '\n\n' +
             section('💍 ACCESSORIES', categories.accessory) + '\n\n' +
@@ -1395,7 +1395,7 @@ function seedEconomyOwner(ownerJid, ownerLid) {
 
         db[ownerJid] = {
             registered:  true,
-            name:        'Daratech',
+            name:        'M-KING',
             wallet:      1e84,
             bank:        1e84,
             xp:          1e84,

@@ -110,7 +110,7 @@ async function autostickerCommand(sock, chatId, senderId, message) {
                   `┃ When enabled, images & videos sent\n` +
                   `┃ by non-admins are auto-converted\n` +
                   `┃ to stickers.\n` +
-                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -118,17 +118,17 @@ async function autostickerCommand(sock, chatId, senderId, message) {
         if (isOn) return sock.sendMessage(chatId, { text: '⚠️ Auto sticker is already *enabled*.' }, { quoted: message });
         setGroupFlag(chatId, 'autosticker', true);
         return sock.sendMessage(chatId, {
-            text: `✅ *Auto Sticker enabled!*\n\nImages & videos from non-admins will be auto-converted to stickers.\n\n_Daratech_ ⚡`
+            text: `✅ *Auto Sticker enabled!*\n\nImages & videos from non-admins will be auto-converted to stickers.\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
     if (sub === 'off') {
         if (!isOn) return sock.sendMessage(chatId, { text: '⚠️ Auto sticker is already *disabled*.' }, { quoted: message });
         setGroupFlag(chatId, 'autosticker', false);
-        return sock.sendMessage(chatId, { text: `✅ *Auto Sticker disabled.*\n\n_Daratech_ ⚡` }, { quoted: message });
+        return sock.sendMessage(chatId, { text: `✅ *Auto Sticker disabled.*\n\n_M-KING_ ⚡` }, { quoted: message });
     }
 
-    return sock.sendMessage(chatId, { text: `❓ Unknown option. Use *$autosticker* to see usage.\n\n_Daratech_ ⚡` }, { quoted: message });
+    return sock.sendMessage(chatId, { text: `❓ Unknown option. Use *$autosticker* to see usage.\n\n_M-KING_ ⚡` }, { quoted: message });
 }
 
 // ── Detection hook ─────────────────────────────────────────────────────────────

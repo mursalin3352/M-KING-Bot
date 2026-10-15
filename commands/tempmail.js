@@ -36,7 +36,7 @@ async function tempmailCommand(sock, chatId, message) {
             const msgs = data?.result || [];
             if (!msgs.length) {
                 return sock.sendMessage(chatId, {
-                    text: `📭 *INBOX — ${email}*\n\nNo messages yet. Share this address to receive emails.\n\n_Daratech_ ⚡`,
+                    text: `📭 *INBOX — ${email}*\n\nNo messages yet. Share this address to receive emails.\n\n_M-KING_ ⚡`,
                 }, { quoted: message });
             }
 
@@ -47,7 +47,7 @@ async function tempmailCommand(sock, chatId, message) {
                 reply += `   *Subject:* ${m.subject || '(no subject)'}\n`;
                 reply += `   *Body:* ${(m.body || m.text || m.message || '').slice(0, 250)}\n\n`;
             });
-            reply += `_Daratech_ ⚡`;
+            reply += `_M-KING_ ⚡`;
             return sock.sendMessage(chatId, { text: reply }, { quoted: message });
         }
 
@@ -69,7 +69,7 @@ async function tempmailCommand(sock, chatId, message) {
             `▸ 🎲 *Modes:* ${modes}\n\n` +
             `📥 Check inbox: *$tempmail inbox*\n` +
             `📥 Or specify: *$tempmail inbox ${r.email}*\n\n` +
-            `_Daratech_ ⚡`;
+            `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: reply }, { quoted: message });
 
     } catch (err) {

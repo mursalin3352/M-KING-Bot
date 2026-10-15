@@ -7,7 +7,7 @@ async function waifuCommand(sock, chatId, message) {
         if (!data?.success || !data?.url) throw new Error('No waifu image returned');
         await sock.sendMessage(chatId, {
             image: { url: data.url },
-            caption: `✨ *RANDOM WAIFU*\n\n_Daratech_ ⚡`,
+            caption: `✨ *RANDOM WAIFU*\n\n_M-KING_ ⚡`,
         }, { quoted: message });
     } catch (err) {
         console.error('[waifu]', err.message);

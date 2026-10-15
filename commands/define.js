@@ -25,7 +25,7 @@ async function defineCommand(sock, chatId, message) {
             });
             txt += '\n';
         }
-        txt += `_Daratech_ ⚡`;
+        txt += `_M-KING_ ⚡`;
         await sock.sendMessage(chatId, { text: txt }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: `❌ No definition found for "*${word}*".` }, { quoted: message });
@@ -48,7 +48,7 @@ async function synonymCommand(sock, chatId, message) {
         }
         if (!syns.length) return sock.sendMessage(chatId, { text: `❌ No synonyms found for "*${word}*".` }, { quoted: message });
         await sock.sendMessage(chatId, {
-            text: `🔁 *SYNONYMS for "${word}"*\n\n${syns.slice(0, 20).join(' · ')}\n\n_Daratech_ ⚡`
+            text: `🔁 *SYNONYMS for "${word}"*\n\n${syns.slice(0, 20).join(' · ')}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: `❌ No synonyms found for "*${word}*".` }, { quoted: message });
@@ -71,7 +71,7 @@ async function antonymCommand(sock, chatId, message) {
         }
         if (!ants.length) return sock.sendMessage(chatId, { text: `❌ No antonyms found for "*${word}*".` }, { quoted: message });
         await sock.sendMessage(chatId, {
-            text: `↔️ *ANTONYMS for "${word}"*\n\n${ants.slice(0, 20).join(' · ')}\n\n_Daratech_ ⚡`
+            text: `↔️ *ANTONYMS for "${word}"*\n\n${ants.slice(0, 20).join(' · ')}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
         await sock.sendMessage(chatId, { text: `❌ No antonyms found for "*${word}*".` }, { quoted: message });
@@ -91,10 +91,10 @@ async function wordofdayCommand(sock, chatId, message) {
         const meaning = entry.meanings?.[0];
         const def = meaning?.definitions?.[0]?.definition || 'No definition available.';
         await sock.sendMessage(chatId, {
-            text: `📅 *WORD OF THE DAY*\n\n🔤 *${word.toUpperCase()}*\n📖 _${meaning?.partOfSpeech || 'word'}_\n\n${def}\n\n_Daratech_ ⚡`
+            text: `📅 *WORD OF THE DAY*\n\n🔤 *${word.toUpperCase()}*\n📖 _${meaning?.partOfSpeech || 'word'}_\n\n${def}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch {
-        await sock.sendMessage(chatId, { text: `📅 *WORD OF THE DAY:* ${word.toUpperCase()}\n\n_Daratech_ ⚡` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `📅 *WORD OF THE DAY:* ${word.toUpperCase()}\n\n_M-KING_ ⚡` }, { quoted: message });
     }
 }
 

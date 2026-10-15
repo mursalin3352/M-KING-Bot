@@ -58,7 +58,7 @@ async function giftedTextReply(sock, chatId, message, endpoint, params, label) {
             ? data.result
             : data.result?.answer || JSON.stringify(data.result);
         await sock.sendMessage(chatId, {
-            text: `🤖 *${label}* · Daratech\n\n${reply.trim()}\n\n_Daratech_ ⚡`,
+            text: `🤖 *${label}* · M-KING\n\n${reply.trim()}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -128,7 +128,7 @@ async function muslimAiCommand(sock, chatId, message) {
         if (!data?.success) throw new Error(data?.message || 'No response');
         const answer = data.result?.answer || (typeof data.result === 'string' ? data.result : 'No answer returned.');
         await sock.sendMessage(chatId, {
-            text: `☪️ *Muslim AI* · Daratech\n\n${answer.trim()}\n\n_Daratech_ ⚡`,
+            text: `☪️ *Muslim AI* · M-KING\n\n${answer.trim()}\n\n_M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {
@@ -159,7 +159,7 @@ async function transcriptCommand(sock, chatId, message) {
         // WhatsApp has a 65536 char limit per message
         if (transcript.length <= 60000) {
             await sock.sendMessage(chatId, {
-                text: `📝 *YouTube Transcript*\n\n${transcript}\n\n_Daratech_ ⚡`,
+                text: `📝 *YouTube Transcript*\n\n${transcript}\n\n_M-KING_ ⚡`,
             }, { quoted: message });
         } else {
             // Split into chunks
@@ -190,7 +190,7 @@ async function aivoiceCommand(sock, chatId, message) {
     const query = extractQuery(message);
     if (!query) {
         return sock.sendMessage(chatId, {
-            text: '🎙️ *AI Voice*\n\nUsage: *$aivoice <your question>*\n\nI will answer and send you a voice note.\n\n_Daratech_ ⚡',
+            text: '🎙️ *AI Voice*\n\nUsage: *$aivoice <your question>*\n\nI will answer and send you a voice note.\n\n_M-KING_ ⚡',
         }, { quoted: message });
     }
     try {
@@ -261,7 +261,7 @@ async function aivoiceCommand(sock, chatId, message) {
         console.error('[gifted-ai:aivoice]', err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId,
-            { text: `❌ *AI Voice* failed. Try again.\n\n_${err.message}_\n\n_Daratech_ ⚡` },
+            { text: `❌ *AI Voice* failed. Try again.\n\n_${err.message}_\n\n_M-KING_ ⚡` },
             { quoted: message });
     }
 }
@@ -287,7 +287,7 @@ async function magicStudioCommand(sock, chatId, message) {
         await sock.sendMessage(chatId, {
             image:   buffer,
             mimetype: 'image/jpeg',
-            caption: `✨ *${prompt}*\n\n_MagicStudio · Daratech_ ⚡`,
+            caption: `✨ *${prompt}*\n\n_MagicStudio · M-KING_ ⚡`,
         }, { quoted: message });
         await react(sock, message, '✅');
     } catch (err) {

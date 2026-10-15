@@ -33,7 +33,7 @@ async function playlistCommand(sock, chatId, message) {
                   `┃ Example:\n` +
                   `┃ $playlist https://youtube.com/playlist?list=...\n` +
                   `┃\n` +
-                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -67,12 +67,12 @@ async function playlistCommand(sock, chatId, message) {
     if (!tracks.length) {
         await react(sock, message, '❌');
         return sock.sendMessage(chatId, {
-            text: '❌ *Could not fetch playlist.*\n\nMake sure the playlist is public.\n\n_Daratech_ ⚡'
+            text: '❌ *Could not fetch playlist.*\n\nMake sure the playlist is public.\n\n_M-KING_ ⚡'
         }, { quoted: message });
     }
 
     await sock.sendMessage(chatId, {
-        text: `🎵 *Found ${tracks.length} tracks — downloading…*\n\n_Daratech_ ⚡`
+        text: `🎵 *Found ${tracks.length} tracks — downloading…*\n\n_M-KING_ ⚡`
     }, { quoted: message });
 
     let sent = 0;
@@ -118,8 +118,8 @@ async function playlistCommand(sock, chatId, message) {
     await react(sock, message, sent > 0 ? '✅' : '❌');
     await sock.sendMessage(chatId, {
         text: sent > 0
-            ? `✅ *Sent ${sent}/${tracks.length} tracks!*\n\n_Daratech_ ⚡`
-            : `❌ *All tracks failed to download.*\n\n_Daratech_ ⚡`
+            ? `✅ *Sent ${sent}/${tracks.length} tracks!*\n\n_M-KING_ ⚡`
+            : `❌ *All tracks failed to download.*\n\n_M-KING_ ⚡`
     }, { quoted: message });
 }
 

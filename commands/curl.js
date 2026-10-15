@@ -152,7 +152,7 @@ async function curlCommand(sock, chatId, message) {
                 `┃ $curl https://api.example.com -H "Authorization: Bearer TOKEN"\n` +
                 `┃ $curl https://api.example.com -X POST -d '{"q":"hello"}'\n` +
                 `┃\n` +
-                `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n_Daratech_ ⚡`
+                `╰━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -185,7 +185,7 @@ async function curlCommand(sock, chatId, message) {
             method,
             url,
             headers: {
-                'User-Agent': 'Daratech-Bot/1.0 curl-tester',
+                'User-Agent': 'M-KING-Bot/1.0 curl-tester',
                 ...headers,
             },
             data: bodyStr || undefined,
@@ -208,7 +208,7 @@ async function curlCommand(sock, chatId, message) {
                 `│ ❌ *Failed*\n` +
                 `│ ⏱️ Speed: ${duration} ms\n` +
                 `│ ⚠️ ${errMsg}\n` +
-                `╰────────────────────╯\n\n_Daratech_ ⚡`
+                `╰────────────────────╯\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -231,7 +231,7 @@ async function curlCommand(sock, chatId, message) {
         `│ ⏱️ Speed: ${duration} ms | 📦 Size: ${fmtSize(sizeBytes)}\n` +
         `│ 📌 Headers: ${hdrLine}\n` +
         `╰────────────────────╯\n\n` +
-        `\`\`\`\n${formattedBody}\n\`\`\`\n\n_Daratech_ ⚡`;
+        `\`\`\`\n${formattedBody}\n\`\`\`\n\n_M-KING_ ⚡`;
 
     await sock.sendMessage(chatId, { text: out }, { quoted: message });
 }

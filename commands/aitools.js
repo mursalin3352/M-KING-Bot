@@ -42,7 +42,7 @@ async function aiToolReply(sock, chatId, message, systemPrompt, userText, label,
         const cmd = (message.message?.conversation || message.message?.extendedTextMessage?.text || '')
             .trim().split(' ')[0];
         return sock.sendMessage(chatId, {
-            text: `${emoji} *${label.toUpperCase()}*\n\nUsage: *${cmd} <text>*\nor reply to a message with *${cmd}*\n\n_Daratech_ ⚡`
+            text: `${emoji} *${label.toUpperCase()}*\n\nUsage: *${cmd} <text>*\nor reply to a message with *${cmd}*\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 
@@ -54,13 +54,13 @@ async function aiToolReply(sock, chatId, message, systemPrompt, userText, label,
 
         await react(sock, message, '✅');
         await sock.sendMessage(chatId, {
-            text: `${emoji} *${label.toUpperCase()}*\n\n${reply.trim()}\n\n_Daratech_ ⚡`
+            text: `${emoji} *${label.toUpperCase()}*\n\n${reply.trim()}\n\n_M-KING_ ⚡`
         }, { quoted: message });
     } catch (err) {
         console.error(`[aitools:${label}]`, err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ *${label}* failed.\n\n_${err.message}_\n\n_Daratech_ ⚡`
+            text: `❌ *${label}* failed.\n\n_${err.message}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }
