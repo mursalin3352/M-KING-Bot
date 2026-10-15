@@ -42,8 +42,7 @@ const settings = {
   // GitHub repo — used for git auto-update AND as ZIP fallback
   githubRepo: "https://github.com/mursalin3352/M-KING-Bot",
   githubBranch: "main",
-  updateZipUrl: "https://github.com/mursalin3352/M-KING-Bot/archive/refs/heads/main.zip
-unzip main.zip",
+  updateZipUrl: "https://github.com/mursalin3352/M-KING-Bot/archive/refs/heads/main.zip",
   // How often (in seconds) the bot checks for updates automatically (default: 39s)
   autoUpdateInterval: 39,
 };
