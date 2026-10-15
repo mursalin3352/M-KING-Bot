@@ -2,16 +2,16 @@
 require('./lib/logger');
 
 /**
- * DaratechMD- A WhatsApp Bot
- * Copyright (c) 2024 Daratech SHOP
+ * M-KINGMD- A WhatsApp Bot
+ * Copyright (c) 2024 M-KING SHOP
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the MIT License.
  * 
  * Credits:
- * - Developed by Daratech SHOP
- * - YouTube Channel: Daratech
- * - GitHub: daratech
+ * - Developed by M-KING SHOP
+ * - YouTube Channel: M-KING
+ * - GitHub: m-king
  */
 require('./settings')
 const { Boom } = require('@hapi/boom')
@@ -122,7 +122,7 @@ setInterval(() => {
 let phoneNumber = (process.env.PAIRING_NUMBER || process.env.OWNER_NUMBER || '').replace(/\D/g, '')
 let owner = JSON.parse(fs.readFileSync('./data/owner.json'))
 
-global.botname = "Daratech"
+global.botname = "M-KING"
 global.themeemoji = "•"
 const pairingCode = !!phoneNumber || process.argv.includes("--pairing-code")
 const useMobile = process.argv.includes("--mobile")
@@ -215,7 +215,7 @@ function saveSessionToEnv(sessionDir = 'session', envVarName = 'SESSION_ID') {
 async function startSession(config = {}) {
     // ── Per-session identity ──────────────────────────────────────────────────
     const sessionId      = config.id        || 'default';
-    const sessionName    = config.name      || settings.sessionName || global.botname || 'Daratech';
+    const sessionName    = config.name      || settings.sessionName || global.botname || 'M-KING';
     const sessionDir     = config.sessionDir|| 'session';
     const sessionOwnerNum= (config.ownerNumber || '').replace(/\D/g, '') || phoneNumber;
 
@@ -460,7 +460,7 @@ async function startSession(config = {}) {
                     if (rData && rData.chatId) {
                         await delay(2000);
                         await XeonBotInc.sendMessage(rData.chatId, {
-                            text: `╭─〔 ✅ *REBOOT COMPLETE* 〕─╮\n│\n│  ⚡ *DaraTech Bot is back online!*\n│  🚀 _All features are active & ready._\n│\n╰──────────────────────────╯\n\n_Daratech_ ⚡`
+                            text: `╭─〔 ✅ *REBOOT COMPLETE* 〕─╮\n│\n│  ⚡ *M-KING Bot is back online!*\n│  🚀 _All features are active & ready._\n│\n╰──────────────────────────╯\n\n_M-KING_ ⚡`
                         });
                     }
                 }
@@ -504,7 +504,7 @@ async function startSession(config = {}) {
                             `⚡ *UPDATE DONE* ✅`,
                             ``,
                             `╭── INFO`,
-                            `│ 🤖 ${global.botname || 'Daratech'}`,
+                            `│ 🤖 ${global.botname || 'M-KING'}`,
                             `│ 📱 +${botNumber.replace('@s.whatsapp.net', '')}`,
                             `│ 📅 ${dateStr} • ${timeStr}`,
                             `│ ⚡ v${connSettings.version}`,
@@ -527,12 +527,12 @@ async function startSession(config = {}) {
                         // Normal startup message
                         const startupMsg = [
                             `╔════════════════════════════════════╗`,
-                            `║  ⚡  *D A R A T E C H  B O T*  ⚡    ║`,
+                            `║  ⚡  *M  -  K I N G  B O T*  ⚡    ║`,
                             `║  🟢  *Connected Successfully!*      ║`,
                             `╚════════════════════════════════════╝`,
                             ``,
                             `╭──🌟 *BOT INFO*`,
-                            `│ 🤖 Bot: *${global.botname || 'Daratech'}*`,
+                            `│ 🤖 Bot: *${global.botname || 'M-KING'}*`,
                             `│ 📱 Number: *+${botNumber.replace('@s.whatsapp.net', '')}*`,
                             `│ 📅 Date: *${dateStr}*`,
                             `│ 🕐 Time: *${timeStr}*`,
@@ -546,7 +546,7 @@ async function startSession(config = {}) {
                             `│ *$owner* → contact bot owner`,
                             `╰──────────────────────────────────`,
                             ``,
-                            `> 🤖 *Daratech Bot* is now online and ready!`,
+                            `> 🤖 *M-KING Bot* is now online and ready!`,
                         ].join('\n');
                         await XeonBotInc.sendMessage(botNumber, { text: startupMsg });
                     }
@@ -556,11 +556,11 @@ async function startSession(config = {}) {
             }
 
             await delay(1999)
-            console.log(chalk.yellow(`\n\n                  ${chalk.bold.blue(`[ ${global.botname || 'Daratech'} ]`)}\n\n`))
+            console.log(chalk.yellow(`\n\n                  ${chalk.bold.blue(`[ ${global.botname || 'M-KING'} ]`)}\n\n`))
             console.log(chalk.cyan(`< ================================================== >`))
-            console.log(chalk.magenta(`\n${global.themeemoji || '•'} YT CHANNEL: Daratech`))
-            console.log(chalk.magenta(`${global.themeemoji || '•'} GITHUB: daratech`))
-            console.log(chalk.magenta(`${global.themeemoji || '•'} CREDIT: Daratech`))
+            console.log(chalk.magenta(`\n${global.themeemoji || '•'} YT CHANNEL: M-KING`))
+            console.log(chalk.magenta(`${global.themeemoji || '•'} GITHUB: m-king`))
+            console.log(chalk.magenta(`${global.themeemoji || '•'} CREDIT: M-KING`))
             console.log(chalk.magenta(`${global.themeemoji || '•'} WA NUMBER: ${owner}`))
             console.log(chalk.green(`${global.themeemoji || '•'} 🤖 Bot Connected Successfully! ✅`))
             // Warn if the connected number doesn't match OWNER_NUMBER in $env
@@ -677,7 +677,7 @@ async function startAllSessions() {
     // Each deployment runs one bot. $bots shows all deployments via GitHub registry.
     const config = {
         id:           'default',
-        name:         process.env.NAME || settings.sessionName || global.botname || 'Daratech',
+        name:         process.env.NAME || settings.sessionName || global.botname || 'M-KING',
         sessionDir:   'session',
         envSessionVar: 'SESSION_ID',
         enabled:      true,
