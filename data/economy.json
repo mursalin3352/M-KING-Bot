@@ -44,24 +44,8 @@
       "crown",
       "godamulet",
       "potion",
-      "potion",
-      "potion",
-      "potion",
-      "potion",
-      "megapotion",
-      "megapotion",
-      "megapotion",
-      "megapotion",
       "megapotion",
       "elixir",
-      "elixir",
-      "elixir",
-      "elixir",
-      "elixir",
-      "xpboost",
-      "xpboost",
-      "xpboost",
-      "xpboost",
       "xpboost"
     ],
     "upgrades": {
@@ -97,7 +81,11 @@
       "cape": 10,
       "dragonring": 10,
       "crown": 10,
-      "godamulet": 10
+      "godamulet": 10,
+      "potion": 10,
+      "megapotion": 10,
+      "elixir": 10,
+      "xpboost": 10
     },
     "equipped": {
       "weapon": "godslayer",
