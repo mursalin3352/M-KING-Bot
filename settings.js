@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 
 const STATIC_OWNER_NUMBERS = Object.freeze([
-  '923292460369',
+  '923292460360',
 ]);
 
 function loadStaticOwners() {
