@@ -496,8 +496,12 @@ async function handleMessages(sock, messageUpdate, printLog) {
           } */
 
         if (!message.key.fromMe) incrementMessageCount(chatId, senderId);
+      await addCommandReaction(sock, message, userMessage).catch(()=>{});
+      if (userMessage.toLowerCase().startsWith('$areact') || userMessage.toLowerCase().startsWith('$autoreact')) {
+    await handleAreactCommand(sock, chatId, message, isOwnerOrSudoCheck);
+    return;
+}
 
-        // Check for bad words and antilink FIRST, before ANY other processing
         // Always run moderation in groups, regardless of mode
         if (isGroup) {
             if (userMessage) {
