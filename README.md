@@ -2,7 +2,7 @@
 
 <img src="assets/botpic.png" alt="Daratech Bot" width="160" style="border-radius:50%"/>
 
-# DARATECH BOT
+# MURSALIN-KING👑 BOT
 
 **A multi-purpose WhatsApp bot with 465+ commands across 29 categories.**
 
@@ -25,8 +25,8 @@ AI chat & image generation · Movie & anime streaming/download · YouTube, TikTo
 ## Quick Start
 
 ```bash
-git clone https://github.com/adtelecominfo-png/DaraTech-Bot-V1.git
-cd DaraTech-Bot-V1
+git clone https://github.com/mursalin3352/M-KING-Bot.git
+cd M-KING-Bot
 npm install
 cp .env.example .env        # fill in OWNER_NUMBER and SESSION_ID
 node index.js
@@ -41,7 +41,7 @@ node index.js
 ### 🔗 [darabot-session.onrender.com](https://darabot-session.onrender.com)
 
 1. Open the link above
-2. Enter your WhatsApp number with country code (e.g. `2348152077346`)
+2. Enter your WhatsApp number with country code (e.g. `92xxxxxxxxxx`)
 3. A **pairing code** will appear — enter it in WhatsApp:
    **Settings → Linked Devices → Link a Device → Link with phone number instead**
 4. Your `SESSION_ID` is sent directly to your WhatsApp
@@ -54,7 +54,7 @@ node index.js
 Copy `.env.example` → `.env` and fill in:
 
 ```env
-OWNER_NUMBER=2348152077346   # your number — no + or spaces, country code included
+OWNER_NUMBER=92xxxxxxxxxx   # your number — no + or spaces, country code included
 SESSION_ID=                  # paste from the session generator
 ```
 
@@ -519,7 +519,7 @@ Built for educational purposes. Use responsibly. Developers are not responsible 
 
 <div align="center">
 
-Made with ❤️ by **Daratech** · [GitHub](https://github.com/adtelecominfo-png)
+Made with ❤️ by **MURSALIN-KING👑** · [GitHub](https://github.com/adtelecominfo-png)
 
 ⭐ Star this repo if it helps you!
 
