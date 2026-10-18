@@ -1,8 +1,8 @@
 #!/bin/bash
-# Reinitializes the dara-bot git repo if .git gets wiped by Replit checkpoints.
+# M-KING-Bot - Only Your Repo
 # Run: bash setup-git.sh
 
-REMOTE="https://${GITHUB_PERSONAL_ACCESS_TOKEN}@github.com/adtelecominfo-png/DaraTech-Bot-V1.git"
+REMOTE="https://${GITHUB_PERSONAL_ACCESS_TOKEN}@github.com/mursalin3352/M-KING-Bot.git"
 
 if [ -d ".git" ] && [ -f ".git/config" ]; then
   echo "✅ Git already initialized."
