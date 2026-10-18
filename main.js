@@ -221,6 +221,7 @@ const rizzCommand = require('./commands/rizz');
 const unpinCommand = require('./commands/unpin');
 const statsCommand = require('./commands/stats');
 const gppCommand = require('./commands/gpp');
+const ppCommand = require('./commands/pp');
 const leaveCommand = require('./commands/leave');
 const calcCommand = require('./commands/calc');
 const { netinfoCommand, cpuinfoCommand, meminfoCommand, diskinfoCommand, timezoneCommand } = require('./commands/netinfo');
@@ -818,7 +819,10 @@ case userMessage.startsWith('$gpp'):
     await gppCommand(sock, chatId, message);
     commandExecuted = true;
     break;
-
+case userMessage.startsWith('$pp'):
+    await ppCommand(sock, chatId, message);
+    commandExecuted = true;
+    break;
 case userMessage === '$leavegc':
     await leavegcCommand(sock, chatId, message);
     commandExecuted = true;
