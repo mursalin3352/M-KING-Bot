@@ -519,7 +519,7 @@ Built for educational purposes. Use responsibly. Developers are not responsible 
 
 <div align="center">
 
-Made with ❤️ by **MURSALIN-KING👑** · [GitHub](https://github.com/adtelecominfo-png)
+Made with ❤️ by **MURSALIN-KING👑** · [GitHub](https://github.com/mursalin3352)
 
 ⭐ Star this repo if it helps you!
 
