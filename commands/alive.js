@@ -9,26 +9,27 @@ async function aliveCommand(sock, chatId, message) {
         const ver = settings.version || '1.0.0';
         const mode = settings.commandMode || 'public';
 
-        const msg = [
-            `⚡ *M-KING BOT* ⚡`,
-            `🤖 Alive & Running!\n`,
-            `▸ ✅ *Status:*  Online`,
-            `▸ ⏱️ *Uptime:*  ${h}h ${m}m ${s}s`,
-            `▸ 🔧 *Version:* v${ver}`,
-            `▸ ⚙️ *Mode:*    ${mode}\n`,
-            `🎬 Movie search  →  *$movie*`,
-            `🤖 AI assistant  →  *$gpt*`,
-            `📋 All commands  →  *$menu*`,
-            `📖 Descriptions  →  *$help*\n`,
-            `👥 *Join our Community:*`,
-            `https://chat.whatsapp.com/D1OaGKmTvrOGfb5E7w8nZJ\n`,
-            `_M-KING_ ⚡`,
-        ].join('\n');
+        const msg = 
+`╭──⊷❍ 𝐌-𝐊𝐈𝐍𝐆 𝐒𝐔𝐂𝐂𝐄𝐒𝐒 ❍⊷─╮
+│ ╭────────────
+│ │❁➟ ✅ 𝐌-𝐊𝐈𝐍𝐆 𝐁𝐎𝐓 is online.
+│ │❁➟ ✅ Status: Online
+│ │❁➟ ⏱️ Uptime: ${h}h ${m}m ${s}s
+│ │❁➟ 🔧 Version: v${ver}
+│ │❁➟ ⚙️ Mode: ${mode}
+│ ┗─────────────
+┗───────────⊷❍➟
+
+🎬 Movie search  →  $movie
+🤖 AI assistant  →  $gpt
+📋 All commands  →  $menu
+
+> 𝐏𝐎𝐖𝐄𝐑𝐄𝐃 𝐁𝐘 𝐌𝐮𝐫𝐬𝐚𝐥𝐢𝐧-𝐊𝐢𝐧𝐠👑`;
 
         await sock.sendMessage(chatId, { text: msg }, { quoted: message });
     } catch (error) {
         console.error('Error in alive command:', error);
-        await sock.sendMessage(chatId, { text: '✅ M-KING is alive and running!' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '✅ M-KING is alive and running! | POWERED BY 👑 Mursalin-King👑' }, { quoted: message });
     }
 }
 
@@ -37,8 +38,7 @@ async function communityCommand(sock, chatId, message) {
         text:
             `👥 *M-KING COMMUNITY*\n\n` +
             `Join our WhatsApp community to get updates, tips, and connect with other users!\n\n` +
-            `🔗 *Link:*\nhttps://chat.whatsapp.com/D1OaGKmTvrOGfb5E7w8nZJ\n\n` +
-            `_M-KING_ ⚡`,
+            `> 𝐏𝐎𝐖𝐄𝐑𝐄𝐃 𝐁𝐘 𝐌𝐮𝐫𝐬𝐚𝐥𝐢𝐧-𝐊𝐢𝐧𝐠👑`,
     }, { quoted: message });
 }
 
