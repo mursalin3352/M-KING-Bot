@@ -715,3 +715,14 @@ startAllSessions().catch(error => {
     console.error('Fatal error:', error)
     process.exit(1)
 })
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err)
+})
+
+process.on('unhandledRejection', (err) => {
+    console.error('Unhandled Rejection:', err)
+})
+
+// Hot-reload via fs.watchFile removed — it spawned duplicate bot instances on
+// every file change (including auto-update), causing stream conflicts and QR loops.
+// Auto-update handles restarts cleanly via process.exit(0).
