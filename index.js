@@ -671,23 +671,43 @@ async function startSession(config = {}) {
     }
 }
 
-// ── Single-session launcher ────────────────────────────────────────────────────
+// ── MULTI-SESSION LAUNCHER - 10 BOTS ──────────────────
 async function startAllSessions() {
-    // Single session: name from NAME env, creds from SESSION_ID env.
-    // Each deployment runs one bot. $bots shows all deployments via GitHub registry.
-    const config = {
-        id:           'default',
-        name:         process.env.NAME || settings.sessionName || global.botname || 'M-KING',
-        sessionDir:   'session',
-        envSessionVar: 'SESSION_ID',
-        enabled:      true,
-        ownerNumber:  '',
-    };
-
-    console.log(chalk.cyan(`🤖 Starting session: ${config.name}…`));
-    startSession(config).catch(err => {
-        console.error(`[session] Fatal:`, err.message);
-    });
+    const sessions = [];
+    for (let i = 1; i <= 10; i++) {
+        const pairingKey = i === 1 ? 'PAIRING_NUMBER' : `PAIRING_NUMBER_${i}`;
+        const sessionKey = i === 1 ? 'SESSION_ID' : `SESSION_ID_${i}`;
+        const sessionDir = i === 1 ? 'session' : `session${i}`;
+        const pairingNum = (process.env[pairingKey] || '').replace(/\D/g, '');
+        const sessionIdStr = process.env[sessionKey];
+        if (pairingNum || sessionIdStr) {
+            sessions.push({
+                id: i === 1 ? 'default' : `bot${i}`,
+                name: `M-KING-${i}`,
+                sessionDir: sessionDir,
+                envSessionVar: sessionKey,
+                enabled: true,
+                ownerNumber: pairingNum,
+            });
+        }
+    }
+    if (sessions.length === 0) {
+        sessions.push({
+            id: 'default',
+            name: process.env.NAME || settings.sessionName || global.botname || 'M-KING',
+            sessionDir: 'session',
+            envSessionVar: 'SESSION_ID',
+            enabled: true,
+            ownerNumber: '',
+        });
+    }
+    console.log(chalk.cyan(`🤖 Starting ${sessions.length} bot session(s)…`));
+    for (const cfg of sessions) {
+        startSession(cfg).catch(err => {
+            console.error(`[${cfg.name}] Fatal:`, err.message);
+        });
+        await delay(2000);
+    }
 }
 
 // Start the bot with error handling
@@ -695,14 +715,3 @@ startAllSessions().catch(error => {
     console.error('Fatal error:', error)
     process.exit(1)
 })
-process.on('uncaughtException', (err) => {
-    console.error('Uncaught Exception:', err)
-})
-
-process.on('unhandledRejection', (err) => {
-    console.error('Unhandled Rejection:', err)
-})
-
-// Hot-reload via fs.watchFile removed — it spawned duplicate bot instances on
-// every file change (including auto-update), causing stream conflicts and QR loops.
-// Auto-update handles restarts cleanly via process.exit(0).
