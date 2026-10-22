@@ -1,4 +1,3 @@
-
 // 🧹 Fix for ENOSPC / temp overflow in hosted panels
 const fs = require('fs');
 const path = require('path');
@@ -222,6 +221,7 @@ const unpinCommand = require('./commands/unpin');
 const statsCommand = require('./commands/stats');
 const gppCommand = require('./commands/gpp');
 const ppCommand = require('./commands/pp');
+const { autoreactgCommand, handleAutoReactG } = require('./commands/autoreactg');
 const leaveCommand = require('./commands/leave');
 const calcCommand = require('./commands/calc');
 const { netinfoCommand, cpuinfoCommand, meminfoCommand, diskinfoCommand, timezoneCommand } = require('./commands/netinfo');
@@ -495,13 +495,20 @@ async function handleMessages(sock, messageUpdate, printLog) {
               });
               return;
           } */
+let _gReacted = false;
+try { _gReacted = await handleAutoReactG(sock, message); } catch (_) {}
+if (!_gReacted) await addCommandReaction(sock, message, userMessage).catch(() => {});
 
-        if (!message.key.fromMe) incrementMessageCount(chatId, senderId);
-      await addCommandReaction(sock, message, userMessage).catch(()=>{});
-      if (userMessage.toLowerCase().startsWith('$areact') || userMessage.toLowerCase().startsWith('$autoreact')) {
-    await handleAreactCommand(sock, chatId, message, isOwnerOrSudoCheck);
-    return;
-}
+        const _uLower = userMessage.toLowerCase();
+        if (_uLower === '$areact' || _uLower.startsWith('$areact ') ||
+            _uLower === '$autoreact' || _uLower.startsWith('$autoreact ')) {
+            await handleAreactCommand(sock, chatId, message, isOwnerOrSudoCheck);
+            return;
+        }
+        if (_uLower === '$autoreactg' || _uLower.startsWith('$autoreactg ')) {
+            await autoreactgCommand(sock, chatId, message, userMessage, isOwnerOrSudoCheck);
+            return;
+        }
 
         // Always run moderation in groups, regardless of mode
         if (isGroup) {
@@ -645,9 +652,8 @@ if (checkAFK(senderId)) {
             }
         }
 
-        // React to the command immediately — before any slow processing so the user
-        // sees the emoji the instant they send a command, not after the response.
-        addCommandReaction(sock, message, userMessage).catch(() => {});
+        // NOTE: addCommandReaction already ran above (with the autoreactg hook).
+        // Running it again here would overwrite the autoreactg emoji on commands.
 
         // Command handlers - Execute commands immediately without waiting for typing indicator
         // We'll show typing indicator after command execution if needed
@@ -3424,4 +3430,4 @@ module.exports = {
         await handleStatusUpdate(sock, status);
         await handleAutoReactStatus(sock, status).catch(() => {});
     }
-};    
+};

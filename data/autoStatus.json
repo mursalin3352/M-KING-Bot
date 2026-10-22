@@ -1,6 +1,6 @@
 {
-  "enabled": false,
-  "reactOn": false,
+  "enabled": true,
+  "reactOn": true,
   "reactionEmoji": "💚",
   "readReceipts": true
 }
