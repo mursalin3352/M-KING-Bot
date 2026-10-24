@@ -34,7 +34,7 @@ async function ppCommand(sock, chatId, message) {
         const ppUrl = await sock.profilePictureUrl(targetJid, 'image');
         
         const number = targetJid.split('@')[0];
-        const caption = `╭━━━「 *PROFILE PICTURE* 」━━━\n┃\n┃ 👤 *Number:* ${number}\n┃ 🔗 *JID:* ${targetJid}\n┃\n╰━━━━━━━━━━━━━━━━━━━━━━\n> _M-KING👑_`;
+        const caption = `╭━━━「 *PROFILE PICTURE* 」━━━\n┃\n┃ 👤 *Number:* ${number}\n┃ 🔗 *JID:* ${targetJid}\n┃\n╰━━━━━━━━━━━━━━━━━━━━━━\n> _Powered by M-KING👑_`;
 
         await sock.sendMessage(chatId, {
             image: { url: ppUrl },
