@@ -78,9 +78,9 @@ async function addMetadata(buffer) {
     await image.load(buffer);
     const json = {
         'sticker-pack-id': crypto.randomBytes(16).toString('hex'),
-        'sticker-pack-name': settings.packname || 'Daratech',
-        'sticker-pack-publisher': settings.author || 'Daratech',
-        emojis: ['🤖']
+        'sticker-pack-name': settings.packname || 'M-KING 👑',
+        'sticker-pack-publisher': settings.author || 'Mursalin King 👑',
+        emojis: ['👑']
     };
     const exifHeader = Buffer.from([
         0x49, 0x49, 0x2A, 0x00, 0x08, 0x00, 0x00, 0x00,
