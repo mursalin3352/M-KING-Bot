@@ -1,62 +1,102 @@
 'use strict';
 /**
- * simage.js — Sticker to Image - M-KING FIXED
- * Sharp > Jimp > Raw fallback (kabhi fail nahi hoga)
+ * simage.js — Sticker to Image/Video - M-KING PROFESSIONAL - AUTO PLAY & LOOP
  */
 
 const fs = require('fs');
 const path = require('path');
+const { spawn } = require('child_process');
 const { downloadContentFromMessage } = require('@whiskeysockets/baileys');
 
 const tempDir = './temp';
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 
+function runFfmpegFile(inputPath, outputPath, args) {
+    return new Promise((resolve, reject) => {
+        const ff = spawn('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', inputPath, ...args, outputPath]);
+        let err = '';
+        ff.stderr.on('data', d => err += d.toString());
+        ff.on('error', reject);
+        ff.on('close', code => {
+            if (code === 0 && fs.existsSync(outputPath)) return resolve();
+            reject(new Error(err || `ffmpeg exited ${code}`));
+        });
+    });
+}
+
 const convertStickerToImage = async (sock, quotedMessage, chatId, message) => {
     try {
-        const stickerMessage = quotedMessage?.stickerMessage || quotedMessage;
-        if (!stickerMessage || !stickerMessage.url && !stickerMessage.directPath) {
-             // check if reply has sticker
-             if (!quotedMessage?.stickerMessage) {
-                return sock.sendMessage(chatId, { text: '↩️ Reply to a sticker with *$simage* to convert it to an image.' }, { quoted: message });
-             }
+        if (!quotedMessage?.stickerMessage) {
+            return sock.sendMessage(chatId, { text: '↩️ Reply to a sticker with *$simage*' }, { quoted: message });
         }
 
-        await sock.sendMessage(chatId, { text: '🖼️ Converting sticker to image…' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '🖼️ Converting sticker to image...' }, { quoted: message });
 
-        const stream = await downloadContentFromMessage(stickerMessage.stickerMessage || stickerMessage, 'sticker');
+        const stream = await downloadContentFromMessage(quotedMessage.stickerMessage, 'sticker');
         let buffer = Buffer.alloc(0);
         for await (const chunk of stream) buffer = Buffer.concat([buffer, chunk]);
 
-        // 1. Try SHARP (best quality)
+        let isAnimated = false;
         try {
             const sharp = require('sharp');
-            const pngBuffer = await sharp(buffer).toFormat('png').toBuffer();
-            return sock.sendMessage(chatId, {
-                image: pngBuffer,
-                caption: '🖼 Here is your converted image!\n\n👑 *Powered by M-KING*',
-            }, { quoted: message });
-        } catch (e) {}
+            const meta = await sharp(buffer, { animated: true }).metadata();
+            if ((meta.pages || 1) > 1) isAnimated = true;
+        } catch {}
+        if (!isAnimated && buffer.includes(Buffer.from('ANIM'))) isAnimated = true;
+        if (!isAnimated && buffer.length > 35000) isAnimated = true;
 
-        // 2. Try JIMP (pure JS, hosting safe)
+        if (isAnimated) {
+            try {
+                const id = Date.now();
+                const sharp = require('sharp');
+                const gifBuffer = await sharp(buffer, { animated: true }).gif().toBuffer();
+                const gifPath = path.join(tempDir, `simage-${id}.gif`);
+                const mp4Path = path.join(tempDir, `simage-${id}.mp4`);
+                fs.writeFileSync(gifPath, gifBuffer);
+
+                await runFfmpegFile(gifPath, mp4Path, [
+                    '-vf', 'scale=512:512:flags=lanczos:force_original_aspect_ratio=increase,crop=512:512:(in_w-out_w)/2:(in_h-out_h)/2,scale=trunc(iw/2)*2:trunc(ih/2)*2',
+                    '-c:v', 'libx264',
+                    '-pix_fmt', 'yuv420p',
+                    '-movflags', '+faststart',
+                    '-r', '15',
+                    '-t', '6',
+                    '-an'
+                ]);
+
+                const videoBuffer = fs.readFileSync(mp4Path);
+                await sock.sendMessage(chatId, {
+                    video: videoBuffer,
+                    caption: '🖼️ Here is your converted sticker\n\n*Powered by M-KING👑*',
+                    gifPlayback: true, // Isi se foran hilega, click nahi karna padega, loop chalega
+                    mimetype: 'video/mp4'
+                }, { quoted: message });
+
+                try { fs.unlinkSync(gifPath); } catch {}
+                try { fs.unlinkSync(mp4Path); } catch {}
+                return;
+            } catch (e) {
+                console.error('[simage mp4]', e.message);
+            }
+        }
+
         try {
-            const Jimp = require('jimp');
-            const img = await Jimp.read(buffer);
-            const pngBuffer = await img.getBufferAsync(Jimp.MIME_PNG);
-            return sock.sendMessage(chatId, {
+            const sharp = require('sharp');
+            const pngBuffer = await sharp(buffer).png().toBuffer();
+            return await sock.sendMessage(chatId, {
                 image: pngBuffer,
-                caption: '🖼 Here is your converted image!\n\n👑 *Powered by M-KING*',
+                caption: '🖼️ Here is your converted sticker\n\n*Powered by M-KING👑*',
             }, { quoted: message });
-        } catch (e) {}
+        } catch {}
 
-        // 3. Fallback - raw webp as image (WhatsApp shows it)
-        return sock.sendMessage(chatId, {
+        return await sock.sendMessage(chatId, {
             image: buffer,
-            caption: '🖼 Here is your sticker as image!\n\n👑 *Powered by M-KING*',
+            caption: '🖼️ Here is your converted sticker\n\n*Powered by M-KING👑*',
         }, { quoted: message });
 
     } catch (error) {
-        console.error('[simage]', error.message);
-        return sock.sendMessage(chatId, { text: '❌ Failed to convert sticker. Try again.' }, { quoted: message });
+        console.error('[simage]', error);
+        return sock.sendMessage(chatId, { text: '❌ Failed: ' + error.message }, { quoted: message });
     }
 };
 
