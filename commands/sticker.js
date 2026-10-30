@@ -37,40 +37,53 @@ async function downloadUrl(url) {
     };
 }
 
-function runFfmpeg(input, args) {
+function runFfmpegFile(inputPath, outputPath, args) {
     return new Promise((resolve, reject) => {
-        const ff = spawn('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', ...args]);
-        const output = [];
-        const errors = [];
-        ff.stdout.on('data', chunk => output.push(chunk));
-        ff.stderr.on('data', chunk => errors.push(chunk));
+        const ff = spawn('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', inputPath, ...args, outputPath]);
+        let err = '';
+        ff.stderr.on('data', d => err += d.toString());
         ff.on('error', reject);
         ff.on('close', code => {
-            if (code === 0 && output.length) return resolve(Buffer.concat(output));
-            reject(new Error(Buffer.concat(errors).toString() || `ffmpeg exited with code ${code}`));
+            if (code === 0 && fs.existsSync(outputPath)) return resolve();
+            reject(new Error(err || `ffmpeg exited ${code}`));
         });
-        ff.stdin.on('error', () => {});
-        ff.stdin.end(input);
     });
 }
 
-async function convertToWebp(input, animated) {
-    const common = [
-        '-i', 'pipe:0',
-        '-vf', 'scale=512:512:force_original_aspect_ratio=decrease,format=rgba,pad=512:512:(ow-iw)/2:(oh-ih)/2:color=#00000000'
-    ];
-    if (animated) {
-        // This FFmpeg build emits invalid multi-frame WebP for some video inputs.
-        // Use the first frame so $sticker always produces a valid WhatsApp sticker.
-        return runFfmpeg(input, [
-            ...common, '-frames:v', '1', '-c:v', 'libwebp', '-lossless', '0',
-            '-q:v', '55', '-compression_level', '6', '-f', 'webp', 'pipe:1'
-        ]);
+async function convertToWebp(inputBuffer, animated) {
+    const tmpDir = path.join(process.cwd(), 'tmp');
+    fs.mkdirSync(tmpDir, { recursive: true });
+    const id = Date.now() + '-' + Math.random().toString(16).slice(2);
+    const inPath = path.join(tmpDir, `in-${id}`);
+    const outPath = path.join(tmpDir, `out-${id}.webp`);
+    fs.writeFileSync(inPath, inputBuffer);
+
+    try {
+        if (animated) {
+            // FIXED + AUTO CROP FULL SIZE - eval=frame hataya, crop center
+            await runFfmpegFile(inPath, outPath, [
+                '-vf', 'scale=512:512:force_original_aspect_ratio=increase:flags=lanczos,crop=512:512:(in_w-out_w)/2:(in_h-out_h)/2,fps=15',
+                '-c:v', 'libwebp_anim',
+                '-loop', '0',
+                '-preset', 'default',
+                '-an', '-vsync', '0',
+                '-t', '6'
+            ]);
+        } else {
+            // IMAGE - AUTO CORRECT CROP FULL SIZE
+            await runFfmpegFile(inPath, outPath, [
+                '-vf', 'scale=512:512:force_original_aspect_ratio=increase,crop=512:512:(in_w-out_w)/2:(in_h-out_h)/2',
+                '-frames:v', '1',
+                '-c:v', 'libwebp',
+                '-q:v', '80'
+            ]);
+        }
+        const buf = fs.readFileSync(outPath);
+        return buf;
+    } finally {
+        try { fs.unlinkSync(inPath); } catch {}
+        try { fs.unlinkSync(outPath); } catch {}
     }
-    return runFfmpeg(input, [
-        ...common, '-frames:v', '1', '-c:v', 'libwebp', '-lossless', '0',
-        '-q:v', '75', '-compression_level', '6', '-f', 'webp', 'pipe:1'
-    ]);
 }
 
 async function addMetadata(buffer) {
@@ -137,18 +150,26 @@ async function stickerCommand(sock, chatId, message) {
 
         const animated = /video|gif|webm/i.test(contentType) ||
             Boolean(mediaMessage?.seconds) || /\.(gif|mp4|webm|mov)(?:\?|$)/i.test(url || '');
-        const tempDir = path.join(process.cwd(), 'tmp');
-        fs.mkdirSync(tempDir, { recursive: true });
-        tempInput = path.join(tempDir, `sticker-input-${process.pid}-${Date.now()}`);
-        fs.writeFileSync(tempInput, mediaBuffer);
-
+        
         let webpBuffer = await convertToWebp(mediaBuffer, animated);
-        if (animated && webpBuffer.length > 900 * 1024) {
-            webpBuffer = await runFfmpeg(mediaBuffer, [
-                '-i', 'pipe:0', '-frames:v', '1',
-                '-vf', 'scale=320:320:force_original_aspect_ratio=decrease,pad=320:320:(ow-iw)/2:(oh-ih)/2:color=#00000000',
-                '-c:v', 'libwebp', '-q:v', '35', '-compression_level', '6', '-f', 'webp', 'pipe:1'
+
+        // Agar size 1MB se zyada ho to chota karo - FULL SIZE CROP ke saath
+        if (webpBuffer.length > 900 * 1024 && animated) {
+            const tmpDir = path.join(process.cwd(), 'tmp');
+            const id = Date.now() + '-small';
+            const inPath = path.join(tmpDir, `in-${id}`);
+            const outPath = path.join(tmpDir, `out-${id}.webp`);
+            fs.writeFileSync(inPath, mediaBuffer);
+            await runFfmpegFile(inPath, outPath, [
+                '-vf', 'scale=512:512:force_original_aspect_ratio=increase,crop=512:512:(in_w-out_w)/2:(in_h-out_h)/2,fps=10',
+                '-c:v', 'libwebp_anim',
+                '-loop', '0',
+                '-q:v', '30',
+                '-t', '5'
             ]);
+            webpBuffer = fs.readFileSync(outPath);
+            try { fs.unlinkSync(inPath); } catch {}
+            try { fs.unlinkSync(outPath); } catch {}
         }
 
         const finalBuffer = await addMetadata(webpBuffer);
@@ -156,7 +177,7 @@ async function stickerCommand(sock, chatId, message) {
     } catch (error) {
         console.error('[sticker]', error);
         await sock.sendMessage(chatId, {
-            text: 'Failed to create sticker. Reply to a valid image/video or a working image URL and try again.'
+            text: `Failed: ${error.message}. Reply to a valid image/video and try again.`
         }, { quoted: message });
     } finally {
         if (tempInput) {
