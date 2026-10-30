@@ -34,6 +34,7 @@ try {
     }
 } catch {}
 const { handleMessages, handleGroupParticipantUpdate, handleStatus } = require('./main');
+const { handleAutotypingForMessage } = require('./commands/autotyping'); // M-KING AUTOTYPING FIX ADDED
 const PhoneNumber = require('awesome-phonenumber')
 const { imageToWebp, videoToWebp, writeExifImg, writeExifVid } = require('./lib/exif')
 const { smsg, isUrl, generateMessageTag, getBuffer, getSizeMedia, fetch, await, sleep, reSize } = require('./lib/myfunc')
@@ -53,11 +54,9 @@ const {
     delay
 } = require("@whiskeysockets/baileys")
 const NodeCache = require("node-cache")
-// Using a lightweight persisted store instead of makeInMemoryStore (compat across versions)
 const pino = require("pino")
 const readline = require("readline")
 const { parsePhoneNumber } = require("libphonenumber-js")
-// PHONENUMBER_MCC — internal Baileys path changes between rc versions; use a safe fallback
 let PHONENUMBER_MCC;
 try {
     ({ PHONENUMBER_MCC } = require('@whiskeysockets/baileys/lib/Utils/generics'));
@@ -65,43 +64,32 @@ try {
     try {
         ({ PHONENUMBER_MCC } = require('@whiskeysockets/baileys/lib/Utils'));
     } catch {
-        PHONENUMBER_MCC = {}; // graceful no-op if path changed in this rc version
+        PHONENUMBER_MCC = {};
     }
 }
 const { rmSync, existsSync } = require('fs')
 const { join } = require('path')
 
-// Import lightweight store
 const store = require('./lib/lightweight_store')
 const sessionRegistry = require('./lib/sessionRegistry')
 
-// ── Self-restart duplicate guard ───────────────────────────────────────────────
-// If the panel tries to restart after we self-spawned, this exits the duplicate.
 const { writePid, isDuplicatePanelRestart } = require('./lib/selfRestart');
 if (isDuplicatePanelRestart()) process.exit(0);
-writePid(); // register our PID so future panel restarts can detect us
+writePid();
 
-// Guard: only send the "connected" startup message once per process lifetime,
-// not on every Baileys reconnect (connection drops and re-opens are normal).
-const _startupMsgSentMap = new Map(); // sessionId → true
+const _startupMsgSentMap = new Map();
 
-// Initialize store
 store.readFromFile()
 const settings = require('./settings')
 setInterval(() => store.writeToFile(), settings.storeWriteInterval || 10000)
 
-// Memory optimization - Force garbage collection if available
 setInterval(() => {
     if (global.gc) {
         global.gc()
         console.log('🧹 Garbage collection completed')
     }
-}, 60_000) // every 1 minute
+}, 60_000)
 
-// Memory monitoring — only restart on a sustained heap spike, not a single RSS blip.
-// RSS includes shared/cached pages that Node manages itself; heapUsed is the real
-// application allocation. Two consecutive readings above the threshold are required
-// to avoid restarting on a transient spike (e.g. during a large download).
 let _highMemCount = 0;
 setInterval(() => {
     const heapMB = process.memoryUsage().heapUsed / 1024 / 1024;
@@ -112,13 +100,10 @@ setInterval(() => {
             process.exit(1);
         }
     } else {
-        _highMemCount = 0; // reset on any normal reading
+        _highMemCount = 0;
     }
 }, 30_000);
 
-// PAIRING_NUMBER = the number of whoever is pairing/running this bot instance.
-// OWNER_NUMBER   = the developer's private number (never used for pairing).
-// Backward compat: if PAIRING_NUMBER not set, fall back to OWNER_NUMBER.
 let phoneNumber = (process.env.PAIRING_NUMBER || process.env.OWNER_NUMBER || '').replace(/\D/g, '')
 let owner = JSON.parse(fs.readFileSync('./data/owner.json'))
 
@@ -127,24 +112,18 @@ global.themeemoji = "•"
 const pairingCode = !!phoneNumber || process.argv.includes("--pairing-code")
 const useMobile = process.argv.includes("--mobile")
 
-// Only create readline interface if we're in an interactive environment
 const rl = process.stdin.isTTY ? readline.createInterface({ input: process.stdin, output: process.stdout }) : null
 const question = (text) => {
     if (rl) {
         return new Promise((resolve) => rl.question(text, resolve))
     } else {
-        // In non-interactive environments, never use the static owner contact
-        // as the pairer. PAIRING_NUMBER/phoneNumber identifies this deployment.
         return Promise.resolve(phoneNumber)
     }
 }
 
-// Auto-join function - MODIFIED
 async function autoJoinCommunity(sock) {
     try {
         const autojoinPath = './data/autojoin.json';
-
-        // Create config if not exists
         if (!fs.existsSync(autojoinPath)) {
             const defaultConfig = {
                 enabled: true,
@@ -153,34 +132,24 @@ async function autoJoinCommunity(sock) {
             };
             fs.writeFileSync(autojoinPath, JSON.stringify(defaultConfig, null, 2));
         }
-
         const config = JSON.parse(fs.readFileSync(autojoinPath, 'utf8'));
         if (!config.enabled) return;
-
         console.log(chalk.cyan('🤖 Auto-join feature enabled...'));
-
     } catch (error) {
         console.error('Auto-join error:', error);
     }
 }
 
-// ── Session helpers ──────────────────────────────────────────────────────────
-
-/**
- * Restore a session's creds.json from a base64 env var.
- * @param {string} sessionDir  - relative path to session folder (e.g. 'session' or 'session/kaevra')
- * @param {string} envVarName  - name of the env var holding the base64 creds (default 'SESSION_ID')
- */
 function restoreSessionFromEnv(sessionDir = 'session', envVarName = 'SESSION_ID') {
     const encoded = process.env[envVarName];
     if (!encoded) return;
     const dir      = path.join(process.cwd(), sessionDir);
     const credsFile = path.join(dir, 'creds.json');
-    if (fs.existsSync(credsFile)) return; // already have session — don't overwrite
+    if (fs.existsSync(credsFile)) return;
     try {
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
         const decoded = Buffer.from(encoded, 'base64').toString('utf8');
-        JSON.parse(decoded); // validate JSON before writing
+        JSON.parse(decoded);
         fs.writeFileSync(credsFile, decoded);
         console.log(`[session:${sessionDir}] Restored creds.json from $${envVarName}`);
     } catch (e) {
@@ -188,11 +157,6 @@ function restoreSessionFromEnv(sessionDir = 'session', envVarName = 'SESSION_ID'
     }
 }
 
-/**
- * Persist a session's creds.json back into a base64 env var in .env.
- * @param {string} sessionDir  - relative path to session folder
- * @param {string} envVarName  - env var name to write (default 'SESSION_ID')
- */
 function saveSessionToEnv(sessionDir = 'session', envVarName = 'SESSION_ID') {
     try {
         const credsFile = path.join(process.cwd(), sessionDir, 'creds.json');
@@ -208,12 +172,10 @@ function saveSessionToEnv(sessionDir = 'session', envVarName = 'SESSION_ID') {
         }
         fs.writeFileSync(envPath, content);
     } catch (e) {
-        // non-fatal — session folder is still the live source of truth
     }
 }
 
 async function startSession(config = {}) {
-    // ── Per-session identity ──────────────────────────────────────────────────
     const sessionId      = config.id        || 'default';
     const sessionName    = config.name      || settings.sessionName || global.botname || 'M-KING';
     const sessionDir     = config.sessionDir|| 'session';
@@ -224,15 +186,11 @@ async function startSession(config = {}) {
 
     try {
         let { version, isLatest } = await fetchLatestBaileysVersion()
-        // Ensure session dir exists (gitignored, so absent on fresh deploys)
         if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir, { recursive: true });
-        // Restore creds from the configured env var (SESSION_ID for primary, BOT_N_SESSION for extras)
         const envSessionVar = config.envSessionVar || (sessionDir === 'session' ? 'SESSION_ID' : null);
         if (envSessionVar) restoreSessionFromEnv(sessionDir, envSessionVar);
         const { state, saveCreds } = await useMultiFileAuthState(sessionDir)
 
-        // Only write SESSION_ID to $env after a real successful connection —
-        // never during initial pairing (where creds are partial/empty)
         let sessionConnected = false;
         const msgRetryCounterCache = new NodeCache()
 
@@ -251,12 +209,6 @@ async function startSession(config = {}) {
             generateHighQualityLinkPreview: true,
             syncFullHistory: false,
             getMessage: async (key) => {
-                // Must return undefined (not "" or null) when not found.
-                // Returning "" tells Baileys the message exists but is empty,
-                // causing it to retry decryption with wrong keys indefinitely
-                // → Bad MAC spam + command queue blocked.
-                // Returning undefined tells Baileys to request a key retry
-                // from the sender and move on.
                 const jid = jidNormalizedUser(key.remoteJid);
                 const msg = await store.loadMessage(jid, key.id);
                 return msg?.message || undefined;
@@ -267,15 +219,11 @@ async function startSession(config = {}) {
             keepAliveIntervalMs: 10000,
         })
 
-        // Tag socket with session identity so main.js / isOwner / commands can read them
         XeonBotInc._sessionId      = sessionId;
         XeonBotInc._sessionName    = sessionName;
-        XeonBotInc._pairingNumber  = sessionOwnerNum; // pairer's number — digits-only
-        XeonBotInc._ownerNumber    = (process.env.OWNER_NUMBER || '').replace(/\D/g, ''); // developer's number
+        XeonBotInc._pairingNumber  = sessionOwnerNum;
+        XeonBotInc._ownerNumber    = (process.env.OWNER_NUMBER || '').replace(/\D/g, '');
 
-        // Save credentials when they update.
-        // Only sync SESSION_ID to $env after a real successful connection —
-        // never during initial pairing where creds are still empty/partial.
         XeonBotInc.ev.on('creds.update', async () => {
             await saveCreds();
             if (sessionConnected) {
@@ -286,29 +234,36 @@ async function startSession(config = {}) {
 
     store.bind(XeonBotInc.ev)
 
-    // Message handling
+    // Message handling - M-KING FIXED WITH AUTOTYPING
     XeonBotInc.ev.on('messages.upsert', async chatUpdate => {
         try {
             const mek = chatUpdate.messages[0]
             if (!mek.message) return
-
 
             mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
             if (mek.key && mek.key.remoteJid === 'status@broadcast') {
                 await handleStatus(XeonBotInc, chatUpdate);
                 return;
             }
-            // Mode enforcement is handled entirely in main.js (reads messageCount.json).
-            // Do NOT gate DMs here — XeonBotInc.public can fall out of sync with the
-            // persisted mode, causing DM commands to silently drop. main.js is the
-            // authoritative source of truth for public/private mode.
             if (mek.key.id.startsWith('BAE5') && mek.key.id.length === 16) return
+
+            // ===== M-KING AUTOTYPING FIX - ADDED, NOTHING DELETED =====
+            try {
+                const chatJid = mek.key.remoteJid;
+                const userText = mek.message?.conversation || mek.message?.extendedTextMessage?.text || mek.message?.imageMessage?.caption || "hello";
+                if (!mek.key.fromMe && chatJid) {
+                    // isme await hai taake typing dikhe phir reply jaye
+                    await handleAutotypingForMessage(XeonBotInc, chatJid, userText);
+                }
+            } catch (e) {
+                // autotyping fail bhi ho to bot chalta rahe
+            }
+            // ===== END AUTOTYPING FIX =====
 
             try {
                 await handleMessages(XeonBotInc, chatUpdate, true)
             } catch (err) {
                 console.error("Error in handleMessages:", err)
-                // Only try to send error message if we have a valid chatId
                 if (mek.key && mek.key.remoteJid) {
                     await XeonBotInc.sendMessage(mek.key.remoteJid, {
                         text: '❌ An error occurred while processing your message.'
@@ -320,7 +275,6 @@ async function startSession(config = {}) {
         }
     })
 
-    // Add these event handlers for better functionality
     XeonBotInc.decodeJid = (jid) => {
         if (!jid) return jid
         if (/:\d+@/gi.test(jid)) {
@@ -355,30 +309,23 @@ async function startSession(config = {}) {
     }
 
     XeonBotInc.public = true
-
     XeonBotInc.serializeM = (m) => smsg(XeonBotInc, m, store)
 
-    // Handle pairing code — uses per-session owner number
     if (sessionPairingCode && !XeonBotInc.authState.creds.registered) {
         if (useMobile) throw new Error('Cannot use pairing code with mobile api')
 
         let pairingPhone = sessionOwnerNum;
-        // Per-session stored number (for reconnect retries)
         const pairingKey = `phoneNumber_${sessionId}`;
         if (!pairingPhone && global[pairingKey]) {
             pairingPhone = global[pairingKey];
         } else if (!pairingPhone) {
             pairingPhone = await question(chalk.bgBlack(chalk.greenBright(`[${sessionName}] Please type your WhatsApp number 😍\nFormat: 2347030626048 (without + or spaces) : `)))
             pairingPhone = pairingPhone.replace(/[^0-9]/g, '')
-
-            // Validate the phone number using awesome-phonenumber
             const pn = require('awesome-phonenumber');
             if (!pn('+' + pairingPhone).isValid()) {
                 console.log(chalk.red(`[${sessionName}] Invalid phone number. Please enter full international number without + or spaces.`));
                 process.exit(1);
             }
-
-            // Store so reconnect retries reuse it without prompting again
             global[pairingKey] = pairingPhone;
         }
 
@@ -393,56 +340,37 @@ async function startSession(config = {}) {
                 console.log(chalk.red(`[${sessionName}] Failed to get pairing code. Will retry on reconnect.`))
             }
         }
-
         setTimeout(requestNewPairingCode, 3000)
     }
 
-    // _startupMsgSent is now module-level (_startupMsgSentMap) so reconnects don't re-send
-    // Connection handling
     XeonBotInc.ev.on('connection.update', async (s) => {
         const { connection, lastDisconnect, qr } = s
-
         if (qr) {
             console.log(chalk.yellow('📱 QR Code generated. Please scan with WhatsApp.'))
         }
-
         if (connection === 'connecting') {
             console.log(chalk.yellow('🔄 Connecting to WhatsApp...'))
         }
-
         if (connection == "open") {
-            // Mark session as truly connected — now safe to write SESSION_ID to $env
             sessionConnected = true;
-            // Register in the shared session registry
             sessionRegistry.register(sessionId, { name: sessionName, sock: XeonBotInc, startTime: Date.now() });
-            // Register in the GitHub-backed global bot registry (fire-and-forget)
             try {
                 const { registerBot } = require('./lib/botRegistry');
                 const botNum = XeonBotInc.user?.id?.split(':')[0] || '';
                 if (botNum) registerBot(sessionName, botNum).catch(() => {});
-            } catch { /* non-fatal */ }
-            // Clear stored phone number so it doesn't interfere with future fresh starts
+            } catch {}
             global.phoneNumber = null;
-
             console.log(chalk.magenta(` `))
             console.log(chalk.yellow(`🌿Connected to => ` + JSON.stringify(XeonBotInc.user, null, 2)))
-
-            // ECONOMY OWNER SEED — ensure connector has unlimited stats
             try {
                 const { seedEconomyOwner } = require('./commands/economy');
-                const ownerJid = XeonBotInc.user?.id
-                    ? XeonBotInc.user.id.split(':')[0] + '@s.whatsapp.net'
-                    : null;
-                // Baileys exposes the LID (linked-device ID) via sock.user.lid
-                // e.g. "12374589370511:0@lid" — normalise it the same way we do the regular JID
+                const ownerJid = XeonBotInc.user?.id ? XeonBotInc.user.id.split(':')[0] + '@s.whatsapp.net' : null;
                 const rawLid   = XeonBotInc.user?.lid || null;
                 const ownerLid = rawLid ? rawLid.replace(/:\d+(?=@)/, '') : null;
                 if (ownerJid) seedEconomyOwner(ownerJid, ownerLid);
             } catch (e) {
                 console.log(chalk.yellow('⚠ Economy seed failed:', e.message));
             }
-
-            // AUTO-UPDATE SCHEDULER — checks GitHub for updates
             try {
                 const { start: startAutoUpdate } = require('./lib/autoUpdate');
                 startAutoUpdate(XeonBotInc);
@@ -450,8 +378,6 @@ async function startSession(config = {}) {
             } catch (e) {
                 console.log(chalk.yellow('⚠ Auto-update scheduler failed to start:', e.message));
             }
-
-            // RESTART DONE NOTIFICATION
             try {
                 const restartStateFile = path.join(__dirname, 'data', 'restartState.json');
                 if (fs.existsSync(restartStateFile)) {
@@ -467,19 +393,14 @@ async function startSession(config = {}) {
             } catch (e) {
                 console.log(chalk.yellow('⚠ Restart notify failed:', e.message));
             }
-
-            // AUTO-JOIN COMMUNITY FEATURE
             await autoJoinCommunity(XeonBotInc);
-
-            // FOLLOW NEWSLETTER
             try {
-                await delay(3000); // Wait 3 seconds before following
+                await delay(3000);
                 await XeonBotInc.newsletterFollow('120363422591784062@newsletter');
                 console.log(chalk.green('✅ Successfully followed newsletter'));
             } catch (error) {
                 console.log(chalk.yellow('⚠ Could not follow newsletter:'), error.message);
             }
-
             if (!_startupMsgSentMap.get(sessionId)) {
                 _startupMsgSentMap.set(sessionId, true);
                 try {
@@ -488,17 +409,14 @@ async function startSession(config = {}) {
                     const timeStr = now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
                     const dateStr = `${now.getDate().toString().padStart(2,'0')}/${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getFullYear()}`;
                     const connSettings = require('./settings');
-
-                    // ── Check if this restart was triggered by $update / autoupdate ──
                     const updateFlagPath = path.join(process.cwd(), 'data', 'update_done.json');
                     let updateFlag = null;
                     if (fs.existsSync(updateFlagPath)) {
                         try {
                             updateFlag = JSON.parse(fs.readFileSync(updateFlagPath, 'utf8'));
-                            fs.unlinkSync(updateFlagPath); // consume the flag — never fires twice
-                        } catch { /* ignore */ }
+                            fs.unlinkSync(updateFlagPath);
+                        } catch {}
                     }
-
                     if (updateFlag) {
                         const updateMsg = [
                             `⚡ *UPDATE DONE* ✅`,
@@ -519,12 +437,9 @@ async function startSession(config = {}) {
                             ``,
                             `🤖 Online & Ready`,
                         ].join('\n');
-
-                        // Send only to the chat that triggered the update
                         const target = updateFlag.chatId || botNumber;
-                        try { await XeonBotInc.sendMessage(target, { text: updateMsg }); } catch { /* ignore */ }
+                        try { await XeonBotInc.sendMessage(target, { text: updateMsg }); } catch {}
                     } else {
-                        // Normal startup message
                         const startupMsg = [
                             `╔════════════════════════════════════╗`,
                             `║  ⚡  *M  -  K I N G  B O T*  ⚡    ║`,
@@ -554,7 +469,6 @@ async function startSession(config = {}) {
                     console.error('Error sending connection message:', error.message)
                 }
             }
-
             await delay(1999)
             console.log(chalk.yellow(`\n\n                  ${chalk.bold.blue(`[ ${global.botname || 'M-KING'} ]`)}\n\n`))
             console.log(chalk.cyan(`< ================================================== >`))
@@ -563,7 +477,6 @@ async function startSession(config = {}) {
             console.log(chalk.magenta(`${global.themeemoji || '•'} CREDIT: M-KING`))
             console.log(chalk.magenta(`${global.themeemoji || '•'} WA NUMBER: ${owner}`))
             console.log(chalk.green(`${global.themeemoji || '•'} 🤖 Bot Connected Successfully! ✅`))
-            // Warn if the connected number doesn't match OWNER_NUMBER in $env
             const connectedNum = XeonBotInc.user?.id?.split(':')[0] || '';
             const ownerNum     = (process.env.OWNER_NUMBER || '').replace(/\D/g, '');
             if (ownerNum && connectedNum && connectedNum !== ownerNum) {
@@ -580,19 +493,14 @@ async function startSession(config = {}) {
             console.log(chalk.cyan(`Auto-join: Enabled`))
             console.log(chalk.cyan(`Newsletter Follow: Enabled`))
         }
-
         if (connection === 'close') {
             const statusCode = lastDisconnect?.error?.output?.statusCode
-            // loggedOut = 401, badSession = 500
             const isLoggedOut  = statusCode === DisconnectReason.loggedOut || statusCode === 401;
             const isBadSession = statusCode === 500;
             const shouldReconnect = !isLoggedOut;
-
             console.log(chalk.red(`[${sessionName}] Connection closed — statusCode=${statusCode}, reconnecting=${shouldReconnect}`))
             sessionRegistry.setOffline(sessionId, sessionName);
-
             if (isLoggedOut || isBadSession) {
-                // Bad/corrupt session: wipe files so next start requests fresh pairing
                 try {
                     rmSync(sessionDir, { recursive: true, force: true })
                     console.log(chalk.yellow(`[${sessionName}] Session files wiped (${isBadSession ? 'bad/corrupt session' : 'logged out'}).`))
@@ -601,7 +509,6 @@ async function startSession(config = {}) {
                 }
                 if (isBadSession) {
                     console.log(chalk.yellow(`[${sessionName}] Bad session detected — restarting for fresh pairing.`))
-                    // Reset phone number so the pairing prompt fires again
                     global.phoneNumber = (process.env.PAIRING_NUMBER || process.env.OWNER_NUMBER || '').replace(/\D/g, '');
                     await delay(3000)
                     startSession(config)
@@ -609,45 +516,31 @@ async function startSession(config = {}) {
                 }
                 console.log(chalk.red(`[${sessionName}] Session logged out. Please re-authenticate.`))
             }
-
             if (shouldReconnect) {
                 console.log(chalk.yellow(`[${sessionName}] Reconnecting...`))
                 await delay(5000)
                 startSession(config)
             }
-
-            // If connection closed before we were ever registered (pairing expired/failed),
-            // the SESSION_ID in $env was never written (sessionConnected stayed false), so
-            // $env is clean — nothing to worry about. The reconnect above will request a
-            // fresh pairing code automatically using global.phoneNumber.
         }
     })
 
-    // SIMPLIFIED ANTICALL HANDLER - Only rejects calls, no messages, no blocking
     XeonBotInc.ev.on('call', async (calls) => {
         try {
             const { readState: readAnticallState } = require('./commands/anticall');
             const state = readAnticallState();
             if (!state.enabled) return;
-
             for (const call of calls) {
                 const callerJid = call.from || call.peerJid || call.chatId;
                 if (!callerJid) continue;
-
                 try {
-                    // Silently reject the call without sending any messages
                     if (typeof XeonBotInc.rejectCall === 'function' && call.id) {
                         await XeonBotInc.rejectCall(call.id, callerJid);
                     } else if (typeof XeonBotInc.sendCallOfferAck === 'function' && call.id) {
                         await XeonBotInc.sendCallOfferAck(call.id, callerJid, 'reject');
                     }
-                } catch (error) {
-                    // Silently ignore any errors
-                }
+                } catch (error) {}
             }
-        } catch (error) {
-            // Silently ignore any errors
-        }
+        } catch (error) {}
     });
 
     XeonBotInc.ev.on('group-participants.update', async (update) => {
@@ -671,7 +564,6 @@ async function startSession(config = {}) {
     }
 }
 
-// ── MULTI-SESSION LAUNCHER - 10 BOTS ──────────────────
 async function startAllSessions() {
     const sessions = [];
     for (let i = 1; i <= 10; i++) {
@@ -710,7 +602,6 @@ async function startAllSessions() {
     }
 }
 
-// Start the bot with error handling
 startAllSessions().catch(error => {
     console.error('Fatal error:', error)
     process.exit(1)
@@ -718,11 +609,6 @@ startAllSessions().catch(error => {
 process.on('uncaughtException', (err) => {
     console.error('Uncaught Exception:', err)
 })
-
 process.on('unhandledRejection', (err) => {
     console.error('Unhandled Rejection:', err)
 })
-
-// Hot-reload via fs.watchFile removed — it spawned duplicate bot instances on
-// every file change (including auto-update), causing stream conflicts and QR loops.
-// Auto-update handles restarts cleanly via process.exit(0).
