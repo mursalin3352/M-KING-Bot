@@ -129,9 +129,12 @@ async function handleAntideleteCommand(sock, chatId, message, match) {
 async function storeMessage(sock, message) {
     try {
         const config = loadAntideleteConfig();
-        if (!config.enabled) return; // Don't store if antidelete is disabled
+        if (!config.enabled) return;
 
         if (!message.key?.id) return;
+
+        // FIX: Apna message store hi mat karo (react wale ki tarah fromMe check)
+        if (message.key.fromMe) return;
 
         const messageId = message.key.id;
         let content = '';
@@ -141,10 +144,8 @@ async function storeMessage(sock, message) {
 
         const sender = message.key.participant || message.key.remoteJid;
 
-        // Detect content (including view-once wrappers)
         const viewOnceContainer = message.message?.viewOnceMessageV2?.message || message.message?.viewOnceMessage?.message;
         if (viewOnceContainer) {
-            // unwrap view-once content
             if (viewOnceContainer.imageMessage) {
                 mediaType = 'image';
                 content = viewOnceContainer.imageMessage.caption || '';
@@ -199,14 +200,12 @@ async function storeMessage(sock, message) {
             timestamp: new Date().toISOString()
         });
 
-        // Anti-ViewOnce: forward immediately to owner if captured
         if (isViewOnce && mediaType && fs.existsSync(mediaPath)) {
             try {
                 const ownerNumber = sock.user.id.split(':')[0] + '@s.whatsapp.net';
                 const senderName = sender.split('@')[0];
                 const mediaOptions = {
-                    caption: `*Anti-ViewOnce ${mediaType}*
-From: @${senderName}`,
+                    caption: `*Anti-ViewOnce ${mediaType}*\nFrom: @${senderName}`,
                     mentions: [sender]
                 };
                 if (mediaType === 'image') {
@@ -214,11 +213,8 @@ From: @${senderName}`,
                 } else if (mediaType === 'video') {
                     await sock.sendMessage(ownerNumber, { video: { url: mediaPath }, ...mediaOptions });
                 }
-                // Cleanup immediately for view-once forward
                 try { fs.unlinkSync(mediaPath); } catch {}
-            } catch (e) {
-                // ignore
-            }
+            } catch (e) {}
         }
 
     } catch (err) {
@@ -234,14 +230,23 @@ async function handleMessageRevocation(sock, revocationMessage) {
 
         const messageId = revocationMessage.message.protocolMessage.key.id;
         const deletedBy = revocationMessage.participant || revocationMessage.key.participant || revocationMessage.key.remoteJid;
-        const ownerNumber = sock.user.id.split(':')[0] + '@s.whatsapp.net';
+        const botNumber = sock.user.id.split(':')[0];
+        const ownerNumber = botNumber + '@s.whatsapp.net';
+        const ownerDigits = botNumber.replace(/\D/g, '').slice(-10);
 
         if (deletedBy.includes(sock.user.id) || deletedBy === ownerNumber) return;
 
         const original = messageStore.get(messageId);
         if (!original) return;
 
+        // === FINAL FIX: Agar message bot/owner ka apna tha to report mat karo ===
         const sender = original.sender;
+        const senderDigits = sender.replace(/\D/g, '').slice(-10);
+        if (sender.includes(botNumber) || sender === ownerNumber || senderDigits === ownerDigits) {
+            messageStore.delete(messageId);
+            return;
+        }
+
         const senderName = sender.split('@')[0];
         const groupName = original.group ? (await sock.groupMetadata(original.group)).subject : '';
 
@@ -268,7 +273,6 @@ async function handleMessageRevocation(sock, revocationMessage) {
             mentions: [deletedBy, sender]
         });
 
-        // Media sending
         if (original.mediaType && fs.existsSync(original.mediaPath)) {
             const mediaOptions = {
                 caption: `*Deleted ${original.mediaType}*\nFrom: @${senderName}`,
@@ -310,7 +314,6 @@ async function handleMessageRevocation(sock, revocationMessage) {
                 });
             }
 
-            // Cleanup
             try {
                 fs.unlinkSync(original.mediaPath);
             } catch (err) {
