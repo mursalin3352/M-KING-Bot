@@ -45,8 +45,38 @@ async function handleAutoReactG(sock, message) {
         if (!message || !message.key || message.key.fromMe) return false;
         const chatId = message.key.remoteJid;
         if (!chatId || chatId === 'status@broadcast') return false;
+        
         const d = load();
-        const list = toList(d.chats[chatId]);
+        let list = null;
+
+        // 1. Direct check
+        if (d.chats[chatId]) list = d.chats[chatId];
+
+        // 2. FIX: @lid ke liye - message ke andar PN dhoondo
+        if (!list) {
+            const k = message.key;
+            const possible = [k.remoteJidAlt, k.participantAlt, k.participant, message.participant].filter(Boolean);
+            for (const j of possible) {
+                if (d.chats[j]) { list = d.chats[j]; break; }
+                // number se match
+                const jd = j.replace(/\D/g, '').slice(-10);
+                for (const key in d.chats) {
+                    if (key.replace(/\D/g, '').slice(-10) === jd) { list = d.chats[key]; break; }
+                }
+                if (list) break;
+            }
+        }
+
+        // 3. FIX: Last 10 digits se match (923xxxx wala direct number)
+        if (!list) {
+            const chatDig = chatId.replace(/\D/g, '').slice(-10);
+            for (const key in d.chats) {
+                const keyDig = key.replace(/\D/g, '').slice(-10);
+                if (keyDig && chatDig && keyDig === chatDig) { list = d.chats[key]; break; }
+            }
+        }
+
+        list = toList(list);
         if (!list.length) return false;
         const emoji = pick(list);
         await sock.sendMessage(chatId, { react: { text: emoji, key: message.key } });
@@ -160,12 +190,22 @@ async function autoreactgCommand(sock, chatId, message, userMessage, isOwner) {
             return sock.sendMessage(chatId, { text: '❌ Pehle *$autoreactg list* chalao, phir uska number do.' }, { quoted: message });
         }
         if (sub === 'off') {
+            const offDig = token.replace(/\D/g, '').slice(-10);
+            for (const key in d.chats) {
+                if (key.replace(/\D/g, '').slice(-10) === offDig) delete d.chats[key];
+            }
             delete d.chats[jid]; save(d);
             return sock.sendMessage(chatId, { text: '✅ OFF: ' + jid.split('@')[0] }, { quoted: message });
         }
         let list = toList(args.slice(2).join(' '));
         if (!list.length) list = toList(d.default);
         d.chats[jid] = list;
+        // FIX: Direct number ke liye extra keys save karo
+        const dig = token.replace(/\D/g, '');
+        if (dig.length >= 10) {
+            d.chats[dig] = list;
+            d.chats[dig.slice(-10)] = list;
+        }
         save(d);
         return sock.sendMessage(chatId, { text: '✅ ON: ' + jid.split('@')[0] + ' → ' + list.join(' ') + '\n(har message pe in mein se ek random emoji lagega)' }, { quoted: message });
     }
