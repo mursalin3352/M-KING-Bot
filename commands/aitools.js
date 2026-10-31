@@ -1,13 +1,16 @@
 'use strict';
 /**
  * aitools.js — Extra AI utility commands
- * $humanize  — make AI-sounding text sound natural/human
- * $summarize — summarize long text or quoted message
- * $rewrite   — rewrite text in a different style
- * $grammar   — fix grammar and spelling
+ * $humanize / $summarize / $rewrite / $grammar
+ * Primary: text.pollinations.ai (free, no key, tested)
+ * Fallback: gifted overchat
  */
 
+const axios = require('axios');
 const { get } = require('../lib/gifted');
+
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
+const MAX_PROMPT = 4000;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -20,7 +23,6 @@ function getInput(message, sliceWords = 1) {
                 message.message?.extendedTextMessage?.text || '';
     const fromCmd = raw.trim().split(/\s+/).slice(sliceWords).join(' ').trim();
 
-    // Also grab quoted text if present
     const quoted = message.message?.extendedTextMessage?.contextInfo?.quotedMessage;
     const quotedText =
         quoted?.conversation ||
@@ -31,10 +33,47 @@ function getInput(message, sliceWords = 1) {
     return (quotedText ? quotedText + (fromCmd ? '\n\n' + fromCmd : '') : fromCmd).trim();
 }
 
-async function askGifted(endpoint, model, prompt) {
-    const data = await get(`/ai/${endpoint}`, { q: prompt, model }, 60000);
-    if (!data?.success) throw new Error(data?.message || data?.error || 'No response');
-    return typeof data.result === 'string' ? data.result : (data.result?.answer || JSON.stringify(data.result));
+// ── AI call: pollinations (tested) → gifted (fallback) ────────────────────────
+
+async function askAI(system, text) {
+    const prompt = `${system}\n\nText:\n${text}`.slice(0, MAX_PROMPT);
+    const enc = encodeURIComponent(prompt);
+    const tried = [];
+
+    const urls = [
+        `https://text.pollinations.ai/${enc}?model=openai`,
+        `https://text.pollinations.ai/${enc}`,
+    ];
+
+    for (const u of urls) {
+        for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+                const res = await axios.get(u, {
+                    timeout: 60000, responseType: 'text',
+                    headers: { 'User-Agent': UA },
+                    validateStatus: (s) => s >= 200 && s < 300,
+                });
+                const out = String(res.data ?? '').trim();
+                if (out.length > 1 && !/^\s*\{/.test(out)) return out;
+                tried.push('pollinations:empty');
+                break;
+            } catch (e) {
+                tried.push('pollinations:' + (e.response?.status || e.code || e.message));
+                if (e.response?.status === 429) await new Promise((r) => setTimeout(r, 1500));
+            }
+        }
+    }
+
+    try {
+        const data = await get('/ai/overchat', { q: prompt, model: 'deepseek' }, 60000);
+        const r = typeof data?.result === 'string'
+            ? data.result
+            : (data?.result?.answer || data?.result?.message || data?.answer);
+        if (r && String(r).trim()) return String(r).trim();
+        tried.push('gifted:no-result');
+    } catch (e) { tried.push('gifted:' + e.message); }
+
+    throw new Error(tried.join(' | '));
 }
 
 async function aiToolReply(sock, chatId, message, systemPrompt, userText, label, emoji) {
@@ -49,8 +88,7 @@ async function aiToolReply(sock, chatId, message, systemPrompt, userText, label,
     await react(sock, message, '⏳');
 
     try {
-        const fullPrompt = `${systemPrompt}\n\nText:\n${userText}`;
-        const reply = await askGifted('overchat', 'deepseek', fullPrompt);
+        const reply = await askAI(systemPrompt, userText);
 
         await react(sock, message, '✅');
         await sock.sendMessage(chatId, {
@@ -60,49 +98,35 @@ async function aiToolReply(sock, chatId, message, systemPrompt, userText, label,
         console.error(`[aitools:${label}]`, err.message);
         await react(sock, message, '❌');
         await sock.sendMessage(chatId, {
-            text: `❌ *${label}* failed.\n\n_${err.message}_\n\n_M-KING_ ⚡`
+            text: `❌ *${label}* failed.\n\n_${err.message.slice(0, 160)}_\n\n_M-KING_ ⚡`
         }, { quoted: message });
     }
 }
 
-// ── $humanize ─────────────────────────────────────────────────────────────────
+// ── Commands ──────────────────────────────────────────────────────────────────
+
 async function humanizeCommand(sock, chatId, message) {
-    const text = getInput(message);
-    await aiToolReply(
-        sock, chatId, message,
-        'Rewrite the following text to sound completely natural, human, and conversational. Remove all AI-sounding phrases, robotic structure, and overly formal language. Make it flow naturally as if written by a real person. Keep the original meaning intact.',
-        text, 'Humanize', '🧑'
-    );
+    await aiToolReply(sock, chatId, message,
+        'Rewrite the text in very simple, easy, natural human language. Use common daily words. Keep it short and easy to understand for everyone. Keep same meaning and same language as input.',
+        getInput(message), 'Humanize', '🧑');
 }
 
-// ── $summarize ────────────────────────────────────────────────────────────────
 async function summarizeCommand(sock, chatId, message) {
-    const text = getInput(message);
-    await aiToolReply(
-        sock, chatId, message,
-        'Summarize the following text into clear, concise key points. Use bullet points where appropriate. Keep it brief but capture all important information.',
-        text, 'Summarize', '📝'
-    );
+    await aiToolReply(sock, chatId, message,
+        'Summarize the text in VERY SIMPLE and EASY language. Use 3-5 short bullet points. Use easy words that a 10 year old can understand. Keep same language as input. Make it short and clear, not complicated.',
+        getInput(message), 'Summarize', '📝');
 }
 
-// ── $rewrite ──────────────────────────────────────────────────────────────────
 async function rewriteCommand(sock, chatId, message) {
-    const text = getInput(message);
-    await aiToolReply(
-        sock, chatId, message,
-        'Rewrite the following text to make it clearer, more professional, and better structured. Improve the wording and flow while keeping the original meaning.',
-        text, 'Rewrite', '✍️'
-    );
+    await aiToolReply(sock, chatId, message,
+        'Rewrite the text in simple, clear, easy to read language. Make it more natural and easy to understand. Use simple words. Keep same meaning and same language as input. Do NOT make it difficult or professional.',
+        getInput(message), 'Rewrite', '✍️');
 }
 
-// ── $grammar ──────────────────────────────────────────────────────────────────
 async function grammarCommand(sock, chatId, message) {
-    const text = getInput(message);
-    await aiToolReply(
-        sock, chatId, message,
-        'Fix all grammar, spelling, and punctuation errors in the following text. Return only the corrected version with a brief note of major changes made.',
-        text, 'Grammar Fix', '✏️'
-    );
+    await aiToolReply(sock, chatId, message,
+        'Fix grammar and spelling only. Keep the language simple and same as input. Return only corrected version. Do not make it more difficult.',
+        getInput(message), 'Grammar Fix', '✏️');
 }
 
 module.exports = { humanizeCommand, summarizeCommand, rewriteCommand, grammarCommand };
