@@ -16,8 +16,8 @@ const SIZE = 512;
 const PAD = 34;
 const MAX_LINES = 4;
 const WRAP_CHARS = 14;
-const DURATION = 1.6;
-const FPS = 15;
+const DURATION = 1.8;
+const FPS = 20;
 
 const FONT_CANDIDATES = [
     '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
@@ -44,7 +44,10 @@ function runFfmpeg(args, timeout) {
         const ff = spawn('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', ...args]);
         const out = [];
         const err = [];
-        const timer = setTimeout(() => { try { ff.kill('SIGKILL'); } catch { } reject(new Error('ffmpeg timeout')); }, timeout || 25000);
+        const timer = setTimeout(() => {
+            try { ff.kill('SIGKILL'); } catch { }
+            reject(new Error('ffmpeg timeout'));
+        }, timeout || 25000);
 
         ff.stdout.on('data', c => out.push(c));
         ff.stderr.on('data', c => err.push(c));
@@ -86,13 +89,12 @@ async function renderSticker(text, color, quality) {
     const longest = Math.max(...lines.map(l => l.length), 1);
 
     const usable = SIZE - PAD * 2;
-    let fs2 = Math.floor(usable / longest);
-    fs2 = Math.max(26, Math.min(78, fs2));
+    let fsize = Math.floor(usable / longest);
+    fsize = Math.max(26, Math.min(78, fsize));
 
-    const lineH = Math.round(fs2 * 1.25);
+    const lineH = Math.round(fsize * 1.3);
     const totalH = lineH * lines.length;
-    let y = Math.round((SIZE - totalH) / 2 + (lineH - fs2) / 2);
-    y = Math.max(6, y);
+    const startY = Math.max(8, Math.round((SIZE - totalH) / 2 + (lineH - fsize) / 2));
 
     const font = findFont();
     const tmpFiles = [];
@@ -105,17 +107,25 @@ async function renderSticker(text, color, quality) {
             tmpFiles.push(f);
 
             const fontPart = font ? `fontfile='${font}':` : 'font=Sans:';
+            const baseY = startY + i * lineH;
+
+            // slide up + fade in, then hold
+            const yExpr = `${baseY}+16*max(0\\,0.5-t)`;
+            const alphaExpr = `min(1\\,t*3)`;
+
             filters.push(
-                `drawtext=${fontPart}textfile='${f}':fontsize=${fs2}:` +
-                `x=(w-text_w)/2:y=${y + i * lineH}:` +
-                `fontcolor=${color}:borderw=3:bordercolor=black@0.8`
+                `drawtext=${fontPart}textfile='${f}':fontsize=${fsize}:` +
+                `x=(w-text_w)/2:y='${yExpr}':` +
+                `alpha='${alphaExpr}':` +
+                `fontcolor=${color}:borderw=3:bordercolor=black@0.85`
             );
         }
 
-        const vf = filters.join(',');
+        const vf = 'format=rgba,' + filters.join(',');
         const base = [
             '-f', 'lavfi', '-i', `color=c=black@0.0:s=${SIZE}x${SIZE}:d=${DURATION}:r=${FPS}`,
             '-vf', vf,
+            '-pix_fmt', 'yuva420p',
         ];
         const tail = ['-loop', '0', '-an', '-f', 'webp', 'pipe:1'];
 
