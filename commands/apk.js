@@ -4,7 +4,6 @@ const axios = require('axios');
 const API = 'https://api.omegatech.app';
 const CDN = 'https://apkmody.mobi';
 const FOOT = '𝗠-𝗞𝗜𝗡𝗚👑';
-const MAX_DOC = 95 * 1024 * 1024;
 
 const HDR = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
@@ -26,7 +25,6 @@ async function apiGet(path, params, timeout) {
     return b.data !== undefined ? b.data : b;
 }
 
-// Provider 1: apkmody
 async function mSearch(q) {
     const d = await apiGet('/api/download/apkmody', { action: 'search', query: q }, 12000);
     const items = Array.isArray(d?.items) ? d.items : [];
@@ -38,7 +36,6 @@ async function mDetail(url) {
     return { title: d?.title, version: d?.version, mod: d?.mod, pkg: d?.package, icon: abs(d?.icon), file: dl ? { url: dl.url, name: dl.fileName, size: dl.size, bytes: dl.sizeBytes } : null, source: 'apkmody' };
 }
 
-// Provider 2: apk4free
 async function aSearch(q) {
     const d = await apiGet('/api/Search/apk4free', { q }, 12000);
     const raw = d?.items || d?.results || d?.apps || (Array.isArray(d) ? d : []);
@@ -54,7 +51,6 @@ async function aDetail(item) {
     return { title: d?.appname || d?.title || item.title, version: d?.version || item.version, mod: d?.mod, pkg: d?.package || d?.package_name, icon: abs(d?.appicon || d?.icon || item.cover), file: { url: dl, name: d?.filename, size: d?.size, bytes: d?.size_bytes }, source: 'apk4free' };
 }
 
-// Provider 3: Aptoide - Screenshot wala (BEST BACKUP)
 async function aptoideSearch(q) {
     const { data } = await axios.get(`https://ws75.aptoide.com/api/7/apps/search?query=${encodeURIComponent(q)}&limit=1`, { timeout: 15000 });
     const app = data?.datalist?.list?.[0];
@@ -122,7 +118,6 @@ async function apkCommand(sock, chatId, message) {
         const { info } = await resolve(query, pick);
         const f = info.file; const sizeTxt = f.size || mb(f.bytes); const title = info.title || query;
 
-        // Aptoide style caption - screenshot jaisa
         let caption;
         if (info.source === 'aptoide') {
             caption = `📦 *${title}*\n👨‍💻 Developer: ${info.dev || 'Unknown'}\n📦 Package: ${info.pkg || '-'}\n📏 Size: ${sizeTxt}\n⭐ Rating: ${info.rating || 'N/A'}\n🔒 Signature:\n${info.signature || 'N/A'}\n\n${FOOT}`;
@@ -133,14 +128,20 @@ async function apkCommand(sock, chatId, message) {
         const icon = await fetchIcon(info.icon);
         if (icon) { try { await sock.sendMessage(chatId, { image: icon, caption }, { quoted: message }); } catch { await sock.sendMessage(chatId, { text: caption }, { quoted: message }); } } else { await sock.sendMessage(chatId, { text: caption }, { quoted: message }); }
 
-        if (f.bytes && f.bytes > MAX_DOC) {
-            return sock.sendMessage(chatId, { text: `📦 *${title}* (${sizeTxt})\n\nFile bari hai, direct link:\n${f.url}\n\n${FOOT}` }, { quoted: message });
-        }
+        // FIXED: No size limit - bade MB bhi file ban ke ayenge
         try {
-            await sock.sendMessage(chatId, { document: { url: f.url }, mimetype: 'application/vnd.android.package-archive', fileName: f.name || clean(title) + '.apk', caption: icon ? undefined : `✅ _Use at your own risk._\n\n${FOOT}`, }, { quoted: message });
-        } catch {
-            await sock.sendMessage(chatId, { text: `📦 *${title}* (${sizeTxt})\n\n${f.url}\n\n${FOOT}` }, { quoted: message });
+            await sock.sendMessage(chatId, {
+                document: { url: f.url },
+                mimetype: 'application/vnd.android.package-archive',
+                fileName: f.name || clean(title) + '.apk',
+            }, { quoted: message });
+        } catch (e) {
+            console.log('Doc fail, sending link', e.message);
+            await sock.sendMessage(chatId, {
+                text: `📦 *${title}* (${sizeTxt})\n\n🔗 Direct Link:\n${f.url}\n\n${FOOT}`
+            }, { quoted: message });
         }
+
     } catch (err) {
         console.error('[apk]', err.message);
         await sock.sendMessage(chatId, { text: `🚫 APK nahi mila.\n_${err.message}_\n\n${FOOT}` }, { quoted: message });
