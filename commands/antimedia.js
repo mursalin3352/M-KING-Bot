@@ -1,6 +1,6 @@
 'use strict';
 /**
- * antimedia.js — M-KING Premium Look
+ * antimedia.js — M-KING 
  */
 
 const fs   = require('fs');
@@ -77,7 +77,7 @@ function makeToggleCommand(key, label, emoji, description) {
 
 💡 ${description}
 
-╰─► 👑 𝙼-𝙺𝙸𝙽𝙶 𝙱𝙾𝚃 👑 ◄─╯`
+╰─► 👑 𝙼-𝙺𝙸𝙽𝙶👑 ◄─╯`
             }, { quoted: message });
         }
 
@@ -257,7 +257,7 @@ async function gctimeCommand(sock, chatId, message) {
 ┃ 📊 𝐌𝐄𝐌𝐁𝐄𝐑𝐒: ${meta.participants.length}
 ┗━━━━━━━━━━━━━━━━━━━━━━┛
 
-╰─► 👑 𝙼-𝙺𝙸𝙽𝙶 𝙱𝙾𝚃 👑 ◄─╯`
+╰─► 👑 𝙼-𝙺𝙸𝙽𝙶👑 ◄─╯`
         }, { quoted: message });
     } catch (err) {
         console.error('[gctime]', err.message);
