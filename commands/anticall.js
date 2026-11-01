@@ -25,20 +25,38 @@ async function anticallCommand(sock, chatId, message, args) {
     const sub = (args || '').trim().toLowerCase();
 
     if (!sub || (sub !== 'on' && sub !== 'off' && sub !== 'status')) {
-        await sock.sendMessage(chatId, { text: '*ANTICALL*\n\n.anticall on  - Enable reject an incoming calls\n.anticall off - Disable anticall\n.anticall status - Show current status' }, { quoted: message });
+        const menu = 
+`╔══════════════════════════╗
+║   📵  ᴀɴᴛɪ-ᴄᴀʟʟ ᴄᴇɴᴛʀᴇ  📵   ║
+╚══════════════════════════╝
+
+┏━━━━━━━━━━━━━━━━━━━━━━┓
+┃ ⚙️  𝙎𝙀𝙏𝙐𝙋 𝙈𝙀𝙉𝙐
+┣━━━━━━━━━━━━━━━━━━━━━━┫
+┃ 📵 .ᴀɴᴛɪᴄᴀʟʟ ᴏɴ ➔ 🟢 Enable
+┃ 🔰 .ᴀɴᴛɪᴄᴀʟʟ ᴏғғ ➔ 🔴 Disable
+┃ 📊 .ᴀɴᴛɪᴄᴀʟʟ ꜱᴛᴀᴛᴜꜱ ➔ 📖 Status
+┗━━━━━━━━━━━━━━━━━━━━━━┛
+
+💡 Auto reject incoming calls 🚫📞
+
+╰─► 👑 𝙈-𝙆𝙄𝙉𝙂 𝘽𝙊𝙏 👑 ◄─╯`;
+        await sock.sendMessage(chatId, { text: menu }, { quoted: message });
         return;
     }
 
     if (sub === 'status') {
-        await sock.sendMessage(chatId, { text: `Anticall is currently *${state.enabled ? 'ON' : 'OFF'}*.` }, { quoted: message });
+        await sock.sendMessage(chatId, { 
+            text: `╔═══『 📊 *ANTICALL STATUS* 📵 』═══╗\n║\n║ ${state.enabled ? '🟢 Status: *ON ✅*\n║ 📵 Calls will be Rejected 🚫' : '🔴 Status: *OFF ❌*\n║ 💤 Calls will be Allowed'}\n║\n╚════『 👑 M-KING 』════╝` 
+        }, { quoted: message });
         return;
     }
 
     const enable = sub === 'on';
     writeState(enable);
-    await sock.sendMessage(chatId, { text: `Anticall is now *${enable ? 'ENABLED' : 'DISABLED'}*.` }, { quoted: message });
+    await sock.sendMessage(chatId, { 
+        text: enable ? `╔═══『 🛡️ *ANTICALL ON* 🟢 』═══╗\n║ 📵 Anticall *ENABLED* ✅\n║ 🚫 All Calls will be Rejected\n╚════『 👑 M-KING 』════╝` : `╔═══『 🚫 *ANTICALL OFF* 🔴 』═══╗\n║ 💤 Anticall *DISABLED* ❌\n║ 📞 Calls will be Allowed\n╚════『 👑 M-KING 』════╝` 
+    }, { quoted: message });
 }
 
 module.exports = { anticallCommand, readState };
-
-
