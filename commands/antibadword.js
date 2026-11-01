@@ -8,7 +8,6 @@ async function antibadwordCommand(sock, chatId, message, senderId, isSenderAdmin
         const match = text.replace(/^\S+\s*/, '').trim().toLowerCase();
         const sub = match.split(/\s+/)[0];
 
-        // list / test sabke liye khula
         const isPublic = ['list', 'test'].includes(sub);
 
         if (!isPublic && !isSenderAdmin && !isOwner) {
