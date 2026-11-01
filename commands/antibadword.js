@@ -1,23 +1,21 @@
-const { handleAntiBadwordCommand } = require('../lib/antibadword');
+'use strict';
+const { handleAntiBadwordCommand, handleBadwordDetection } = require('../lib/antibadword');
 
 async function antibadwordCommand(sock, chatId, message, senderId, isSenderAdmin) {
     try {
-        // Auto Owner Detect - Bot ka apna number hi owner hai
         const isOwner = message.key.fromMe;
-        
-        // Sirf Admin ya Owner allow
-        if (!isSenderAdmin && !isOwner) {
-            await sock.sendMessage(chatId, { text: '```For Group Admins or Bot Owner Only!```' }, { quoted: message });
-            return;
+        const text = message.message?.conversation || message.message?.extendedTextMessage?.text || '';
+        const match = text.replace(/^\S+\s*/, '').trim().toLowerCase();
+        const sub = match.split(/\s+/)[0];
+
+        // list / test sabke liye khula
+        const isPublic = ['list', 'test'].includes(sub);
+
+        if (!isPublic && !isSenderAdmin && !isOwner) {
+            return sock.sendMessage(chatId, { text: '```For Group Admins or Bot Owner Only!```' }, { quoted: message });
         }
 
-        const text = message.message?.conversation || 
-                    message.message?.extendedTextMessage?.text || '';
-        
-        const match = text.split(' ').slice(1).join(' ').trim().toLowerCase();
-
-        await handleAntiBadwordCommand(sock, chatId, message, match);
-
+        await handleAntiBadwordCommand(sock, chatId, message, match, senderId, !!isSenderAdmin);
     } catch (e) {
         console.error('Error in antibadword command:', e);
         await sock.sendMessage(chatId, { text: '*Error processing command*' }, { quoted: message });
@@ -25,3 +23,6 @@ async function antibadwordCommand(sock, chatId, message, senderId, isSenderAdmin
 }
 
 module.exports = antibadwordCommand;
+module.exports.antibadwordCommand = antibadwordCommand;
+module.exports.handleAntiBadwordCommand = handleAntiBadwordCommand;
+module.exports.handleBadwordDetection = handleBadwordDetection;
