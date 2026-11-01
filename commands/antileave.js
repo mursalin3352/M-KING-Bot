@@ -1,9 +1,4 @@
 'use strict';
-/**
- * antileave.js — Notify the group when a member leaves
- * $antileave on/off  → toggle per group (admin only)
- * handleAntiLeave    → called from group-participants.update (remove)
- */
 
 const fs   = require('fs');
 const path = require('path');
@@ -12,7 +7,6 @@ const { isAuthorizedOwnerSession } = require('../lib/isOwner');
 
 const CONFIG_PATH = path.join(__dirname, '../data/antileave.json');
 
-// ── Config helpers ────────────────────────────────────────────────────────────
 function loadConfig() {
     try {
         if (!fs.existsSync(CONFIG_PATH)) return {};
@@ -20,25 +14,27 @@ function loadConfig() {
     } catch { return {}; }
 }
 function saveConfig(cfg) {
-    try { fs.writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2)); }
+    try { 
+        const dir = path.dirname(CONFIG_PATH);
+        if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+        fs.writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2)); 
+    }
     catch (err) { console.error('[antileave] config save:', err.message); }
 }
 function isEnabled(groupId) {
     return !!loadConfig()[groupId]?.enabled;
 }
 
-// ── $antileave command ────────────────────────────────────────────────────────
 async function handleAntiLeaveCommand(sock, chatId, senderId, message) {
     if (!chatId.endsWith('@g.us')) {
         return sock.sendMessage(chatId,
-            { text: '❌ This command can only be used in groups.' },
+            { text: '╭━━━〔 ❌ ERROR 〕━━━╮\n┃ Group-Only Baby 💔\n╰━━━━━━━━━━━━━╯' },
             { quoted: message });
     }
 
     const isOwner = isAuthorizedOwnerSession(sock) &&
         (message.key.fromMe || await isOwnerOrSudo(senderId, sock, chatId));
 
-    // Must be admin or owner
     let isAdmin = false;
     try {
         const meta = await sock.groupMetadata(chatId);
@@ -50,7 +46,7 @@ async function handleAntiLeaveCommand(sock, chatId, senderId, message) {
 
     if (!isOwner && !isAdmin) {
         return sock.sendMessage(chatId,
-            { text: '❌ Only group admins can use this command.' },
+            { text: '╭━━━〔 🔒 ADMIN ONLY 〕━━━╮\n┃ Sirf Admin 👑\n╰━━━━━━━━━━━━━╯' },
             { quoted: message });
     }
 
@@ -58,48 +54,56 @@ async function handleAntiLeaveCommand(sock, chatId, senderId, message) {
     const match = text.split(' ').slice(1).join(' ').trim().toLowerCase();
     const cfg   = loadConfig();
 
-    if (!match || match === 'status') {
+    if (!match || match === 'status' || match === 'get') {
         const on = !!cfg[chatId]?.enabled;
         return sock.sendMessage(chatId, {
-            text: `╭━━━「 🚪 *ANTI-LEAVE* 」━━━\n` +
-                  `┃\n` +
-                  `┃ Status: ${on ? '✅ Enabled' : '❌ Disabled'}\n` +
-                  `┃\n` +
-                  `┃ ▸ *$antileave on*  — Enable\n` +
-                  `┃ ▸ *$antileave off* — Disable\n` +
-                  `┃\n` +
-                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n` +
-                  `_Posts a farewell message when someone leaves._\n\n` +
-                  `_M-KING_ ⚡`
+            text: `╔══════════════════════════╗
+║   🚪 𝗔𝗡𝗧𝗜-𝗟𝗘𝗔𝗩𝗘 𝗦𝗬𝗦𝗧𝗘𝗠 🚪   ║
+╚══════════════════════════╝
+
+┏━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 📊 𝐒𝐓𝐀𝐓𝐔𝐒
+┣━━━━━━━━━━━━━━━━━━━━━━┫
+┃ ${on ? '🟢 Enabled ✅ ✨' : '🔴 Disabled ❌ 💤'}
+┗━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━『 ✨ MENU ✨ 』━━━━━━━━┓
+┃ 🎀 $antileave on ➔ 🟢 Active
+┃ 🥀 $antileave off ➔ 🔴 Deactive
+┃ 📖 $antileave status ➔ 📊
+┗━━━━━━━━━━━━━━━━━━━━━━┛
+
+💡 Leave Pe Auto Farewell Msg 📢
+
+╰─► 👑 𝙼-𝙺𝙸𝙽G👑 ◄─╯`
         }, { quoted: message });
     }
 
     if (match === 'on') {
         if (cfg[chatId]?.enabled)
-            return sock.sendMessage(chatId, { text: '⚠️ Anti-Leave is already *enabled* in this group.' }, { quoted: message });
+            return sock.sendMessage(chatId, { text: '╔═══『 ⚠️ ALREADY ON 』═══╗\n║ 🟢 Already Enabled ✨\n╚════『 👑 M-KING 』════╝' }, { quoted: message });
         cfg[chatId] = { enabled: true };
         saveConfig(cfg);
         return sock.sendMessage(chatId, {
-            text: `✅ *Anti-Leave enabled!*\n\nA farewell message will be sent whenever someone leaves.\n\n_M-KING_ ⚡`
+            text: `╔═══『 🟢 ENABLED ✅ 』═══╗\n║ 🚪 Anti-Leave *ON* Ho Gya 💖\n║ 📢 Ab Leave Pe Msg Ayega 🥺\n╚════『 👑 M-KING 』════╝`
         }, { quoted: message });
     }
 
     if (match === 'off') {
         if (!cfg[chatId]?.enabled)
-            return sock.sendMessage(chatId, { text: '⚠️ Anti-Leave is already *disabled* in this group.' }, { quoted: message });
+            return sock.sendMessage(chatId, { text: '╔═══『 ⚠️ ALREADY OFF 』═══╗\n║ 🔴 Already Off 💔\n╚════『 👑 M-KING 』════╝' }, { quoted: message });
         cfg[chatId] = { enabled: false };
         saveConfig(cfg);
         return sock.sendMessage(chatId, {
-            text: `❌ *Anti-Leave disabled.*\n\n_M-KING_ ⚡`
+            text: `╔═══『 🔴 DISABLED 💤 』═══╗\n║ 🚪 Anti-Leave *OFF* Ho Gya 🥀\n╚════『 👑 M-KING 』════╝`
         }, { quoted: message });
     }
 
     return sock.sendMessage(chatId,
-        { text: '❌ Unknown option. Use *$antileave on* or *$antileave off*.' },
+        { text: '╭━━━〔 ❓ ERROR 〕━━━╮\n┃ Use: $antileave on/off 🎀\n╰━━━━━━━━━━━━━╯' },
         { quoted: message });
 }
 
-// ── Leave event handler ───────────────────────────────────────────────────────
 async function handleAntiLeave(sock, groupId, participants) {
     try {
         if (!isEnabled(groupId)) return;
@@ -111,21 +115,28 @@ async function handleAntiLeave(sock, groupId, participants) {
         } catch {}
 
         for (const jid of participants) {
-            // Resolve clean number / display
             const clean = jid.replace(/:\d+@/, '@');
             const num   = clean.split('@')[0];
-            const display = `+${num}`;
+            const tag = `@${num}`;
 
             await sock.sendMessage(groupId, {
-                text: `╭━━━「 🚪 *MEMBER LEFT* 」━━━\n` +
-                      `┃\n` +
-                      `┃ 👤 ${display}\n` +
-                      `┃ has left *${groupName}*\n` +
-                      `┃\n` +
-                      `┃ We'll miss you 💔\n` +
-                      `┃\n` +
-                      `╰━━━━━━━━━━━━━━━━━━━━━\n\n` +
-                      `_M-KING_ ⚡`,
+                text: `╔═══════════════════════════╗
+║   💔 𝗦𝗢𝗠𝗘𝗢𝗡𝗘 𝗟𝗘𝗙𝗧 💔   ║
+╚═══════════════════════════╝
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 👤 𝐔𝐒𝐄𝐑: ${tag}
+┃ 🏰 𝐆𝐑𝐎𝐔𝐏: ${groupName}
+┣━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ 🥀 𝐒𝐓𝐀𝐓𝐔𝐒: Left The Group 🚪
+┃ 💬 𝐌𝐒𝐆: Goodbye, We Will Miss You 😢
+┃ ⏰ 𝐓𝐈𝐌𝐄: ${new Date().toLocaleTimeString()}
+┗━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+𝘌𝘷𝘦𝘳𝘺 𝘭𝘦𝘢𝘷𝘦 𝘩𝘢𝘴 𝘢 𝘴𝘵𝘰𝘳𝘺... 📖
+𝘚𝘰𝘮𝘦𝘵𝘪𝘮𝘦𝘴 𝘨𝘰𝘰𝘥𝘣𝘺𝘦 𝘪𝘴 𝘵𝘩𝘦 𝘣𝘦𝘴𝘵 💫
+
+╰─► 👑 𝙼-𝙺𝙸𝙽𝙶👑 ◄─╯`,
                 mentions: [clean]
             });
         }
