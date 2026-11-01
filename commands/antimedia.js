@@ -1,6 +1,6 @@
 'use strict';
 /**
- * antimedia.js — M-KING 
+ * antimedia.js — Group content-blocking automation + admin protection
  */
 
 const fs   = require('fs');
@@ -36,7 +36,7 @@ function isOn(groupId, key) { return !!groupCfg(groupId)[key]; }
 
 async function checkAuth(sock, chatId, senderId, message) {
     if (!chatId.endsWith('@g.us')) {
-        await sock.sendMessage(chatId, { text: '╭━━━〔 ❌ ERROR 〕━━━╮\n┃ Group Only Command 💔\n╰━━━━━━━━━━━━━╯' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '❌ Group only command.' }, { quoted: message });
         return false;
     }
     const isOwner = message.key.fromMe || await isOwnerOrSudo(senderId, sock, chatId);
@@ -46,7 +46,7 @@ async function checkAuth(sock, chatId, senderId, message) {
         const isAdmin = meta.participants.some(p => p.id === senderId && p.admin);
         if (isAdmin) return true;
     } catch {}
-    await sock.sendMessage(chatId, { text: '╭━━━〔 🔒 ADMIN ONLY 〕━━━╮\n┃ Only Admins Can Use 👑\n╰━━━━━━━━━━━━━╯' }, { quoted: message });
+    await sock.sendMessage(chatId, { text: '❌ Only admins can use this command.' }, { quoted: message });
     return false;
 }
 
@@ -60,40 +60,33 @@ function makeToggleCommand(key, label, emoji, description) {
 
         if (!match || match === 'status') {
             return sock.sendMessage(chatId, {
-                text: `╔══════════════════════════╗
-║   ${emoji} 𝗔𝗡𝗧𝗜-𝗦𝗬𝗦𝗧𝗘𝗠 ${emoji}   ║
-╚══════════════════════════╝
-
-┏━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 🛡️ 𝐋𝐀𝐁𝐄𝐋: ${label}
-┃ 📊 𝐒𝐓𝐀𝐓𝐔𝐒: ${on ? '🟢 Enabled ✅' : '🔴 Disabled ❌'}
-┗━━━━━━━━━━━━━━━━━━━━━━┛
-
-┏━━━━『 ✨ MENU ✨ 』━━━━┓
-┃ 🎀 $${key} on → 🟢 Active
-┃ 🥀 $${key} off → 🔴 Deactive
-┃ 📖 $${key} status → 📊 Check
-┗━━━━━━━━━━━━━━━━━━━━━━┛
-
-💡 ${description}
-
-╰─► 👑 𝙼-𝙺𝙸𝙽𝙶👑 ◄─╯`
+                text: `╭━━━「 ${emoji} 𝐀𝐍𝐓𝐈-𝐒𝐘𝐒𝐓𝐄𝐌 」━━━\n` +
+                      `┃\n` +
+                      `┃ 🛡️ 𝐋𝐀𝐁𝐄𝐋: ${label}\n` +
+                      `┃ 📊 𝐒𝐓𝐀𝐓𝐔𝐒: ${on ? '🟢 Enabled ✅' : '🔴 Disabled ❌'}\n` +
+                      `┃\n` +
+                      `┃ ▸ $${key} on  → 🟢 Active\n` +
+                      `┃ ▸ $${key} off → 🔴 Deactive\n` +
+                      `┃\n` +
+                      `╰━━━━━━━━━━━━━━━━━━━━━\n\n` +
+                      `_${description}_\n\n` +
+                      `𝗠-𝗞𝗜𝗡𝗚👑`
             }, { quoted: message });
         }
 
         if (match === 'on') {
-            if (on) return sock.sendMessage(chatId, { text: `╔═══『 ⚠️ ALREADY ON 』═══╗\n║ 🟢 ${label} Already Enabled ✨\n╚════『 👑 M-KING 』════╝` }, { quoted: message });
+            if (on) return sock.sendMessage(chatId, { text: `⚠️ ${label} is already *enabled*. \n\n𝗠-𝗞𝗜𝗡𝗚 👑` }, { quoted: message });
             setGroupFlag(chatId, key, true);
-            return sock.sendMessage(chatId, { text: `╔═══『 🟢 ENABLED ✅ 』═══╗\n║ ${emoji} ${label} *ON* Ho Gya 💖\n║ ${description}\n╚════『 👑 M-KING 』════╝` }, { quoted: message });
+            return sock.sendMessage(chatId, { text: `✅ *${label} enabled!*\n\n_${description}_\n\n𝗠-𝗞𝗜𝗡𝗚 👑` }, { quoted: message });
         }
         if (match === 'off') {
-            if (!on) return sock.sendMessage(chatId, { text: `╔═══『 ⚠️ ALREADY OFF 』═══╗\n║ 🔴 ${label} Already Off 💔\n╚════『 👑 M-KING 』════╝` }, { quoted: message });
+            if (!on) return sock.sendMessage(chatId, { text: `⚠️ ${label} is already *disabled*. \n\n𝗠-𝗞𝗜𝗡𝗚 👑` }, { quoted: message });
             setGroupFlag(chatId, key, false);
-            return sock.sendMessage(chatId, { text: `╔═══『 🔴 DISABLED 💤 』═══╗\n║ ${emoji} ${label} *OFF* Ho Gya 🥀\n╚════『 👑 M-KING 』════╝` }, { quoted: message });
+            return sock.sendMessage(chatId, { text: `❌ *${label} disabled.*\n\n𝗠-𝗞𝗜𝗡𝗚 👑` }, { quoted: message });
         }
 
         return sock.sendMessage(chatId,
-            { text: `╭━━━〔 ❓ ERROR 〕━━━╮\n┃ Use: $${key} on/off 🎀\n╰━━━━━━━━━━━━━╯` },
+            { text: `❌ Use *$${key} on* or *$${key} off*. \n\n𝗠-𝗞𝗜𝗡𝗚 👑` },
             { quoted: message });
     };
 }
@@ -148,16 +141,16 @@ async function handleAntiMediaMessage(sock, message) {
         if (!shouldDelete) return;
 
         const warningMessages = {
-            '🖼️ Anti-Image':   `╔═══『 🖼️ 𝗔𝗡𝗧𝗜-𝗜𝗠𝗔𝗚𝗘 』═══╗\n║ 👤 𝐔𝐒𝐄𝐑: @${senderId.split('@')[0]}\n║ 🚫 Images Are For Admins Only 📸\n╚════『 👑 M-KING 』════╝`,
-            '🎬 Anti-Video':   `╔═══『 🎬 𝗔𝗡𝗧𝗜-𝗩𝗜𝗗𝗘𝗢 』═══╗\n║ 👤 𝐔𝐒𝐄𝐑: @${senderId.split('@')[0]}\n║ 🚫 Videos Are For Admins Only 🎥\n╚════『 👑 M-KING 』════╝`,
-            '🎭 Anti-Sticker': `╔═══『 🎭 𝗔𝗡𝗧𝗜-𝗦𝗧𝗜𝗖𝗞𝗘𝗥 』═══╗\n║ 👤 𝐔𝐒𝐄𝐑: @${senderId.split('@')[0]}\n║ 🚫 Stickers Not Allowed Here 🎭\n╚════『 👑 M-KING 』════╝`,
-            '🔊 Anti-Audio':   `╔═══『 🔊 𝗔𝗡𝗧𝗜-𝗔𝗨𝗗𝗜𝗢 』═══╗\n║ 👤 𝐔𝐒𝐄𝐑: @${senderId.split('@')[0]}\n║ 🚫 Audio Restricted To Admins 🎙️\n╚════『 👑 M-KING 』════╝`,
-            '📢 Anti-Mention': `╔═══『 📢 𝗔𝗡𝗧𝗜-𝗠𝗘𝗡𝗧𝗜𝗢𝗡 』═══╗\n║ 👤 𝐔𝐒𝐄𝐑: @${senderId.split('@')[0]}\n║ 🚫 Mass Mention Not Allowed 📣\n╚════『 👑 M-KING 』════╝`,
+            '🖼️ Anti-Image':   `🖼️ *Anti-Image Active*\n\n@${senderId.split('@')[0]} — images are restricted to admins only. 🚫📸\n\n𝗠-𝗞𝗜𝗡𝗚 👑`,
+            '🎬 Anti-Video':   `🎬 *Anti-Video Active*\n\n@${senderId.split('@')[0]} — video posts are for admins only. 🚫🎥\n\n𝗠-𝗞𝗜𝗡𝗚 👑`,
+            '🎭 Anti-Sticker': `🎭 *Anti-Sticker Active*\n\n@${senderId.split('@')[0]} — sticker spam is disabled. 🚫🎭\n\n𝗠-𝗞𝗜𝗡𝗚 👑`,
+            '🔊 Anti-Audio':   `🔊 *Anti-Audio Active*\n\n@${senderId.split('@')[0]} — audio restricted to admins. 🚫🎙️\n\n𝗠-𝗞𝗜𝗡𝗚 👑`,
+            '📢 Anti-Mention': `📢 *Anti-Mention Active*\n\n@${senderId.split('@')[0]} — mass-mentioning not allowed. 🚫📣\n\n𝗠-𝗞𝗜𝗡𝗚 👑`,
         };
 
         await sock.sendMessage(chatId, { delete: message.key });
         await sock.sendMessage(chatId, {
-            text: warningMessages[reason],
+            text: warningMessages[reason] || `❌ *${reason}*\n\n@${senderId.split('@')[0]} — only admins can send this.\n\n𝗠-𝗞𝗜𝗡𝗚 👑`,
             mentions: [senderId]
         });
 
@@ -178,7 +171,7 @@ async function handleAntiPromoteDemote(sock, update) {
         if (action === 'demote' && cfg.antidemote && !authorIsOwner) {
             await sock.groupParticipantsUpdate(id, participants, 'promote');
             await sock.sendMessage(id, {
-                text: `╔═══『 👑 𝗔𝗡𝗧𝗜-𝗗𝗘𝗠𝗢𝗧𝗘 』═══╗\n║ @${authorClean.split('@')[0]} Tried To Demote Admin!\n║ Action Reversed 🔄\n╚════『 👑 M-KING 』════╝`,
+                text: `👑 *Anti-Demote*\n\n@${authorClean.split('@')[0]} tried to demote an admin — reversed.\n\n𝗠-𝗞𝗜𝗡𝗚 👑`,
                 mentions: [authorClean]
             });
         }
@@ -186,7 +179,7 @@ async function handleAntiPromoteDemote(sock, update) {
         if (action === 'promote' && cfg.antipromote && !authorIsOwner) {
             await sock.groupParticipantsUpdate(id, participants, 'demote');
             await sock.sendMessage(id, {
-                text: `╔═══『 🛡️ 𝗔𝗡𝗧𝗜-𝗣𝗥𝗢𝗠𝗢𝗧𝗘 』═══╗\n║ @${authorClean.split('@')[0]} Tried To Promote Member!\n║ Action Reversed 🔄\n╚════『 👑 M-KING 』════╝`,
+                text: `🛡️ *Anti-Promote*\n\n@${authorClean.split('@')[0]} tried to promote a member — reversed.\n\n𝗠-𝗞𝗜𝗡𝗚 👑`,
                 mentions: [authorClean]
             });
         }
@@ -202,21 +195,21 @@ async function banlistCommand(sock, chatId, message) {
     try {
         const banPath = path.join(__dirname, '../data/ban.json');
         if (!fs.existsSync(banPath)) {
-            return sock.sendMessage(chatId, { text: '📋 𝐁𝐀𝐍 𝐋𝐈𝐒𝐓\n\nNo Banned Members ✨\n\n╰─► 👑 M-KING BOT 👑 ◄─╯' }, { quoted: message });
+            return sock.sendMessage(chatId, { text: '📋 *BAN LIST*\n\nNo banned members.\n\n𝗠-𝗞𝗜𝗡𝗚 👑' }, { quoted: message });
         }
         const allBans = JSON.parse(fs.readFileSync(banPath, 'utf8'));
         const bans    = (allBans[chatId] || []);
         if (!bans.length) {
-            return sock.sendMessage(chatId, { text: '📋 𝐁𝐀𝐍 𝐋𝐈𝐒𝐓\n\nNo Banned Members ✨\n\n╰─► 👑 M-KING BOT 👑 ◄─╯' }, { quoted: message });
+            return sock.sendMessage(chatId, { text: '📋 *BAN LIST*\n\nNo banned members.\n\n𝗠-𝗞𝗜𝗡𝗚 👑' }, { quoted: message });
         }
         const list = bans.map((jid, i) => `${i + 1}. @${jid.split('@')[0]}`).join('\n');
         await sock.sendMessage(chatId, {
-            text: `╔═══『 🚫 𝗕𝗔𝗡 𝗟𝗜𝗦𝗧 』═══╗\n║ ${bans.length} Banned Member(s):\n║\n${list}\n╚════『 👑 M-KING 』════╝`,
+            text: `╭━━━「 🚫 *BAN LIST* 」━━━\n┃\n┃ ${bans.length} banned member(s):\n┃\n${list}\n┃\n╰━━━━━━━━━━━━━━━━━━━━━\n\n𝗠-𝗞𝗜𝗡𝗚 👑`,
             mentions: bans
         }, { quoted: message });
     } catch (err) {
         console.error('[banlist]', err.message);
-        await sock.sendMessage(chatId, { text: '❌ Failed to load ban list.' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '❌ Failed to load ban list.\n\n𝗠-𝗞𝗜𝗡𝗚 👑' }, { quoted: message });
     }
 }
 
@@ -228,7 +221,7 @@ async function gctimeCommand(sock, chatId, message) {
         const meta      = await sock.groupMetadata(chatId);
         const createdAt = meta.creation ? new Date(meta.creation * 1000) : null;
         if (!createdAt) {
-            return sock.sendMessage(chatId, { text: '❌ Could not retrieve group creation date.' }, { quoted: message });
+            return sock.sendMessage(chatId, { text: '❌ Could not retrieve group creation date.\n\n𝗠-𝗞𝗜𝗡𝗚 👑' }, { quoted: message });
         }
         const now     = new Date();
         const diffMs  = now - createdAt;
@@ -245,23 +238,21 @@ async function gctimeCommand(sock, chatId, message) {
         const timeStr = createdAt.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
 
         await sock.sendMessage(chatId, {
-            text: `╔══════════════════════════╗
-║   🕐 𝗚𝗥𝗢𝗨𝗣 𝗔𝗚𝗘 🕐   ║
-╚══════════════════════════╝
-
-┏━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 👥 𝐆𝐑𝐎𝐔𝐏: ${meta.subject}
-┃ 📅 𝐂𝐑𝐄𝐀𝐓𝐄𝐃: ${dateStr}
-┃ 🕐 𝐓𝐈𝐌𝐄: ${timeStr} UTC
-┃ 🗓️ 𝐀𝐆𝐄: ${age}
-┃ 📊 𝐌𝐄𝐌𝐁𝐄𝐑𝐒: ${meta.participants.length}
-┗━━━━━━━━━━━━━━━━━━━━━━┛
-
-╰─► 👑 𝙼-𝙺𝙸𝙽𝙶👑 ◄─╯`
+            text: `╭━━━「 🕐 *GROUP AGE* 」━━━\n` +
+                  `┃\n` +
+                  `┃ 👥 *${meta.subject}*\n` +
+                  `┃\n` +
+                  `┃ 📅 Created: ${dateStr}\n` +
+                  `┃ 🕐 Time:    ${timeStr} UTC\n` +
+                  `┃ 🗓️ Age:     ${age}\n` +
+                  `┃ 📊 Members: ${meta.participants.length}\n` +
+                  `┃\n` +
+                  `╰━━━━━━━━━━━━━━━━━━━━━\n\n` +
+                  `𝗠-𝗞𝗜𝗡𝗚👑`
         }, { quoted: message });
     } catch (err) {
         console.error('[gctime]', err.message);
-        await sock.sendMessage(chatId, { text: '❌ Could not fetch group info.' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '❌ Could not fetch group info.\n\n𝗠-𝗞𝗜𝗡𝗚 👑' }, { quoted: message });
     }
 }
 
