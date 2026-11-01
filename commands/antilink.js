@@ -30,7 +30,7 @@ async function handleAntilinkCommand(sock, chatId, userMessage, senderId, isSend
 ┃ 🔰 ${prefix}antilink off
 ┃ 📊 ${prefix}antilink get
 ┗━━━━━━━━━━━━━━━━━━━━━━┛
-╰─► 👑 𝙈-𝙆𝙄𝙉𝙂 𝘽𝙊𝙏 👑 ◄─╯`;
+╰─► 👑 𝙈-𝙆𝙄𝙉𝙂👑 ◄─╯`;
             await sock.sendMessage(chatId, { text: usage }, { quoted: message });
             return;
         }
