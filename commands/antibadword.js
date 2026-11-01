@@ -1,23 +1,27 @@
 const { handleAntiBadwordCommand } = require('../lib/antibadword');
-const isAdminHelper = require('../lib/isAdmin');
 
 async function antibadwordCommand(sock, chatId, message, senderId, isSenderAdmin) {
     try {
-        if (!isSenderAdmin) {
-            await sock.sendMessage(chatId, { text: '```For Group Admins Only!```' }, { quoted: message });
+        // Auto Owner Detect - Bot ka apna number hi owner hai
+        const isOwner = message.key.fromMe;
+        
+        // Sirf Admin ya Owner allow
+        if (!isSenderAdmin && !isOwner) {
+            await sock.sendMessage(chatId, { text: '```For Group Admins or Bot Owner Only!```' }, { quoted: message });
             return;
         }
 
-        // Extract match from message
         const text = message.message?.conversation || 
                     message.message?.extendedTextMessage?.text || '';
-        const match = text.split(' ').slice(1).join(' ');
+        
+        const match = text.split(' ').slice(1).join(' ').trim().toLowerCase();
 
         await handleAntiBadwordCommand(sock, chatId, message, match);
-    } catch (error) {
-        console.error('Error in antibadword command:', error);
-        await sock.sendMessage(chatId, { text: '*Error processing antibadword command*' }, { quoted: message });
+
+    } catch (e) {
+        console.error('Error in antibadword command:', e);
+        await sock.sendMessage(chatId, { text: '*Error processing command*' }, { quoted: message });
     }
 }
 
-module.exports = antibadwordCommand; 
+module.exports = antibadwordCommand;
