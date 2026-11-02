@@ -16,11 +16,22 @@ const rimuruResponseMessageIds = new Set();
 // ─── In-memory cache: memKey → { messages, userInfo } ────────────────────────
 const chatMemory = new Map();
 
+// ─── Duplicate-reply lock ────────────────────────────────────────────────────
+const repliedIds = new Set();
+function claimMessage(message) {
+    const id = message?.key?.id;
+    if (!id) return true;
+    if (repliedIds.has(id)) return false;
+    repliedIds.add(id);
+    if (repliedIds.size > 500) repliedIds.delete(repliedIds.values().next().value);
+    return true;
+}
+
 // ─── File name helpers ────────────────────────────────────────────────────────
 function memKeyToFilename(memKey) {
     return memKey
-        .replace(/@[a-z.]+/g, '')   // strip @s.whatsapp.net / @g.us / @lid
-        .replace(/::/g, '_')        // group separator
+        .replace(/@[a-z.]+/g, '')
+        .replace(/::/g, '_')
         .replace(/[^a-zA-Z0-9_-]/g, '_')
         + '_rimuru_memory.json';
 }
@@ -118,6 +129,29 @@ function rememberRimuruResponse(messageKey) {
     }
 }
 
+// ─── Language auto-detect (script + word based) ───────────────────────────────
+const STRONG_ROMAN_URDU = /\b(kya|kyu|kyun|kyunke|hai|hain|ho|hun|tum|tera|teri|tujhe|mera|meri|mujhe|mujhko|apna|apni|kaise|kaisa|kaisi|kahan|acha|accha|achi|theek|thik|nahi|nahin|bhai|yaar|karo|kardo|batao|bolo|suno|dekho|raha|rahi|rahe|gaya|gayi|gaye|kuch|koi|bahut|bohot|zyada|salaam|assalam|shukriya|maza|mazaa|pata|samajh|samjho|chalo|abhi|phir|lekin|magar)\b/i;
+
+const LANG_SPEC = {
+    'roman-urdu': 'ROMAN URDU — Urdu written in English letters (e.g. "kya haal hai bhai")',
+    'urdu':       'URDU SCRIPT — اردو رسم الخط',
+    'hindi':      'HINDI DEVANAGARI — हिंदी',
+    'arabic':     'ARABIC — العربية',
+    'english':    'ENGLISH',
+};
+
+function detectLang(text) {
+    const s = String(text || '');
+    if (/[\u0600-\u06FF]/.test(s)) {
+        // Urdu-specific letters vs generic Arabic
+        if (/[ٹڈڑںھےۓ]/.test(s) || /(اردو|ہے|ہیں|کیا|تم|آپ)/.test(s)) return 'urdu';
+        return 'arabic';
+    }
+    if (/[\u0900-\u097F]/.test(s)) return 'hindi';
+    if (STRONG_ROMAN_URDU.test(s)) return 'roman-urdu';
+    return 'english';
+}
+
 // ─── Compact Prompt Builder (Rimuru Tempest Edition) ──────────────────────────
 const { isPairingOwnerNumber } = require('../lib/isOwner');
 
@@ -152,6 +186,7 @@ function buildPrompt(userMessage, context) {
     const userCtx  = context?.userInfo || {};
     const history  = context?.messages || [];
     const senderId = context?.senderId || '';
+    const detected = context?.detectedLang || detectLang(userMessage);
 
     let identity = '';
     if (context?.isOwner) {
@@ -169,32 +204,24 @@ function buildPrompt(userMessage, context) {
 
     if (lm?.type === 'swap' && lm.pairs?.length) {
         const bullets = lm.pairs
-            .map(p => `• User's message is in ${p.input.charAt(0).toUpperCase()+p.input.slice(1)} → reply ONLY in ${p.output.charAt(0).toUpperCase()+p.output.slice(1)}`)
+            .map(p => `• ${p.input} → reply ONLY in ${p.output}`)
             .join('\n');
-        langOverride =
-            `[LANGUAGE RULE — MANDATORY, OVERRIDES EVERYTHING]\n` +
-            `SWAP MODE ACTIVE. Look at the language of the user's current message and apply the matching rule:\n` +
-            `${bullets}\n` +
-            `NEVER auto-detect and reply in the same language as the user. Follow the swap EXACTLY.`;
+        langOverride = `[LANGUAGE: SWAP — MANDATORY]\n${bullets}\nNever mirror the user's language. Follow the swap.`;
     } else if (lm?.type === 'single') {
-        langOverride =
-            `[LANGUAGE RULE — MANDATORY, USER REQUESTED]\n` +
-            `User explicitly requested language: ${lm.lang}. Reply ONLY in ${lm.lang.charAt(0).toUpperCase()+lm.lang.slice(1)} for this and all following messages until user says "auto".`;
+        langOverride = `[LANGUAGE: LOCKED — MANDATORY]\nReply ONLY in ${LANG_SPEC[lm.lang] || lm.lang} until user says "auto".`;
     } else if (lm?.type === 'default') {
-        langOverride = `[LANGUAGE RULE] Language rule cleared. Return to AUTO DETECT mode.`;
+        langOverride = `[LANGUAGE: AUTO]\nDetect the user's language and match it exactly.`;
     } else {
-        // ★★★★★ AUTO LANGUAGE — FINAL FIX — TERI DEMAND PE ★★★★★
+        // AUTO DETECT — code-side detection, AI ko sirf follow karna hai
         langOverride =
-            `[LANGUAGE RULE — AUTO DETECT — MANDATORY, HIGHEST PRIORITY]\n` +
-            `You MUST detect the language and script of the CURRENT USER MESSAGE (U:) and reply in EXACTLY the same language and script.\n` +
-            `RULES:\n` +
-            `1. If U: is in Roman Urdu/Hinglish (e.g., "kya haal hai", "tera naam kya hai", "mujhe batao") → Reply in ROMAN URDU (Urdu words in English letters).\n` +
-            `2. If U: is in English (e.g., "what is your name") → Reply in ENGLISH.\n` +
-            `3. If U: is in Urdu script (e.g., "تم کون ہو") → Reply in URDU SCRIPT.\n` +
-            `4. If U: is in Hindi Devanagari (e.g., "तुम कौन हो") → Reply in HINDI DEVANAGARI.\n` +
-            `5. If user says "mujhe Urdu me batao / Urdu me bolo / talk in Urdu / speak in Hindi / English me batao" → Switch to that requested language and remember it.\n` +
-            `6. NEVER reply in Devanagari when user used Roman letters. Match script exactly.\n` +
-            `7. If user says "auto pe ao / back to auto / auto mode" → Go back to auto detect.`;
+            `[LANGUAGE: AUTO DETECT — HIGHEST PRIORITY]\n` +
+            `Detected language of current message: ${LANG_SPEC[detected] || detected}\n` +
+            `Reply ONLY in ${LANG_SPEC[detected] || detected}. Match the script EXACTLY.\n` +
+            `- Roman Urdu input → Roman Urdu output (never Devanagari, never Urdu script).\n` +
+            `- Urdu script input → Urdu script output.\n` +
+            `- Hindi input → Devanagari output.\n` +
+            `- English input → English output.\n` +
+            `If the user switches language, follow the NEW message immediately.`;
     }
 
     const turns = history
@@ -210,7 +237,7 @@ function buildPrompt(userMessage, context) {
     if (turns)    prompt += `\nRecent:\n${turns}`;
     prompt += `\nU: ${userMessage}\nR:`;
 
-    if (prompt.length > 1800) {
+    if (prompt.length > 2200) {
         prompt = '';
         if (langOverride) prompt += `${langOverride}\n\n`;
         prompt += `${RIMURU_CORE}\n`;
@@ -227,21 +254,19 @@ function cleanReply(raw) {
         .replace(/^(Rîmîřǔ|Rimuru|Rimuru Tempest|Raphael|Ciel|Dara|Bot|AI|Assistant):\s*/i, '')
         .trim();
 
-    // Convert markdown → WhatsApp formatting
     s = s
-        .replace(/^#{1,6}\s+/gm, '')          // remove # ## ### headings
-        .replace(/\*\*\*(.+?)\*\*\*/g, '*$1*') // ***bold italic*** → *bold italic*
-        .replace(/\*\*(.+?)\*\*/g, '*$1*')     // **bold** → *bold*
-        .replace(/~~(.+?)~~/g, '~$1~')         // ~~strike~~ → ~strike~
-        .replace(/`{3}[\s\S]*?`{3}/g, m =>     // keep code blocks but strip backticks
+        .replace(/^#{1,6}\s+/gm, '')
+        .replace(/\*\*\*(.+?)\*\*\*/g, '*$1*')
+        .replace(/\*\*(.+?)\*\*/g, '*$1*')
+        .replace(/~~(.+?)~~/g, '~$1~')
+        .replace(/`{3}[\s\S]*?`{3}/g, m =>
             m.replace(/^```[a-z]*\n?/i, '').replace(/\n?```$/, '').trim()
         )
-        .replace(/`(.+?)`/g, '$1')             // inline `code` → plain
-        .replace(/^\s*[-*]\s+/gm, '• ')        // - list / * list → bullet
-        .replace(/^\s*\d+\.\s+/gm, m => m)     // numbered lists: leave as-is
+        .replace(/`(.+?)`/g, '$1')
+        .replace(/^\s*[-*]\s+/gm, '• ')
+        .replace(/^\s*\d+\.\s+/gm, m => m)
         .trim();
 
-    // Replace every "Rimuru" (any case) in the AI output with the display name
     s = s.replace(/\bRimuru\b/g, 'Rîmîřǔ').replace(/\brimuru\b/g, 'rîmîřǔ').replace(/\bRIMURU\b/g, 'RÎMÎŘǓ');
 
     return (s.length >= 5 && s.length <= 4000) ? s : null;
@@ -328,7 +353,21 @@ function extractUserInfo(msg) {
     const KNOWN_LANGS = /\b(english|portuguese|french|spanish|arabic|yoruba|igbo|hausa|german|italian|chinese|mandarin|japanese|korean|russian|hindi|swahili|dutch|turkish|persian|urdu|pidgin|creole|latin|greek|hebrew|vietnamese|thai|polish|swedish|norwegian|danish|finnish|romanian|czech|hungarian|slovak|ukrainian|afrikaans|zulu|amharic|somali|tagalog|malay|indonesian)\b/gi;
     const langMatches = [...msg.matchAll(KNOWN_LANGS)].map(m => m[1].toLowerCase());
     const uniqueLangs  = [...new Set(langMatches)];
-    const hasLangVerb  = /(?:reply|respond|give\s+(?:me\s+)?(?:a\s+)?respons\w*|speak|write|answer|convert|translat\w*|swap|mein|ma|main|mujhe|batao|bolo|likho)\s+(?:in|me|mai|mein)\b|(?:when|if)\s+I\s+(?:send|write|speak|use|type)|(?:convert|translat\w*|bolo|batao|likho)\s+(?:it\s+)?(?:to|into|me|mein)\b/i.test(msg);
+    const hasLangVerb  = /(?:reply|respond|speak|write|answer|convert|translat\w*|swap|batao|bolo|likho|baat)\s+(?:in|me|mein|mai|main)\b|(?:when|if)\s+I\s+(?:send|write|speak|use|type)|(?:convert|translat\w*|bolo|batao|likho)\s+(?:it\s+)?(?:to|into|me|mein)\b/i.test(msg);
+
+    const setLang = (cand) => {
+        let c = String(cand || '').toLowerCase().trim();
+        if (!c) return;
+        if (/اردو|roman\s*urdu|roman-urdu|romaan/.test(c)) c = 'roman-urdu';
+        else if (c === 'urdu' || /اردو/.test(c)) c = 'urdu';
+        else if (/انگلش/.test(c) || c === 'english' || c === 'eng') c = 'english';
+        else if (/ہندی/.test(c) || c === 'hindi') c = 'hindi';
+        const notLang = new Set(['me','you','my','your','the','that','this','more','less','just','only','now','please','a','an','mujhe','batao','bolo','likho','mein','mai','ma','baat','karo','kar']);
+        if (notLang.has(c) || c.length < 3) return;
+        info.langMode = { type: 'single', lang: c };
+        info.lang     = null;
+        info.langRule = null;
+    };
 
     const swapAndMatch = msg.match(/\bswap\s+([a-zA-Z]+)\s+and\s+([a-zA-Z]+)/i);
     if (swapAndMatch) {
@@ -356,7 +395,7 @@ function extractUserInfo(msg) {
             const pairs = [];
             let m;
 
-            const patA = /(?:reply|respond|give\s+(?:me\s+)?(?:a\s+)?respons\w*|convert|translat\w*)\s+(?:it\s+)?(?:to|into|in)\s+([a-z]+)\s+(?:if|when)\s+(?:I\s+)?(?:send|write|speak|use|type)\s+(?:a?\s+)?(?:in\s+)?([a-z]+)/gi;
+            const patA = /(?:reply|respond|convert|translat\w*)\s+(?:it\s+)?(?:to|into|in)\s+([a-z]+)\s+(?:if|when)\s+(?:I\s+)?(?:send|write|speak|use|type)\s+(?:a?\s+)?(?:in\s+)?([a-z]+)/gi;
             while ((m = patA.exec(msg)) !== null) {
                 const out = m[1].toLowerCase(), inp = m[2].toLowerCase();
                 if (uniqueLangs.includes(out) && uniqueLangs.includes(inp) && out !== inp)
@@ -377,32 +416,17 @@ function extractUserInfo(msg) {
                 info.langRule = null;
             }
         } else if (uniqueLangs.length === 1 && hasLangVerb) {
-            const notLang = new Set(['me','you','my','your','the','that','this','more','less','just','only','now','please','a','an','back','normal','default']);
-            if (!notLang.has(uniqueLangs[0])) {
-                info.langMode = { type: 'single', lang: uniqueLangs[0] };
-                info.lang     = null;
-                info.langRule = null;
-            }
+            setLang(uniqueLangs[0]);
         } else {
-            const langSet = msg.match(
-                /(?:speak|talk(?:\s+to\s+me)?(?:\s+in)?|reply(?:\s+in)?|respond(?:\s+in)?|use|switch(?:\s+to)?|write(?:\s+in)?|mujhe|mujhko|bolo|batao|likho)\s+(?:in\s+)?([a-zA-Z\u0600-\u06FFÀ-ÿ]{3,20})(?:\s|$|[.,!?]|me|mein|main)/i
-            );
-            if (langSet) {
-                let candidate = langSet[1].toLowerCase();
-                if (candidate.includes('اردو') || candidate === 'urdu') candidate = 'urdu';
-                if (candidate.includes('انگلش') || candidate === 'english') candidate = 'english';
-                if (candidate.includes('ہندی') || candidate === 'hindi') candidate = 'hindi';
-                const notLang = new Set(['me','you','my','your','the','that','this','more','less','just','only','now','please','a','an','mujhe','batao','bolo','likho','mein','mai','ma']);
-                if (!notLang.has(candidate) && candidate.length >= 3) {
-                    info.langMode = { type: 'single', lang: candidate };
-                    info.lang     = null;
-                    info.langRule = null;
-                }
-            }
+            // "urdu me batao" / "english me baat karo" / "mujhe urdu me bolo"
+            const rev = msg.match(/\b([a-zA-Z\u0600-\u06FF]{3,20})\s+(?:me|mein|mai|main)\s+(?:batao|bolo|likho|baat|reply|jawab|answer|karo)/i)
+                     || msg.match(/(?:mujhe|mujhko)\s+([a-zA-Z\u0600-\u06FF]{3,20})\s+(?:me|mein|mai|main)/i)
+                     || msg.match(/(?:speak|talk|reply|respond|write|use|switch(?:\s+to)?)\s+(?:in\s+)?([a-zA-Z\u0600-\u06FF]{3,20})(?:\s|$|[.,!?])/i);
+            if (rev) setLang(rev[1]);
         }
     }
 
-    if (/(?:go\s+back|switch\s+back|back)\s+to\s+(?:english|normal|default|auto)|speak\s+english\s+again|use\s+english\s+again|stop\s+(?:speaking|using)\s+\w+|auto\s+pe\s+ao|auto\s+par\s+ao/i.test(msg)) {
+    if (/(?:go\s+back|switch\s+back|back)\s+to\s+(?:english|normal|default|auto)|speak\s+english\s+again|use\s+english\s+again|stop\s+(?:speaking|using)\s+\w+|auto\s+(?:pe|par)\s+ao|auto\s+mode/i.test(msg)) {
         info.langMode = { type: 'default' };
         info.lang     = 'default';
         info.langRule = null;
@@ -447,26 +471,18 @@ function buildQueryWithQuoted(query, quoted, langMode) {
     if (!quoted) return query || null;
     const { text: qText, type: qType } = quoted;
 
-    // If the quoted text is Rimuru's own previous response, don't feed it back
-    // into the prompt — it's already in the conversation history, and injecting
-    // it again causes the AI to echo / repeat the previous reply.
     const isOwnResponse = qText && qText.startsWith(RIMURU_RESPONSE_MARKER);
     const effectiveText = isOwnResponse ? '' : qText;
     const effectiveType = isOwnResponse ? '' : qType;
 
     if (langMode?.type === 'swap' && effectiveText) {
-        return `[Translator mode] The following is a message from the person I am translating with. ` +
-               `Using active swap rules, translate it into MY language. ` +
-               `Reply with ONLY the translated text.\n` +
-               `Message to translate: "${effectiveText}"`;
+        return `[Translator mode] Translate the following message using the active swap rules. Reply with ONLY the translated text.\nMessage: "${effectiveText}"`;
     }
 
     if (query && effectiveText) return `${query}\n\n(replying to: "${effectiveText}")`;
     if (query)                  return query;
     if (effectiveText)          return effectiveText;
     if (effectiveType)          return `What can you tell me about this ${effectiveType}?`;
-    // Quoted was Rimuru's own response and user sent no additional text —
-    // return null so the caller can decide whether to respond at all.
     return null;
 }
 
@@ -486,6 +502,7 @@ async function rimuruRespond(sock, chatId, message, userText, senderId, mentions
         userInfo: mem.userInfo,
         senderId,
         isOwner: isPairingOwnerNumber(senderId, sock),
+        detectedLang: detectLang(userText),
     });
 
     const fullReply = response || "*slime wobbles* Ciel hit a magicule surge — couldn't process that one. Try again in a second.";
@@ -552,10 +569,14 @@ async function handleChatbotCommand(sock, chatId, message, match) {
 async function handleRimuruNameTrigger(sock, chatId, message, userMessage, senderId) {
     if (userMessage.startsWith(RIMURU_RESPONSE_MARKER)) return;
 
-    if (chatId.endsWith('@g.us')) {
+    const isGroup = chatId.endsWith('@g.us');
+    if (isGroup) {
         const data = loadUserGroupData();
         if (!data?.chatbot?.[chatId]) return;
     }
+
+    if (!claimMessage(message)) return;
+
     const memKey   = getMemKey(senderId, chatId);
     const langMode = chatMemory.get(memKey)?.userInfo?.langMode;
     const quoted   = extractQuotedContext(message);
@@ -585,12 +606,17 @@ async function handleBotchatCommand(sock, chatId, message, query, senderId) {
     await rimuruRespond(sock, chatId, message, finalQuery, senderId);
 }
 
-// ─── @mention and reply-to-bot in groups ─────────────────────────────────────
+// ─── @mention and reply-to-bot / DM ──────────────────────────────────────────
 async function handleChatbotResponse(sock, chatId, message, userMessage, senderId) {
     if (userMessage.startsWith(RIMURU_RESPONSE_MARKER)) return;
 
-    const data = loadUserGroupData();
-    if (!data?.chatbot?.[chatId]) return;
+    const isGroup = chatId.endsWith('@g.us');
+
+    // DM: hamesha jawab. Group: sirf jab chatbot on ho.
+    if (isGroup) {
+        const data = loadUserGroupData();
+        if (!data?.chatbot?.[chatId]) return;
+    }
 
     try {
         const botId  = sock.user.id.split(':')[0];
@@ -610,14 +636,16 @@ async function handleChatbotResponse(sock, chatId, message, userMessage, senderI
         ) || isRimuruResponseMessage(replyContext?.quotedMessage);
         const isReplyToBot = isQuotedByBot && quotedIsRimuruResponse;
 
-        const isDirectMessage = !chatId.endsWith('@g.us');
-        if (!isDirectMessage && !isMentioned && !isReplyToBot) return;
+        // Group me bina mention/reply ke naam-trigger sambhalta hai
+        if (isGroup && !isMentioned && !isReplyToBot) return;
 
         const cleanedMessage = userMessage
             .replace(new RegExp(`@${botId}`, 'g'), '')
             .replace(/^\$/, '')
             .trim();
         if (!cleanedMessage && !extractQuotedContext(message)) return;
+
+        if (!claimMessage(message)) return;
 
         const quoted     = extractQuotedContext(message);
         const memKey3   = getMemKey(senderId, chatId);
