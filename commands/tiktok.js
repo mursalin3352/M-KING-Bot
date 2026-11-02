@@ -4,26 +4,6 @@ const { get } = require('../lib/gifted');
 
 const processedMessages = new Set();
 
-function getCmdEmoji(cmd) {
-    const map = {
-        'tiktok': '🎵',
-        'downloader': '🎵',
-        'error': '❌',
-        'loading': '⏳',
-        'success': '✅'
-    };
-    return map[cmd.toLowerCase()] || '📌';
-}
-
-function proBox(title, emoji, linesArr) {
-    const e = emoji || getCmdEmoji(title);
-    const t = title.toUpperCase();
-    const body = linesArr.map(l => `║ ❃ → ${l}`).join('\n');
-    return `╔══『 ${e} ${t} 』══╗
-${body}
-╚══『 *M-KING* 👑 』══╝`;
-}
-
 async function toBuffer(url) {
     const res = await axios.get(url, {
         responseType: 'arraybuffer',
@@ -43,6 +23,7 @@ async function tikWmApi(url) {
     });
     if (data?.data?.play) {
         let video = data.data.play;
+        // FIX 1 - Yahi error tha
         if (video.startsWith('/')) video = 'https://www.tikwm.com' + video;
         return {
             video: video,
@@ -93,9 +74,9 @@ async function tiktokCommand(sock, chatId, message) {
     setTimeout(() => processedMessages.delete(message.key.id), 5 * 60 * 1000);
     const text = message.message?.conversation || message.message?.extendedTextMessage?.text || '';
     const url  = text.split(' ').slice(1).join(' ').trim();
-    if (!url) return sock.sendMessage(chatId, { text: proBox('TIKTOK', '🎵', ['🎵 *Usage:* $tiktok <TikTok URL>', '📚 *Example:* $tiktok https://vt.tiktok.com/...']) }, { quoted: message });
+    if (!url) return sock.sendMessage(chatId, { text: '🎵 Usage: $tiktok <TikTok URL>' }, { quoted: message });
     try {
-        await sock.sendMessage(chatId, { text: `⏳ _Downloading TikTok video…_` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '⏳ _Downloading TikTok video…_' }, { quoted: message });
         let result = null;
         try { result = await tikWmApi(url); } catch {}
         if (!result) { try { result = await princeApi(url); } catch {} }
@@ -103,39 +84,7 @@ async function tiktokCommand(sock, chatId, message) {
         if (!result?.video) throw new Error('No download URL returned');
         const buf = await toBuffer(result.video);
         
-        // ─── REAL + AUTO BOX - No compress, sab andar ───
-        const clean = (t) => t.replace(/\n/g, ' ').trim();
-        const fullAuthor = clean(result.author);
-        const fullTitle = clean(result.title);
-
-        // Auto wrap - lamba ho to dusri line box ke andar hi
-        function wrapLine(prefix, text, maxW) {
-            let out = [];
-            let remain = text;
-            let first = true;
-            while (remain.length > 0) {
-                let limit = first ? maxW - prefix.length : maxW - 10;
-                out.push((first ? prefix : '          ') + remain.slice(0, limit));
-                remain = remain.slice(limit);
-                first = false;
-            }
-            return out;
-        }
-
-        const INNER = 34;
-        let allLines = [];
-        allLines.push(`❃ → 👤 Author: ${fullAuthor}`);
-        allLines.push(...wrapLine(`❃ → 📝 Title: `, fullTitle, INNER));
-        allLines.push(`❃ → 🔌 Server: ${result.server}`);
-
-        let maxLen = Math.max(...allLines.map(l => l.length));
-        let border = '═'.repeat(maxLen + 2);
-
-        let caption = `╔${border}╗\n║\n`;
-        allLines.forEach(l => {
-            caption += `║ ${l.padEnd(maxLen)} ║\n`;
-        });
-        caption += `║\n╚${border}╝\n     『 *M-KING* 👑 』`;
+        const caption = `🎵 *TIKTOK DOWNLOADER*\n\n👤 *Author:* ${result.author}\n📝 *Title:* ${result.title}\n🔌 *Server:* ${result.server}\n\n👑 *Powered by M-KING*`;
 
         await sock.sendMessage(chatId, {
             video: buf, mimetype: 'video/mp4',
@@ -143,7 +92,7 @@ async function tiktokCommand(sock, chatId, message) {
         }, { quoted: message });
     } catch (err) {
         console.error('[tiktok]', err.message);
-        await sock.sendMessage(chatId, { text: proBox('FAILED', '❌', [`❌ *Failed:* ${err.message}`, '💡 *Try again* with valid URL']) }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `❌ Failed: ${err.message}` }, { quoted: message });
     }
 }
 
