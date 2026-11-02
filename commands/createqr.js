@@ -7,23 +7,22 @@ async function createqrCommand(sock, chatId, message) {
         
         if (!data) {
             return sock.sendMessage(chatId, {
-                text: '📱 *QR CODE GENERATOR*\n\nUsage: $createqr <text or URL>\nExample: $createqr https://youtube.com\nExample: $createqr Hello M-KING',
+                text: `╭─『 📱 QR CODE 』─╮\n│\n│ ❐ Usage: $createqr <text>\n│ ❐ Example: $createqr https://youtube.com\n│\n╰─『 M-KING👑 』─╯`,
             }, { quoted: message });
         }
 
-        await sock.sendMessage(chatId, { text: '📱 _Generating QR...' }, { quoted: message });
-
-        // Direct working QR API - no gifted lib needed
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=800x800&data=${encodeURIComponent(data)}`;
 
         await sock.sendMessage(chatId, {
             image: { url: qrUrl },
-            caption: `📱 *QR CODE CREATED*\n\n▸ 🔤 *Data:* ${data.slice(0, 100)}${data.length > 100 ? '...' : ''}\n\n_M-KING_ ⚡`,
+            caption: `╭─『 📱 QR CODE 』─╮\n│\n│ ❐ Data: ${data.slice(0, 70)}${data.length > 70 ? '...' : ''}\n│\n╰─『 M-KING👑 』─╯`,
         }, { quoted: message });
 
     } catch (err) {
         console.error('[createqr]', err);
-        await sock.sendMessage(chatId, { text: '❌ QR code generation failed. Try again.' }, { quoted: message });
+        await sock.sendMessage(chatId, { 
+            text: `╭─『 ❌ ERROR 』─╮\n│ QR Failed\n╰─『 M-KING👑 』─╯` 
+        }, { quoted: message });
     }
 }
 
