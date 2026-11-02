@@ -70,7 +70,7 @@ async function fetchFlagBuffer(iso2) {
 async function countryCommand(sock, chatId, message) {
     const name = extractText(message).split(' ').slice(1).join(' ').trim();
     if (!name) return sock.sendMessage(chatId, {
-        text: `┌──『 🌍 COUNTRY 』──┐\n‖ ❌ Action: No Name\n‖ 📚 Usage: $country <name>\n‖ 🔒 Mode: Waiting\n└──『 M-KING👑 』──┘`
+        text: `┌──『 🌍 COUNTRY 』──┐\n‖ 🌍 Usage: $country <name>\n‖ 📚 Example: $country Pakistan\n└──『 M-KING👑 』──┘`
     }, { quoted: message });
     try {
         const countries = await getCountries();
@@ -81,14 +81,14 @@ async function countryCommand(sock, chatId, message) {
         if (flagBuf) await sock.sendMessage(chatId, { image: flagBuf, caption: txt }, { quoted: message });
         else await sock.sendMessage(chatId, { text: txt }, { quoted: message });
     } catch {
-        await sock.sendMessage(chatId, { text: `┌──『 ❌ ERROR 』──┐\n‖ 🟢 Status: Not Found\n‖ 📚 Search: ${name}\n└──『 M-KING👑 』──┘` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `┌──『 ❌ ERROR 』──┐\n‖ 🌍 Country: ${name} Not Found\n└──『 M-KING👑 』──┘` }, { quoted: message });
     }
 }
 
 async function capitalCommand(sock, chatId, message) {
     const name = extractText(message).split(' ').slice(1).join(' ').trim();
     if (!name) return sock.sendMessage(chatId, {
-        text: `┌──『 🏙️ CAPITAL 』──┐\n‖ ❌ Action: No Name\n‖ 📚 Usage: $capital <country>\n└──『 M-KING👑 』──┘`
+        text: `┌──『 🏙️ CAPITAL 』──┐\n‖ 🏙️ Usage: $capital <country>\n‖ 📚 Example: $capital Nigeria\n└──『 M-KING👑 』──┘`
     }, { quoted: message });
     try {
         const countries = await getCountries();
@@ -99,14 +99,14 @@ async function capitalCommand(sock, chatId, message) {
         if (flagBuf) await sock.sendMessage(chatId, { image: flagBuf, caption: txt }, { quoted: message });
         else await sock.sendMessage(chatId, { text: txt }, { quoted: message });
     } catch {
-        await sock.sendMessage(chatId, { text: `┌──『 ❌ ERROR 』──┐\n‖ 🟢 Status: Not Found\n└──『 M-KING👑 』──┘` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `┌──『 ❌ ERROR 』──┐\n‖ 🏙️ Country: ${name} Not Found\n└──『 M-KING👑 』──┘` }, { quoted: message });
     }
 }
 
 async function flagCommand(sock, chatId, message) {
     const name = extractText(message).split(' ').slice(1).join(' ').trim();
     if (!name) return sock.sendMessage(chatId, {
-        text: `┌──『 🚩 FLAG 』──┐\n‖ ❌ Action: No Name\n‖ 📚 Usage: $flag <country>\n└──『 M-KING👑 』──┘`
+        text: `┌──『 🚩 FLAG 』──┐\n‖ 🚩 Usage: $flag <country>\n‖ 📚 Example: $flag Japan\n└──『 M-KING👑 』──┘`
     }, { quoted: message });
     try {
         const countries = await getCountries();
@@ -116,21 +116,21 @@ async function flagCommand(sock, chatId, message) {
         if (!flagBuf) throw new Error('flag not available');
         await sock.sendMessage(chatId, { image: flagBuf, caption: `┌──『 🚩 FLAG 』──┐\n‖ 🏴 Country: ${c.name}\n‖ 🆔 ISO: ${c.iso2}\n└──『 M-KING👑 』──┘` }, { quoted: message });
     } catch {
-        await sock.sendMessage(chatId, { text: `┌──『 ❌ ERROR 』──┐\n‖ 🚩 Flag Not Found\n└──『 M-KING👑 』──┘` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `┌──『 ❌ ERROR 』──┐\n‖ 🚩 Flag: ${name} Not Found\n└──『 M-KING👑 』──┘` }, { quoted: message });
     }
 }
 
 async function timezoneCountryCommand(sock, chatId, message) {
     const name = extractText(message).split(' ').slice(1).join(' ').trim();
     if (!name) return sock.sendMessage(chatId, {
-        text: `┌──『 🕐 TIME 』──┐\n‖ ❌ Action: No Name\n‖ 📚 Usage: $countrytime <country>\n└──『 M-KING👑 』──┘`
+        text: `┌──『 🕐 TIME 』──┐\n‖ 🕐 Usage: $countrytime <country>\n‖ 📚 Example: $countrytime Pakistan\n└──『 M-KING👑 』──┘`
     }, { quoted: message });
     try {
         const countries = await getCountries();
         const c = findCountry(name, countries);
         if (!c) throw new Error('not found');
         const tz = TZ_MAP[c.iso2?.toUpperCase()];
-        if (!tz) return sock.sendMessage(chatId, { text: `┌──『 🕐 TIME 』──┐\n‖ 🌍 Country: ${c.name}\n‖ ❔ Timezone: Not Available\n└──『 M-KING👑 』──┘` }, { quoted: message });
+        if (!tz) return sock.sendMessage(chatId, { text: `┌──『 🕐 TIME 』──┐\n‖ 🌍 Country: ${c.name}\n‖ ❔ Timezone Not Available\n└──『 M-KING👑 』──┘` }, { quoted: message });
         const { data: tzData } = await axios.get(`https://timeapi.io/api/timezone/zone?timeZone=${encodeURIComponent(tz)}`, { timeout: 10000 });
         const localTime = tzData?.currentLocalTime?.replace('T', ' ').split('.')[0] || '?';
         const utcOffset = tzData?.currentUtcOffset?.seconds != null ? (() => {
@@ -143,7 +143,7 @@ async function timezoneCountryCommand(sock, chatId, message) {
             text: `┌──『 🕐 COUNTRY TIME 』──┐\n‖ 🌍 Country: ${c.name}\n‖ 🕰️ Timezone: ${tz}\n‖ 🔢 Offset: ${utcOffset}\n‖ 📅 Local: ${localTime}\n└──『 M-KING👑 』──┘`
         }, { quoted: message });
     } catch {
-        await sock.sendMessage(chatId, { text: `┌──『 ❌ ERROR 』──┐\n‖ 🕐 Country Not Found\n└──『 M-KING👑 』──┘` }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `┌──『 ❌ ERROR 』──┐\n‖ 🕐 Country: ${name} Not Found\n└──『 M-KING👑 』──┘` }, { quoted: message });
     }
 }
 
