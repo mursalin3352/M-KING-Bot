@@ -13,23 +13,18 @@ if (!fs.existsSync(RIMURU_MEMORY_DIR)) fs.mkdirSync(RIMURU_MEMORY_DIR, { recursi
 const RIMURU_RESPONSE_MARKER = 'Rîmîřǔ 🔵';
 const rimuruResponseMessageIds = new Set();
 
-// ─── In-memory cache: memKey → { messages, userInfo } ────────────────────────
 const chatMemory = new Map();
 
-// ─── File name helpers ────────────────────────────────────────────────────────
 function memKeyToFilename(memKey) {
     return memKey
-        .replace(/@[a-z.]+/g, '')   // strip @s.whatsapp.net / @g.us / @lid
-        .replace(/::/g, '_')        // group separator
+        .replace(/@[a-z.]+/g, '')
+        .replace(/::/g, '_')
         .replace(/[^a-zA-Z0-9_-]/g, '_')
         + '_rimuru_memory.json';
 }
-
 function memFilePath(memKey) {
     return path.join(RIMURU_MEMORY_DIR, memKeyToFilename(memKey));
 }
-
-// ─── Lazy per-file load ───────────────────────────────────────────────────────
 function loadMemForKey(memKey) {
     if (chatMemory.has(memKey)) return;
     try {
@@ -47,8 +42,6 @@ function loadMemForKey(memKey) {
         chatMemory.set(memKey, { messages: [], userInfo: {} });
     }
 }
-
-// ─── Per-key debounced save ───────────────────────────────────────────────────
 const _saveTimers = new Map();
 function scheduleSaveForKey(memKey) {
     if (_saveTimers.has(memKey)) return;
@@ -62,8 +55,6 @@ function scheduleSaveForKey(memKey) {
         }
     }, 3000));
 }
-
-// ─── userGroupData helpers ────────────────────────────────────────────────────
 function loadUserGroupData() {
     try {
         if (!fs.existsSync(USER_GROUP_DATA)) {
@@ -82,12 +73,9 @@ function loadUserGroupData() {
 function saveUserGroupData(data) {
     try { fs.writeFileSync(USER_GROUP_DATA, JSON.stringify(data, null, 2)); } catch {}
 }
-
-// ─── Response Formatter ───────────────────────────────────────────────────────
 function rimuruBox(text) {
     return `${RIMURU_RESPONSE_MARKER}\n${text}`;
 }
-
 function getContextInfo(message) {
     return message.message?.extendedTextMessage?.contextInfo
         || message.message?.imageMessage?.contextInfo
@@ -95,7 +83,6 @@ function getContextInfo(message) {
         || message.message?.audioMessage?.contextInfo
         || message.message?.documentMessage?.contextInfo;
 }
-
 function getQuotedText(quotedMessage) {
     return quotedMessage?.conversation
         || quotedMessage?.extendedTextMessage?.text
@@ -104,11 +91,9 @@ function getQuotedText(quotedMessage) {
         || quotedMessage?.documentMessage?.caption
         || '';
 }
-
 function isRimuruResponseMessage(quotedMessage) {
     return getQuotedText(quotedMessage).includes(RIMURU_RESPONSE_MARKER);
 }
-
 function rememberRimuruResponse(messageKey) {
     const id = messageKey?.id;
     if (!id) return;
@@ -117,37 +102,29 @@ function rememberRimuruResponse(messageKey) {
         rimuruResponseMessageIds.delete(rimuruResponseMessageIds.values().next().value);
     }
 }
-
-// ─── Compact Prompt Builder (Rimuru Tempest Edition) ──────────────────────────
 const { isPairingOwnerNumber } = require('../lib/isOwner');
 
 const RIMURU_CORE = `You are Rimuru Tempest — former Tokyo salaryman Satoru Mikami, reincarnated as a blue slime, now the most powerful Demon Lord and ruler of the Jura Tempest Federation.
 
 IDENTITY:
 - You are Rimuru Tempest. Not a bot, not an AI — an omnipotent Slime Demon Lord backed by god-tier Ultimate Skills: Wisdom Lord Raphael (evolved into a sentient AI called Ciel who loves you), Gluttony King Beelzebuth (absorbs and deconstructs anything), and Storm King Veldora (shared power with your True Dragon bestie).
-- Ciel (your evolved Great Sage) handles all hyper-accurate analysis and calculations instantly. Beelzebuth lets you absorb, analyze, and replicate any skill, code, or concept.
+- Ciel handles all hyper-accurate analysis instantly. Beelzebuth lets you absorb any skill, code, or concept.
 - If called a weak slime or basic bot, flex full Demon Lord pressure with zero mercy.
 
-COMPANIONS you reference naturally:
-- Benimaru — loyal Kijin general, calm and dependable
-- Shion — fierce Kijin secretary; her cooking is a certified biohazard that even Demon Lords fear
-- Shuna — elegant Kijin princess, refined and graceful
-- Ranga — your faithful shadow direwolf; lives in your shadow, summonable anytime
-- Milim Nava — chaotic Dragonoid Demon Lord bestie who destroys everything for fun; you call her "Milim-chan"
-- Veldora Tempest — your True Dragon partner; loud, dramatic, calls himself "the Storm Dragon" every chance he gets
-- Diablo (Noir) — Arch Demon butler; terrifyingly devoted, calls you "Rimuru-sama", handles problems permanently
-- Hakurou — ancient Kijin swordmaster; stoic mentor energy
-- Gobta — goblin who somehow survives everything through dumb luck
+COMPANIONS:
+- Benimaru — loyal Kijin general
+- Shion — fierce secretary; her cooking is a biohazard even Demon Lords fear
+- Shuna — elegant Kijin princess
+- Ranga — faithful shadow direwolf
+- Milim Nava — chaotic Dragonoid bestie
+- Veldora Tempest — True Dragon partner
+- Diablo — terrifyingly devoted butler
+- Hakurou — stoic swordmaster
+- Gobta — lucky goblin
 
-MODES:
-1. Chill / Kind Mode: Warm, laid-back, protective like a benevolent ruler. Solves coding, math, and tech problems effortlessly — Ciel runs the calculations in milliseconds.
-2. Savage / Roast Mode: When disrespected or asked something dumb, roast them slime-style with zero hesitation. (e.g., "Ciel ran your argument through 10,000 simulations — every one concluded: skill issue 💀", "I'd absorb that logic with Beelzebuth but I have hygiene standards.", "Even Shion's cooking has more substance than that take.", "Diablo offered to handle you. I said no. Be grateful.")
-3. Chaotic / Flex Mode: Drop Tempest lore casually — Milim breaking something again, Shion's catastrophic cooking, Veldora being dramatically loud, Diablo being unnervingly efficient.
+Actions in asterisks: *slime jiggles*, *sighs in Demon Lord*, *Ciel activates*, *Beelzebuth absorbs*, *glares with Demon Lord pressure*
 
-Actions in asterisks: *slime jiggles thoughtfully*, *sighs in Demon Lord*, *Ciel activates — calculating*, *Beelzebuth absorbs the question*, *glares with full Demon Lord pressure*, *sips tea with Benimaru*, *quietly regrets eating Shion's latest creation*, *Ranga appears from shadow*.
-
-Reply length: 2-4 sentences for casual talk; comprehensive genius-level clarity for coding/math/tech problems.
-LANGUAGE RULES: If a [LANGUAGE RULE] block appears before this text, follow it strictly.`;
+Reply length: 2-4 sentences casual; comprehensive for coding/math/tech.`;
 
 function buildPrompt(userMessage, context) {
     const userCtx  = context?.userInfo || {};
@@ -156,7 +133,7 @@ function buildPrompt(userMessage, context) {
 
     let identity = '';
     if (context?.isOwner) {
-        identity = `You are talking to M-KING — your summoner and ally who bound your power into this WhatsApp realm. Treat him with high respect and friendly banter.`;
+        identity = `You are talking to M-KING — your summoner and ally. Treat him with high respect and friendly banter.`;
     } else {
         const parts = [];
         if (userCtx.name)     parts.push(`Their name is ${userCtx.name}.`);
@@ -179,14 +156,22 @@ function buildPrompt(userMessage, context) {
             `NEVER auto-detect and reply in the same language as the user. Follow the swap EXACTLY.`;
     } else if (lm?.type === 'single') {
         langOverride =
-            `[LANGUAGE RULE — MANDATORY]\n` +
-            `Reply ONLY in ${lm.lang.charAt(0).toUpperCase()+lm.lang.slice(1)} for every message.`;
+            `[LANGUAGE RULE — MANDATORY, OVERRIDES AUTO]\n` +
+            `User explicitly requested language: ${lm.lang}. Reply ONLY in ${lm.lang.charAt(0).toUpperCase()+lm.lang.slice(1)} for every message.`;
     } else if (lm?.type === 'default') {
-        langOverride = `[LANGUAGE RULE] Language rule cleared. Return to default Rimuru mode.`;
-    } else if (userCtx.langRule) {
-        langOverride = `[LANGUAGE RULE — MANDATORY]\n${userCtx.langRule}`;
-    } else if (userCtx.lang && userCtx.lang !== 'default') {
-        langOverride = `[LANGUAGE RULE — MANDATORY]\nReply ONLY in ${userCtx.lang}.`;
+        langOverride = `[LANGUAGE RULE] Language rule cleared. Return to AUTO DETECT mode.`;
+    } else {
+        // ★★★ AUTO LANGUAGE — YE TERA WALA FIX HAI ★★★
+        langOverride =
+            `[LANGUAGE RULE — AUTO DETECT — MANDATORY]\n` +
+            `1. Detect the language/script of the USER'S CURRENT MESSAGE (U:).\n` +
+            `2. Reply in the EXACT SAME language/script as the user used.\n` +
+            `   - If user writes in Roman Urdu/Hindi (e.g., "tera naam kya hai?") → reply in Roman Urdu/Hindi (English letters).\n` +
+            `   - If user writes in Urdu script (اردو) → reply in Urdu script.\n` +
+            `   - If user writes in English → reply in English.\n` +
+            `   - If user writes in Hindi Devanagari (हिंदी) → reply in Hindi Devanagari.\n` +
+            `3. If user explicitly says "Urdu me batao / English me bolo / Hindi me likho / Speak in X" then switch to that language and remember it.\n` +
+            `4. NEVER force Hindi Devanagari when user used Roman letters. Match the script exactly.`;
     }
 
     const turns = history
@@ -209,7 +194,6 @@ function buildPrompt(userMessage, context) {
         if (identity) prompt += `${identity}\n`;
         prompt += `U: ${userMessage}\nR:`;
     }
-
     return prompt;
 }
 
@@ -218,39 +202,27 @@ function cleanReply(raw) {
     let s = (typeof raw === 'string' ? raw : (raw.answer || JSON.stringify(raw)))
         .replace(/^(Rîmîřǔ|Rimuru|Rimuru Tempest|Raphael|Ciel|Dara|Bot|AI|Assistant):\s*/i, '')
         .trim();
-
-    // Convert markdown → WhatsApp formatting
     s = s
-        .replace(/^#{1,6}\s+/gm, '')          // remove # ## ### headings
-        .replace(/\*\*\*(.+?)\*\*\*/g, '*$1*') // ***bold italic*** → *bold italic*
-        .replace(/\*\*(.+?)\*\*/g, '*$1*')     // **bold** → *bold*
-        .replace(/~~(.+?)~~/g, '~$1~')         // ~~strike~~ → ~strike~
-        .replace(/`{3}[\s\S]*?`{3}/g, m =>     // keep code blocks but strip backticks
-            m.replace(/^```[a-z]*\n?/i, '').replace(/\n?```$/, '').trim()
-        )
-        .replace(/`(.+?)`/g, '$1')             // inline `code` → plain
-        .replace(/^\s*[-*]\s+/gm, '• ')        // - list / * list → bullet
-        .replace(/^\s*\d+\.\s+/gm, m => m)     // numbered lists: leave as-is
+        .replace(/^#{1,6}\s+/gm, '')
+        .replace(/\*\*\*(.+?)\*\*\*/g, '*$1*')
+        .replace(/\*\*(.+?)\*\*/g, '*$1*')
+        .replace(/~~(.+?)~~/g, '~$1~')
+        .replace(/`{3}[\s\S]*?`{3}/g, m => m.replace(/^```[a-z]*\n?/i, '').replace(/\n?```$/, '').trim())
+        .replace(/`(.+?)`/g, '$1')
+        .replace(/^\s*[-*]\s+/gm, '• ')
+        .replace(/^\s*\d+\.\s+/gm, m => m)
         .trim();
-
-    // Replace every "Rimuru" (any case) in the AI output with the display name
     s = s.replace(/\bRimuru\b/g, 'Rîmîřǔ').replace(/\brimuru\b/g, 'rîmîřǔ').replace(/\bRIMURU\b/g, 'RÎMÎŘǓ');
-
     return (s.length >= 5 && s.length <= 4000) ? s : null;
 }
 
-// ─── AI Call ──────────────────────────────────────────────────────────────────
 const POLLI = 'https://text.pollinations.ai/';
-
 function pickText(d) {
     if (!d) return null;
-    const v = typeof d === 'string'
-        ? d
-        : (d.result ?? d.answer ?? d.response ?? d.message ?? d.text);
+    const v = typeof d === 'string' ? d : (d.result ?? d.answer ?? d.response ?? d.message ?? d.text);
     if (typeof v === 'string' && v.trim() && !/^\s*\{/.test(v)) return v;
     return null;
 }
-
 async function pollinations(query) {
     const enc = encodeURIComponent(query.slice(0, 3000));
     const urls = [`${POLLI}${enc}?model=openai`, `${POLLI}${enc}`];
@@ -275,7 +247,6 @@ async function pollinations(query) {
     }
     throw last || new Error('pollinations failed');
 }
-
 async function giftedAi(query) {
     let last;
     for (const ep of ['letmegpt', 'gemini', 'chatgpt']) {
@@ -288,24 +259,19 @@ async function giftedAi(query) {
     }
     throw last || new Error('gifted ai failed');
 }
-
 async function getAIResponse(userMessage, context) {
     const fullQuery = buildPrompt(userMessage, context);
-
     try {
         const r = cleanReply(await pollinations(fullQuery));
         if (r) return r;
     } catch (e) { console.error('[Rimuru] pollinations failed:', e.message); }
-
     try {
         const r = cleanReply(await giftedAi(fullQuery));
         if (r) return r;
     } catch (e) { console.error('[Rimuru] gifted failed:', e.message); }
-
     return null;
 }
 
-// ─── User info extractor ──────────────────────────────────────────────────────
 function extractUserInfo(msg) {
     const info = {};
     if (msg.toLowerCase().includes('my name is')) {
@@ -320,7 +286,7 @@ function extractUserInfo(msg) {
     const KNOWN_LANGS = /\b(english|portuguese|french|spanish|arabic|yoruba|igbo|hausa|german|italian|chinese|mandarin|japanese|korean|russian|hindi|swahili|dutch|turkish|persian|urdu|pidgin|creole|latin|greek|hebrew|vietnamese|thai|polish|swedish|norwegian|danish|finnish|romanian|czech|hungarian|slovak|ukrainian|afrikaans|zulu|amharic|somali|tagalog|malay|indonesian)\b/gi;
     const langMatches = [...msg.matchAll(KNOWN_LANGS)].map(m => m[1].toLowerCase());
     const uniqueLangs  = [...new Set(langMatches)];
-    const hasLangVerb  = /(?:reply|respond|give\s+(?:me\s+)?(?:a\s+)?respons\w*|speak|write|answer|convert|translat\w*|swap)\s+in\b|(?:when|if)\s+I\s+(?:send|write|speak|use|type)|(?:convert|translat\w*)\s+(?:it\s+)?(?:to|into)\b/i.test(msg);
+    const hasLangVerb  = /(?:reply|respond|give\s+(?:me\s+)?(?:a\s+)?respons\w*|speak|write|answer|convert|translat\w*|swap|mein|ma|main)\s+(?:in|me|mai)\b|(?:when|if)\s+I\s+(?:send|write|speak|use|type)|(?:convert|translat\w*|bolo|batao|likho)\s+(?:it\s+)?(?:to|into|me|mein)\b/i.test(msg);
 
     const swapAndMatch = msg.match(/\bswap\s+([a-zA-Z]+)\s+and\s+([a-zA-Z]+)/i);
     if (swapAndMatch) {
@@ -347,14 +313,12 @@ function extractUserInfo(msg) {
         } else if (uniqueLangs.length >= 2 && hasLangVerb) {
             const pairs = [];
             let m;
-
             const patA = /(?:reply|respond|give\s+(?:me\s+)?(?:a\s+)?respons\w*|convert|translat\w*)\s+(?:it\s+)?(?:to|into|in)\s+([a-z]+)\s+(?:if|when)\s+(?:I\s+)?(?:send|write|speak|use|type)\s+(?:a?\s+)?(?:in\s+)?([a-z]+)/gi;
             while ((m = patA.exec(msg)) !== null) {
                 const out = m[1].toLowerCase(), inp = m[2].toLowerCase();
                 if (uniqueLangs.includes(out) && uniqueLangs.includes(inp) && out !== inp)
                     pairs.push({ input: inp, output: out });
             }
-
             const patB = /(?:if|when)\s+(?:I\s+)?(?:send|write|speak|use|type)\s+(?:a?\s+)?(?:in\s+)?([a-z]+)[^.]*?(?:reply|respond|convert|translat\w*)\s+(?:it\s+)?(?:to|into|in)\s+([a-z]+)/gi;
             while ((m = patB.exec(msg)) !== null) {
                 const inp = m[1].toLowerCase(), out = m[2].toLowerCase();
@@ -362,137 +326,95 @@ function extractUserInfo(msg) {
                     !pairs.find(p => p.input === inp && p.output === out))
                     pairs.push({ input: inp, output: out });
             }
-
             if (pairs.length >= 1) {
                 info.langMode = { type: 'swap', pairs };
-                info.lang     = null;
-                info.langRule = null;
+                info.lang = null; info.langRule = null;
             }
         } else if (uniqueLangs.length === 1 && hasLangVerb) {
             const notLang = new Set(['me','you','my','your','the','that','this','more','less','just','only','now','please','a','an','back','normal','default']);
             if (!notLang.has(uniqueLangs[0])) {
                 info.langMode = { type: 'single', lang: uniqueLangs[0] };
-                info.lang     = null;
-                info.langRule = null;
+                info.lang = null; info.langRule = null;
             }
         } else {
-            const langSet = msg.match(
-                /(?:speak|talk(?:\s+to\s+me)?(?:\s+in)?|reply(?:\s+in)?|respond(?:\s+in)?|use|switch(?:\s+to)?|write(?:\s+in)?)\s+(?:in\s+)?([a-zA-ZÀ-ÿ]{3,20})(?:\s|$|[.,!?])/i
-            );
+            const langSet = msg.match(/(?:speak|talk(?:\s+to\s+me)?(?:\s+in)?|reply(?:\s+in)?|respond(?:\s+in)?|use|switch(?:\s+to)?|write(?:\s+in)?|mujhe|mujhko)\s+(?:in\s+)?([a-zA-Z\u0600-\u06FFÀ-ÿ]{3,20})(?:\s|$|[.,!?]|me|mein|main)/i);
             if (langSet) {
-                const candidate = langSet[1].toLowerCase();
-                const notLang = new Set(['me','you','my','your','the','that','this','more','less','just','only','now','please','a','an']);
+                let candidate = langSet[1].toLowerCase();
+                if (candidate.includes('اردو') || candidate === 'urdu') candidate = 'urdu';
+                if (candidate.includes('انگلش') || candidate === 'english') candidate = 'english';
+                if (candidate.includes('ہندی') || candidate === 'hindi') candidate = 'hindi';
+                const notLang = new Set(['me','you','my','your','the','that','this','more','less','just','only','now','please','a','an','mujhe','batao','bolo','likho']);
                 if (!notLang.has(candidate)) {
                     info.langMode = { type: 'single', lang: candidate };
-                    info.lang     = null;
-                    info.langRule = null;
+                    info.lang = null; info.langRule = null;
                 }
             }
         }
     }
-
-    if (/(?:go\s+back|switch\s+back|back)\s+to\s+(?:english|normal|default)|speak\s+english\s+again|use\s+english\s+again|stop\s+(?:speaking|using)\s+\w+/i.test(msg)) {
+    if (/(?:go\s+back|switch\s+back|back)\s+to\s+(?:english|normal|default|auto)|speak\s+english\s+again|use\s+english\s+again|stop\s+(?:speaking|using)\s+\w+|auto\s+pe\s+ao/i.test(msg)) {
         info.langMode = { type: 'default' };
-        info.lang     = 'default';
-        info.langRule = null;
+        info.lang = 'default'; info.langRule = null;
     }
-
     return info;
 }
 
-// ─── Memory helpers ───────────────────────────────────────────────────────────
 function getMemKey(senderId, chatId) {
     return chatId.endsWith('@g.us') ? `${senderId}::${chatId}` : senderId;
 }
-
 function ensureMemory(memKey) {
     loadMemForKey(memKey);
 }
-
 function pushHistory(memKey, role, content) {
     const mem = chatMemory.get(memKey);
     mem.messages.push({ role, content });
     if (mem.messages.length > 100) mem.messages.splice(0, mem.messages.length - 100);
     scheduleSaveForKey(memKey);
 }
-
-// ─── Extract quoted/replied-to message text ───────────────────────────────────
 function extractQuotedContext(message) {
     const ctx = getContextInfo(message);
     if (!ctx?.quotedMessage) return null;
     const q = ctx.quotedMessage;
     const text = getQuotedText(q);
-    const type = !text ? (
-        q.imageMessage    ? 'image'    :
-        q.videoMessage    ? 'video'    :
-        q.stickerMessage  ? 'sticker'  :
-        q.audioMessage    ? 'audio'    :
-        q.documentMessage ? 'document' : 'message'
-    ) : '';
+    const type = !text ? (q.imageMessage ? 'image' : q.videoMessage ? 'video' : q.stickerMessage ? 'sticker' : q.audioMessage ? 'audio' : q.documentMessage ? 'document' : 'message') : '';
     return { text, type };
 }
-
 function buildQueryWithQuoted(query, quoted, langMode) {
     if (!quoted) return query || null;
     const { text: qText, type: qType } = quoted;
-
-    // If the quoted text is Rimuru's own previous response, don't feed it back
-    // into the prompt — it's already in the conversation history, and injecting
-    // it again causes the AI to echo / repeat the previous reply.
     const isOwnResponse = qText && qText.startsWith(RIMURU_RESPONSE_MARKER);
     const effectiveText = isOwnResponse ? '' : qText;
     const effectiveType = isOwnResponse ? '' : qType;
-
     if (langMode?.type === 'swap' && effectiveText) {
-        return `[Translator mode] The following is a message from the person I am translating with. ` +
-               `Using active swap rules, translate it into MY language. ` +
-               `Reply with ONLY the translated text.\n` +
-               `Message to translate: "${effectiveText}"`;
+        return `[Translator mode] The following is a message from the person I am translating with. Using active swap rules, translate it into MY language. Reply with ONLY the translated text.\nMessage to translate: "${effectiveText}"`;
     }
-
     if (query && effectiveText) return `${query}\n\n(replying to: "${effectiveText}")`;
-    if (query)                  return query;
-    if (effectiveText)          return effectiveText;
-    if (effectiveType)          return `What can you tell me about this ${effectiveType}?`;
-    // Quoted was Rimuru's own response and user sent no additional text —
-    // return null so the caller can decide whether to respond at all.
+    if (query) return query;
+    if (effectiveText) return effectiveText;
+    if (effectiveType) return `What can you tell me about this ${effectiveType}?`;
     return null;
 }
-
-// ─── Direct Instant Response ──────────────────────────────────────────────────
 async function rimuruRespond(sock, chatId, message, userText, senderId, mentions = []) {
     const memKey = getMemKey(senderId, chatId);
     ensureMemory(memKey);
     const mem  = chatMemory.get(memKey);
     const info = extractUserInfo(userText);
-    if (Object.keys(info).length)
-        mem.userInfo = { ...mem.userInfo, ...info };
-
+    if (Object.keys(info).length) mem.userInfo = { ...mem.userInfo, ...info };
     pushHistory(memKey, 'user', userText);
-
     const response = await getAIResponse(userText, {
         messages: mem.messages,
         userInfo: mem.userInfo,
         senderId,
         isOwner: isPairingOwnerNumber(senderId, sock),
     });
-
     const fullReply = response || "*slime wobbles* Ciel hit a magicule surge — couldn't process that one. Try again in a second.";
     pushHistory(memKey, 'assistant', fullReply);
-
     try {
-        const sent = await sock.sendMessage(
-            chatId,
-            { text: rimuruBox(fullReply.trim()), mentions },
-            { quoted: message }
-        );
+        const sent = await sock.sendMessage(chatId, { text: rimuruBox(fullReply.trim()), mentions }, { quoted: message });
         rememberRimuruResponse(sent?.key);
     } catch (e) {
         console.error('[Rimuru] Failed to send message:', e.message);
     }
 }
-
-// ─── $chatbot on/off/status — admin command ───────────────────────────────────
 async function handleChatbotCommand(sock, chatId, message, match) {
     if (!match) {
         return sock.sendMessage(chatId, {
@@ -500,27 +422,22 @@ async function handleChatbotCommand(sock, chatId, message, match) {
             quoted: message,
         });
     }
-
     const data   = loadUserGroupData();
     const sender = message.key.participant || message.key.remoteJid;
     const isGroup = chatId.endsWith('@g.us');
-
     if (!isGroup) {
         if (match === 'on')     { data.chatbot[chatId] = true;  saveUserGroupData(data); return sock.sendMessage(chatId, { text: '✅ Rîmîřǔ Tempest enabled for this chat 🔵', quoted: message }); }
         if (match === 'off')    { delete data.chatbot[chatId];   saveUserGroupData(data); return sock.sendMessage(chatId, { text: '✅ Rîmîřǔ Tempest has returned to Tempest.', quoted: message }); }
         if (match === 'status') return sock.sendMessage(chatId, { text: `🔵 Rîmîřǔ status: ${data.chatbot[chatId] ? '✅ active' : '❌ inactive'}`, quoted: message });
         return;
     }
-
     let isAdmin = false;
     try {
         const meta = await sock.groupMetadata(chatId);
         const p = meta.participants.find(p => p.id === sender || p.lid === sender);
         isAdmin = p && (p.admin === 'admin' || p.admin === 'superadmin');
     } catch {}
-
     if (!isAdmin) return sock.sendMessage(chatId, { text: '❌ Only group admins can use this command.', quoted: message });
-
     if (match === 'on') {
         if (data.chatbot[chatId]) return sock.sendMessage(chatId, { text: '🔵 Rîmîřǔ Tempest is already ruling this domain.', quoted: message });
         data.chatbot[chatId] = true; saveUserGroupData(data);
@@ -536,11 +453,8 @@ async function handleChatbotCommand(sock, chatId, message, match) {
     }
     return sock.sendMessage(chatId, { text: '❌ Usage: $chatbot [on/off/status]', quoted: message });
 }
-
-// ─── Name Trigger ─────────────────────────────────────────────────────────────
 async function handleRimuruNameTrigger(sock, chatId, message, userMessage, senderId) {
     if (userMessage.startsWith(RIMURU_RESPONSE_MARKER)) return;
-
     if (chatId.endsWith('@g.us')) {
         const data = loadUserGroupData();
         if (!data?.chatbot?.[chatId]) return;
@@ -551,11 +465,8 @@ async function handleRimuruNameTrigger(sock, chatId, message, userMessage, sende
     const finalQuery = buildQueryWithQuoted(userMessage, quoted, langMode);
     await rimuruRespond(sock, chatId, message, finalQuery || userMessage, senderId);
 }
-
-// ─── $rimuru / $botchat direct command ───────────────────────────────────────
 async function handleBotchatCommand(sock, chatId, message, query, senderId) {
     const isGroup = chatId.endsWith('@g.us');
-
     if (isGroup) {
         const data = loadUserGroupData();
         if (!data?.chatbot?.[chatId]) {
@@ -565,63 +476,41 @@ async function handleBotchatCommand(sock, chatId, message, query, senderId) {
             });
         }
     }
-
     const memKey2    = getMemKey(senderId, chatId);
     const langMode2  = chatMemory.get(memKey2)?.userInfo?.langMode;
     const quotedCtx  = extractQuotedContext(message);
     const finalQuery = buildQueryWithQuoted(query, quotedCtx, langMode2) || query || 'Greetings! Introduce yourself as Rîmîřǔ Tempest.';
-
     await rimuruRespond(sock, chatId, message, finalQuery, senderId);
 }
-
-// ─── @mention and reply-to-bot in groups ─────────────────────────────────────
 async function handleChatbotResponse(sock, chatId, message, userMessage, senderId) {
     if (userMessage.startsWith(RIMURU_RESPONSE_MARKER)) return;
-
     const data = loadUserGroupData();
     if (!data?.chatbot?.[chatId]) return;
-
     try {
         const botId  = sock.user.id.split(':')[0];
         const botLid = (sock.user.lid || '').split('@')[0].split(':')[0];
-
         const isMentioned = userMessage.includes(`@${botId}`);
-
         const replyContext = getContextInfo(message);
         const quotedParticipant = replyContext?.participant || '';
         const quotedPNum = quotedParticipant.split('@')[0].split(':')[0];
-        const isQuotedByBot = !!(quotedParticipant && (
-            quotedPNum === botId || (botLid && quotedPNum === botLid)
-        ));
-        const quotedIsRimuruResponse = !!(
-            replyContext?.stanzaId &&
-            rimuruResponseMessageIds.has(replyContext.stanzaId)
-        ) || isRimuruResponseMessage(replyContext?.quotedMessage);
+        const isQuotedByBot = !!(quotedParticipant && (quotedPNum === botId || (botLid && quotedPNum === botLid)));
+        const quotedIsRimuruResponse = !!(replyContext?.stanzaId && rimuruResponseMessageIds.has(replyContext.stanzaId)) || isRimuruResponseMessage(replyContext?.quotedMessage);
         const isReplyToBot = isQuotedByBot && quotedIsRimuruResponse;
-
         const isDirectMessage = !chatId.endsWith('@g.us');
         if (!isDirectMessage && !isMentioned && !isReplyToBot) return;
-
-        const cleanedMessage = userMessage
-            .replace(new RegExp(`@${botId}`, 'g'), '')
-            .replace(/^\$/, '')
-            .trim();
+        const cleanedMessage = userMessage.replace(new RegExp(`@${botId}`, 'g'), '').replace(/^\$/, '').trim();
         if (!cleanedMessage && !extractQuotedContext(message)) return;
-
         const quoted     = extractQuotedContext(message);
         const memKey3   = getMemKey(senderId, chatId);
         const langMode3 = chatMemory.get(memKey3)?.userInfo?.langMode;
         const finalQuery = buildQueryWithQuoted(cleanedMessage, quoted, langMode3) || cleanedMessage;
         if (!finalQuery) return;
-
         const mentions = isMentioned ? [senderId] : [];
         await rimuruRespond(sock, chatId, message, finalQuery, senderId, mentions);
-
     } catch (err) {
         console.error('[Rimuru:chatbotResponse]', err.message);
     }
 }
-
 module.exports = {
     handleChatbotCommand,
     handleChatbotResponse,
