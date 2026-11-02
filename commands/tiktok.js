@@ -4,7 +4,7 @@ const { get } = require('../lib/gifted');
 
 const processedMessages = new Set();
 
-// ─── 🔒 M-KING PRO DOUBLE BOX - AUTO EMOJI SYSTEM ────────────────────────────
+// ─── 🔒 M-KING PRO DOUBLE BOX - AUTO EMOJI + BOLD + CUTE FONT ───────────────
 function getCmdEmoji(cmd) {
     const map = {
         'tiktok': '🎵',
@@ -95,9 +95,9 @@ async function tiktokCommand(sock, chatId, message) {
     setTimeout(() => processedMessages.delete(message.key.id), 5 * 60 * 1000);
     const text = message.message?.conversation || message.message?.extendedTextMessage?.text || '';
     const url  = text.split(' ').slice(1).join(' ').trim();
-    if (!url) return sock.sendMessage(chatId, { text: proBox('TIKTOK', '🎵', ['🎵 Usage: $tiktok <TikTok URL>', '📚 Example: $tiktok https://vt.tiktok.com/...']) }, { quoted: message });
+    if (!url) return sock.sendMessage(chatId, { text: proBox('TIKTOK', '🎵', ['🎵 *Usage:* $tiktok <TikTok URL>', '📚 *Example:* $tiktok https://vt.tiktok.com/...']) }, { quoted: message });
     try {
-        await sock.sendMessage(chatId, { text: proBox('DOWNLOADING', '⏳', ['⏳ Downloading TikTok video…', '🔌 Please wait']) }, { quoted: message });
+        await sock.sendMessage(chatId, { text: proBox('DOWNLOADING', '⏳', ['⏳ *Downloading* TikTok video…', '🔌 *Please wait*']) }, { quoted: message });
         let result = null;
         try { result = await tikWmApi(url); } catch {}
         if (!result) { try { result = await princeApi(url); } catch {} }
@@ -105,10 +105,14 @@ async function tiktokCommand(sock, chatId, message) {
         if (!result?.video) throw new Error('No download URL returned');
         const buf = await toBuffer(result.video);
         
-        const caption = `╔══『 🎵 TIKTOK 』══╗
-║ 👤 Author: ${result.author}
-║ 📝 Title: ${result.title}
-║ 🔌 Server: ${result.server}
+        // ─── 🔥 FINAL COMBO: PRO DOUBLE BOX + BOLD MAIN + CUTE CLEAN FONT ───
+        const caption = `╔══『 🎵 *TIKTOK DOWNLOADER* 』══╗
+║
+║ 👤 *Author:* 🎀♡ ${result.author} ♡🎀
+║ 📝 *Title:* ${result.title}
+║ 🔌 *Server:* ${result.server}
+║
+║ 👑 *Powered by M-KING*
 ╚══『 M-KING👑 』══╝`;
 
         await sock.sendMessage(chatId, {
@@ -117,7 +121,7 @@ async function tiktokCommand(sock, chatId, message) {
         }, { quoted: message });
     } catch (err) {
         console.error('[tiktok]', err.message);
-        await sock.sendMessage(chatId, { text: proBox('FAILED', '❌', [`❌ Failed: ${err.message}`, '💡 Try again with valid URL']) }, { quoted: message });
+        await sock.sendMessage(chatId, { text: proBox('FAILED', '❌', [`❌ *Failed:* ${err.message}`, '💡 *Try again* with valid URL']) }, { quoted: message });
     }
 }
 
