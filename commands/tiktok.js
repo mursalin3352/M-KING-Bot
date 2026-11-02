@@ -21,7 +21,7 @@ function proBox(title, emoji, linesArr) {
     const body = linesArr.map(l => `║ ❃ → ${l}`).join('\n');
     return `╔══『 ${e} ${t} 』══╗
 ${body}
-╚══『 M-KING👑 』══╝`;
+╚══『 *M-KING👑* 』══╝`;
 }
 
 async function toBuffer(url) {
@@ -103,7 +103,6 @@ async function tiktokCommand(sock, chatId, message) {
         if (!result?.video) throw new Error('No download URL returned');
         const buf = await toBuffer(result.video);
         
-        // ─── FIXED + AUTO CUT - Box kabhi nahi tootega ───
         const shortTitle = result.title.length > 28 ? result.title.slice(0, 28) + '..' : result.title;
         const shortAuthor = result.author.length > 18 ? result.author.slice(0, 18) + '..' : result.author;
 
@@ -112,7 +111,7 @@ async function tiktokCommand(sock, chatId, message) {
 ║ ❃ → 👤 *Author:* 🎀♡ ${shortAuthor} ♡🎀
 ║ ❃ → 📝 *Title:* ${shortTitle}
 ║ ❃ → 🔌 *Server:* ${result.server}
-╚══『 M-KING👑 』══╝`;
+╚══『 *M-KING👑* 』══╝`;
 
         await sock.sendMessage(chatId, {
             video: buf, mimetype: 'video/mp4',
