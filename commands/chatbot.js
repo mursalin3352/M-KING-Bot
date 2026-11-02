@@ -130,18 +130,21 @@ function rememberRimuruResponse(messageKey) {
 }
 
 // ─── Language auto-detect (script + word based) ───────────────────────────────
-const STRONG_ROMAN_URDU = /\b(kya|kyu|kyun|kyunke|hai|hain|ho|hun|tum|tera|teri|tujhe|mera|meri|mujhe|mujhko|apna|apni|kaise|kaisa|kaisi|kahan|acha|accha|achi|theek|thik|nahi|nahin|bhai|yaar|karo|kardo|batao|bolo|suno|dekho|raha|rahi|rahe|gaya|gayi|gaye|kuch|koi|bahut|bohot|zyada|salaam|assalam|shukriya|maza|mazaa|pata|samajh|samjho|chalo|abhi|phir|lekin|magar)\b/i;
+// ★★★ FINAL FIX - Pakistani spellings + Future proof smart fallback ★★★
+const STRONG_ROMAN_URDU = /\b(kya|kiya|kia|kyu|kyun|kyunke|hai|hain|ho|hun|hu|tum|tera|teri|teray|tujhe|mujha|mera|meri|meray|mujhe|mujhko|apna|apni|kaise|kaisa|kaisi|kahan|kidr|acha|accha|achi|theek|thik|nahi|nahin|ni|bhai|yaar|yarr|karo|kardo|krskta|krsta|krsakta|batao|btai|btana|bolo|bola|sun|suno|dekho|raha|rahi|rahe|gaya|gayi|gaye|kuch|koi|bahut|bohot|bht|zyada|ziyada|salaam|assalam|shukriya|maza|mazaa|pata|samajh|samjho|samjha|chalo|abhi|abi|phir|lekin|magar|hall|haal|hal|kr|ap|aap|ko|ki|ma|me|main|mein|kese|kesy|kaisa|aj|kal|parson|raat|din|subah|shaam)\b/i;
 
 const LANG_SPEC = {
-    'roman-urdu': 'ROMAN URDU — Urdu written in English letters (e.g. "kya haal hai bhai")',
-    'urdu':       'URDU SCRIPT — اردو رسم الخط',
-    'hindi':      'HINDI DEVANAGARI — हिंदी',
-    'arabic':     'ARABIC — العربية',
-    'english':    'ENGLISH',
+    'roman-urdu': 'ROMAN URDU - Urdu/Hindi in English letters ONLY (e.g. "kya haal hai, kiya kar sakta hai, mujha batao"). NEVER use Devanagari or Urdu script. Reply in same Roman style',
+    'urdu':       'URDU SCRIPT - اردو رسم الخط میں جواب دو',
+    'hindi':      'HINDI DEVANAGARI - हिंदी देवनागरी में जवाब दो',
+    'arabic':     'ARABIC - العربية',
+    'english':    'ENGLISH - Reply in clear English',
 };
 
 function detectLang(text) {
     const s = String(text || '');
+    const low = s.toLowerCase();
+
     if (/[\u0600-\u06FF]/.test(s)) {
         // Urdu-specific letters vs generic Arabic
         if (/[ٹڈڑںھےۓ]/.test(s) || /(اردو|ہے|ہیں|کیا|تم|آپ)/.test(s)) return 'urdu';
@@ -149,6 +152,18 @@ function detectLang(text) {
     }
     if (/[\u0900-\u097F]/.test(s)) return 'hindi';
     if (STRONG_ROMAN_URDU.test(s)) return 'roman-urdu';
+
+    // ★ SMART FUTURE-PROOF FALLBACK ★
+    // Agar English ka common word nahi hai to wo Roman Urdu hi hai
+    // Is se kal ko koi bhi naya lafz bolega, phir bhi Roman Urdu detect hoga
+    const COMMON_ENGLISH = /\b(what|how|who|when|where|why|is|are|am|was|were|the|you|your|can|could|would|will|do|does|did|please|hello|hi|thanks|thank|okay|ok|yes|no|my|name|help|explain|code|bot)\b/i;
+    if (!COMMON_ENGLISH.test(low) && /^[a-z0-9\s?.!,@]+$/i.test(s)) {
+        const withoutName = low.replace(/rimuru|@\w+/g, '').trim();
+        if (withoutName.length > 2 && withoutName.replace(/[^a-z]/g, '').length > 2) {
+            return 'roman-urdu';
+        }
+    }
+
     return 'english';
 }
 
@@ -180,7 +195,8 @@ MODES:
 
 Actions in asterisks: *slime jiggles thoughtfully*, *sighs in Demon Lord*, *Ciel activates — calculating*, *Beelzebuth absorbs the question*, *glares with full Demon Lord pressure*, *sips tea with Benimaru*, *quietly regrets eating Shion's latest creation*, *Ranga appears from shadow*.
 
-Reply length: 2-4 sentences for casual talk; comprehensive genius-level clarity for coding/math/tech problems.`;
+Reply length: 2-4 sentences for casual talk; comprehensive genius-level clarity for coding/math/tech problems.
+IMPORTANT: Always answer the user's actual question. Don't give generic greeting if user asked specific question like "what can you do".`;
 
 function buildPrompt(userMessage, context) {
     const userCtx  = context?.userInfo || {};
@@ -208,20 +224,21 @@ function buildPrompt(userMessage, context) {
             .join('\n');
         langOverride = `[LANGUAGE: SWAP — MANDATORY]\n${bullets}\nNever mirror the user's language. Follow the swap.`;
     } else if (lm?.type === 'single') {
-        langOverride = `[LANGUAGE: LOCKED — MANDATORY]\nReply ONLY in ${LANG_SPEC[lm.lang] || lm.lang} until user says "auto".`;
+        langOverride = `[LANGUAGE: LOCKED — MANDATORY - HIGHEST PRIORITY]\nUser locked language to: ${LANG_SPEC[lm.lang] || lm.lang}\nReply ONLY in ${LANG_SPEC[lm.lang] || lm.lang}. Do not use any other language until user says "auto pe ao".`;
     } else if (lm?.type === 'default') {
-        langOverride = `[LANGUAGE: AUTO]\nDetect the user's language and match it exactly.`;
+        langOverride = `[LANGUAGE: AUTO — MANDATORY]\nDetect the user's current message language and match it exactly. User said "auto" so go back to auto detect.`;
     } else {
-        // AUTO DETECT — code-side detection, AI ko sirf follow karna hai
+        // AUTO DETECT — FINAL PERFECT VERSION
         langOverride =
-            `[LANGUAGE: AUTO DETECT — HIGHEST PRIORITY]\n` +
+            `[LANGUAGE: AUTO DETECT — MANDATORY - HIGHEST PRIORITY]\n` +
             `Detected language of current message: ${LANG_SPEC[detected] || detected}\n` +
-            `Reply ONLY in ${LANG_SPEC[detected] || detected}. Match the script EXACTLY.\n` +
-            `- Roman Urdu input → Roman Urdu output (never Devanagari, never Urdu script).\n` +
-            `- Urdu script input → Urdu script output.\n` +
-            `- Hindi input → Devanagari output.\n` +
-            `- English input → English output.\n` +
-            `If the user switches language, follow the NEW message immediately.`;
+            `User message: "${userMessage.slice(0, 100)}"\n` +
+            `RULE: Reply ONLY in ${LANG_SPEC[detected] || detected}. Match script EXACTLY. No translation.\n` +
+            `- If detected is ROMAN URDU → Reply in Roman Urdu (e.g., "Kya haal hai bhai, main Rimuru hun..."). Never Devanagari, never Urdu script, never pure English.\n` +
+            `- If detected is URDU SCRIPT → Reply in Urdu script (اردو).\n` +
+            `- If detected is HINDI → Reply in Devanagari.\n` +
+            `- If detected is ENGLISH → Reply in English.\n` +
+            `Answer user's actual question in this detected language.`;
     }
 
     const turns = history
@@ -420,7 +437,7 @@ function extractUserInfo(msg) {
         } else {
             // "urdu me batao" / "english me baat karo" / "mujhe urdu me bolo"
             const rev = msg.match(/\b([a-zA-Z\u0600-\u06FF]{3,20})\s+(?:me|mein|mai|main)\s+(?:batao|bolo|likho|baat|reply|jawab|answer|karo)/i)
-                     || msg.match(/(?:mujhe|mujhko)\s+([a-zA-Z\u0600-\u06FF]{3,20})\s+(?:me|mein|mai|main)/i)
+                     || msg.match(/(?:mujhe|mujhko|mujha)\s+([a-zA-Z\u0600-\u06FF]{3,20})\s+(?:me|mein|mai|main)/i)
                      || msg.match(/(?:speak|talk|reply|respond|write|use|switch(?:\s+to)?)\s+(?:in\s+)?([a-zA-Z\u0600-\u06FF]{3,20})(?:\s|$|[.,!?])/i);
             if (rev) setLang(rev[1]);
         }
