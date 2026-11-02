@@ -7,7 +7,7 @@ async function createqrCommand(sock, chatId, message) {
         
         if (!data) {
             return sock.sendMessage(chatId, {
-                text: `╭─『 📱 QR CODE 』─╮\n│\n│ ❐ Usage: $createqr <text>\n│ ❐ Example: $createqr https://youtube.com\n│\n╰─『 M-KING👑 』─╯`,
+                text: `╭─『 📱 QR CODE 』─╮\n│ ❌ Action: No Data\n│ 📚 Usage: $createqr <text>\n│ 🔒 Mode: Waiting\n╰─『 M-KING👑 』─╯`,
             }, { quoted: message });
         }
 
@@ -15,13 +15,13 @@ async function createqrCommand(sock, chatId, message) {
 
         await sock.sendMessage(chatId, {
             image: { url: qrUrl },
-            caption: `╭─『 📱 QR CODE 』─╮\n│\n│ ❐ Data: ${data.slice(0, 70)}${data.length > 70 ? '...' : ''}\n│\n╰─『 M-KING👑 』─╯`,
+            caption: `╭─『 📱 QR CODE 』─╮\n│ 🟢 Status: Created\n│ 📦 Data: ${data.slice(0, 50)}${data.length > 50 ? '...' : ''}\n│ 🔒 Mode: Ready To Scan\n╰─『 M-KING👑 』─╯`,
         }, { quoted: message });
 
     } catch (err) {
         console.error('[createqr]', err);
         await sock.sendMessage(chatId, { 
-            text: `╭─『 ❌ ERROR 』─╮\n│ QR Failed\n╰─『 M-KING👑 』─╯` 
+            text: `╭─『 ❌ ERROR 』─╮\n│ 🟢 Status: Failed\n│ 🔒 Mode: Error\n╰─『 M-KING👑 』─╯` 
         }, { quoted: message });
     }
 }
