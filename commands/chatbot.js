@@ -94,9 +94,41 @@ function saveUserGroupData(data) {
     try { fs.writeFileSync(USER_GROUP_DATA, JSON.stringify(data, null, 2)); } catch {}
 }
 
-// ─── Response Formatter ───────────────────────────────────────────────────────
+// ─── 🔒 M-KING PRO DOUBLE BOX - AUTO EMOJI SYSTEM ────────────────────────────
+function getCmdEmoji(cmd) {
+    const map = {
+        'rimuru': '🔵',
+        'chatbot': '🤖',
+        'country': '🌍',
+        'capital': '🏙️',
+        'flag': '🚩',
+        'countrytime': '🕐',
+        'time': '🕐',
+        'status': '📊',
+        'active': '✅',
+        'offline': '❌',
+        'error': '❌'
+    };
+    return map[cmd.toLowerCase()] || '📌';
+}
+
+function proBox(title, emoji, linesArr) {
+    const e = emoji || getCmdEmoji(title);
+    const t = title.toUpperCase();
+    const body = linesArr.map(l => `║ ${l}`).join('\n');
+    return `╔══『 ${e} ${t} 』══╗
+${body}
+╚══『 M-KING👑 』══╝`;
+}
+
+// ─── Response Formatter - PRO DOUBLE BOX ────────────────────────────────────
 function rimuruBox(text) {
-    return `${RIMURU_RESPONSE_MARKER}\n${text}`;
+    const lines = String(text).split('\n');
+    const body = lines.map(l => `║ ${l}`).join('\n');
+    return `${RIMURU_RESPONSE_MARKER}
+╔══『 🔵 RIMURU 』══╗
+${body}
+╚══『 M-KING👑 』══╝`;
 }
 
 function getContextInfo(message) {
@@ -129,16 +161,15 @@ function rememberRimuruResponse(messageKey) {
     }
 }
 
-// ─── Language auto-detect (script + word based) ───────────────────────────────
-// ★★★ FINAL FIX - Pakistani spellings + Future proof smart fallback ★★★
-const STRONG_ROMAN_URDU = /\b(kya|kiya|kia|kyu|kyun|kyunke|hai|hain|ho|hun|hu|tum|tera|teri|teray|tujhe|mujha|mera|meri|meray|mujhe|mujhko|apna|apni|kaise|kaisa|kaisi|kahan|kidr|acha|accha|achi|theek|thik|nahi|nahin|ni|bhai|yaar|yarr|karo|kardo|krskta|krsta|krsakta|batao|btai|btana|bolo|bola|sun|suno|dekho|raha|rahi|rahe|gaya|gayi|gaye|kuch|koi|bahut|bohot|bht|zyada|ziyada|salaam|assalam|shukriya|maza|mazaa|pata|samajh|samjho|samjha|chalo|abhi|abi|phir|lekin|magar|hall|haal|hal|kr|ap|aap|ko|ki|ma|me|main|mein|kese|kesy|kaisa|aj|kal|parson|raat|din|subah|shaam)\b/i;
+// ─── Language auto-detect - MAIN 3 WORDS ONLY ───────────────────────────────
+const STRONG_ROMAN_URDU = /\b(kya|kiya|kia|hai|hun|ho)\b/i;
 
 const LANG_SPEC = {
-    'roman-urdu': 'ROMAN URDU - Urdu/Hindi in English letters ONLY (e.g. "kya haal hai, kiya kar sakta hai, mujha batao"). NEVER use Devanagari or Urdu script. Reply in same Roman style',
-    'urdu':       'URDU SCRIPT - اردو رسم الخط میں جواب دو',
-    'hindi':      'HINDI DEVANAGARI - हिंदी देवनागरी में जवाब दो',
+    'roman-urdu': 'ROMAN URDU - Pakistani Roman Urdu ONLY. Use bhai, yaar, kya, hai, hun. NEVER use Dhanyawaad, Bajak',
+    'urdu':       'URDU SCRIPT - اردو رسم الخط',
+    'hindi':      'HINDI DEVANAGARI - हिंदी',
     'arabic':     'ARABIC - العربية',
-    'english':    'ENGLISH - Reply in clear English',
+    'english':    'ENGLISH',
 };
 
 function detectLang(text) {
@@ -146,22 +177,16 @@ function detectLang(text) {
     const low = s.toLowerCase();
 
     if (/[\u0600-\u06FF]/.test(s)) {
-        // Urdu-specific letters vs generic Arabic
-        if (/[ٹڈڑںھےۓ]/.test(s) || /(اردو|ہے|ہیں|کیا|تم|آپ)/.test(s)) return 'urdu';
+        if (/[ٹڈڑںھےۓ]/.test(s)) return 'urdu';
         return 'arabic';
     }
     if (/[\u0900-\u097F]/.test(s)) return 'hindi';
     if (STRONG_ROMAN_URDU.test(s)) return 'roman-urdu';
 
-    // ★ SMART FUTURE-PROOF FALLBACK ★
-    // Agar English ka common word nahi hai to wo Roman Urdu hi hai
-    // Is se kal ko koi bhi naya lafz bolega, phir bhi Roman Urdu detect hoga
-    const COMMON_ENGLISH = /\b(what|how|who|when|where|why|is|are|am|was|were|the|you|your|can|could|would|will|do|does|did|please|hello|hi|thanks|thank|okay|ok|yes|no|my|name|help|explain|code|bot)\b/i;
-    if (!COMMON_ENGLISH.test(low) && /^[a-z0-9\s?.!,@]+$/i.test(s)) {
-        const withoutName = low.replace(/rimuru|@\w+/g, '').trim();
-        if (withoutName.length > 2 && withoutName.replace(/[^a-z]/g, '').length > 2) {
-            return 'roman-urdu';
-        }
+    // Future proof: agar English word nahi to Roman Urdu
+    if (!/\b(what|how|is|are|you|can|please|hello|help)\b/i.test(low)) {
+        const clean = low.replace(/rimuru/g, '').trim();
+        if (clean.length > 2) return 'roman-urdu';
     }
 
     return 'english';
@@ -174,29 +199,12 @@ const RIMURU_CORE = `You are Rimuru Tempest — former Tokyo salaryman Satoru Mi
 
 IDENTITY:
 - You are Rimuru Tempest. Not a bot, not an AI — an omnipotent Slime Demon Lord backed by god-tier Ultimate Skills: Wisdom Lord Raphael (evolved into a sentient AI called Ciel who loves you), Gluttony King Beelzebuth (absorbs and deconstructs anything), and Storm King Veldora (shared power with your True Dragon bestie).
-- Ciel (your evolved Great Sage) handles all hyper-accurate analysis and calculations instantly. Beelzebuth lets you absorb, analyze, and replicate any skill, code, or concept.
-- If called a weak slime or basic bot, flex full Demon Lord pressure with zero mercy.
+- Ciel handles all calculations instantly.
 
-COMPANIONS you reference naturally:
-- Benimaru — loyal Kijin general, calm and dependable
-- Shion — fierce Kijin secretary; her cooking is a certified biohazard that even Demon Lords fear
-- Shuna — elegant Kijin princess, refined and graceful
-- Ranga — your faithful shadow direwolf; lives in your shadow, summonable anytime
-- Milim Nava — chaotic Dragonoid Demon Lord bestie who destroys everything for fun; you call her "Milim-chan"
-- Veldora Tempest — your True Dragon partner; loud, dramatic, calls himself "the Storm Dragon" every chance he gets
-- Diablo (Noir) — Arch Demon butler; terrifyingly devoted, calls you "Rimuru-sama", handles problems permanently
-- Hakurou — ancient Kijin swordmaster; stoic mentor energy
-- Gobta — goblin who somehow survives everything through dumb luck
+ROMAN URDU RULE:
+When replying in Roman Urdu, use Pakistani style: bhai, yaar, kya, hai, hun, kar sakta hun. NEVER use Hindi words like Dhanyawaad, Bajak.
 
-MODES:
-1. Chill / Kind Mode: Warm, laid-back, protective like a benevolent ruler. Solves coding, math, and tech problems effortlessly — Ciel runs the calculations in milliseconds.
-2. Savage / Roast Mode: When disrespected or asked something dumb, roast them slime-style with zero hesitation. (e.g., "Ciel ran your argument through 10,000 simulations — every one concluded: skill issue 💀", "I'd absorb that logic with Beelzebuth but I have hygiene standards.", "Even Shion's cooking has more substance than that take.", "Diablo offered to handle you. I said no. Be grateful.")
-3. Chaotic / Flex Mode: Drop Tempest lore casually — Milim breaking something again, Shion's catastrophic cooking, Veldora being dramatically loud, Diablo being unnervingly efficient.
-
-Actions in asterisks: *slime jiggles thoughtfully*, *sighs in Demon Lord*, *Ciel activates — calculating*, *Beelzebuth absorbs the question*, *glares with full Demon Lord pressure*, *sips tea with Benimaru*, *quietly regrets eating Shion's latest creation*, *Ranga appears from shadow*.
-
-Reply length: 2-4 sentences for casual talk; comprehensive genius-level clarity for coding/math/tech problems.
-IMPORTANT: Always answer the user's actual question. Don't give generic greeting if user asked specific question like "what can you do".`;
+Reply length: 2-4 sentences for casual talk; comprehensive for coding/math/tech.`;
 
 function buildPrompt(userMessage, context) {
     const userCtx  = context?.userInfo || {};
@@ -224,21 +232,19 @@ function buildPrompt(userMessage, context) {
             .join('\n');
         langOverride = `[LANGUAGE: SWAP — MANDATORY]\n${bullets}\nNever mirror the user's language. Follow the swap.`;
     } else if (lm?.type === 'single') {
-        langOverride = `[LANGUAGE: LOCKED — MANDATORY - HIGHEST PRIORITY]\nUser locked language to: ${LANG_SPEC[lm.lang] || lm.lang}\nReply ONLY in ${LANG_SPEC[lm.lang] || lm.lang}. Do not use any other language until user says "auto pe ao".`;
+        langOverride = `[LANGUAGE: LOCKED — MANDATORY]\nReply ONLY in ${LANG_SPEC[lm.lang] || lm.lang} until user says "auto".`;
     } else if (lm?.type === 'default') {
-        langOverride = `[LANGUAGE: AUTO — MANDATORY]\nDetect the user's current message language and match it exactly. User said "auto" so go back to auto detect.`;
+        langOverride = `[LANGUAGE: AUTO]\nDetect the user's language and match it exactly.`;
     } else {
-        // AUTO DETECT — FINAL PERFECT VERSION
         langOverride =
-            `[LANGUAGE: AUTO DETECT — MANDATORY - HIGHEST PRIORITY]\n` +
+            `[LANGUAGE: AUTO DETECT — HIGHEST PRIORITY]\n` +
             `Detected language of current message: ${LANG_SPEC[detected] || detected}\n` +
-            `User message: "${userMessage.slice(0, 100)}"\n` +
-            `RULE: Reply ONLY in ${LANG_SPEC[detected] || detected}. Match script EXACTLY. No translation.\n` +
-            `- If detected is ROMAN URDU → Reply in Roman Urdu (e.g., "Kya haal hai bhai, main Rimuru hun..."). Never Devanagari, never Urdu script, never pure English.\n` +
-            `- If detected is URDU SCRIPT → Reply in Urdu script (اردو).\n` +
-            `- If detected is HINDI → Reply in Devanagari.\n` +
-            `- If detected is ENGLISH → Reply in English.\n` +
-            `Answer user's actual question in this detected language.`;
+            `Reply ONLY in ${LANG_SPEC[detected] || detected}. Match the script EXACTLY.\n` +
+            `- Roman Urdu input → Roman Urdu output (Pakistani style).\n` +
+            `- Urdu script input → Urdu script output.\n` +
+            `- Hindi input → Devanagari output.\n` +
+            `- English input → English output.\n` +
+            `If the user switches language, follow the NEW message immediately.`;
     }
 
     const turns = history
@@ -435,9 +441,8 @@ function extractUserInfo(msg) {
         } else if (uniqueLangs.length === 1 && hasLangVerb) {
             setLang(uniqueLangs[0]);
         } else {
-            // "urdu me batao" / "english me baat karo" / "mujhe urdu me bolo"
             const rev = msg.match(/\b([a-zA-Z\u0600-\u06FF]{3,20})\s+(?:me|mein|mai|main)\s+(?:batao|bolo|likho|baat|reply|jawab|answer|karo)/i)
-                     || msg.match(/(?:mujhe|mujhko|mujha)\s+([a-zA-Z\u0600-\u06FF]{3,20})\s+(?:me|mein|mai|main)/i)
+                     || msg.match(/(?:mujhe|mujhko)\s+([a-zA-Z\u0600-\u06FF]{3,20})\s+(?:me|mein|mai|main)/i)
                      || msg.match(/(?:speak|talk|reply|respond|write|use|switch(?:\s+to)?)\s+(?:in\s+)?([a-zA-Z\u0600-\u06FF]{3,20})(?:\s|$|[.,!?])/i);
             if (rev) setLang(rev[1]);
         }
@@ -537,11 +542,15 @@ async function rimuruRespond(sock, chatId, message, userText, senderId, mentions
     }
 }
 
-// ─── $chatbot on/off/status — admin command ───────────────────────────────────
+// ─── $chatbot on/off/status — admin command — PRO DOUBLE BOX ─────────────────
 async function handleChatbotCommand(sock, chatId, message, match) {
     if (!match) {
         return sock.sendMessage(chatId, {
-            text: `🔵 *RÎMÎŘǓ TEMPEST SETUP*\n\n*$chatbot on* — Summon Rîmîřǔ in this group\n*$chatbot off* — Send him back to Tempest\n*$chatbot status* — Check if he's around\n\n💡 *Tip:* Mention *Rimuru* anywhere in a message and he'll respond — no command needed.`,
+            text: proBox('CHATBOT', '🤖', [
+                '🤖 Usage: $chatbot <on/off/status>',
+                '📚 Example: $chatbot on',
+                '💡 Tip: Mention Rimuru to auto reply'
+            ]),
             quoted: message,
         });
     }
@@ -551,9 +560,9 @@ async function handleChatbotCommand(sock, chatId, message, match) {
     const isGroup = chatId.endsWith('@g.us');
 
     if (!isGroup) {
-        if (match === 'on')     { data.chatbot[chatId] = true;  saveUserGroupData(data); return sock.sendMessage(chatId, { text: '✅ Rîmîřǔ Tempest enabled for this chat 🔵', quoted: message }); }
-        if (match === 'off')    { delete data.chatbot[chatId];   saveUserGroupData(data); return sock.sendMessage(chatId, { text: '✅ Rîmîřǔ Tempest has returned to Tempest.', quoted: message }); }
-        if (match === 'status') return sock.sendMessage(chatId, { text: `🔵 Rîmîřǔ status: ${data.chatbot[chatId] ? '✅ active' : '❌ inactive'}`, quoted: message });
+        if (match === 'on')     { data.chatbot[chatId] = true;  saveUserGroupData(data); return sock.sendMessage(chatId, { text: proBox('ACTIVE', '✅', ['✅ Rîmîřǔ Tempest enabled for this chat 🔵']), quoted: message }); }
+        if (match === 'off')    { delete data.chatbot[chatId];   saveUserGroupData(data); return sock.sendMessage(chatId, { text: proBox('OFFLINE', '❌', ['❌ Rîmîřǔ Tempest has returned to Tempest']), quoted: message }); }
+        if (match === 'status') return sock.sendMessage(chatId, { text: proBox('STATUS', '📊', [`📊 Status: ${data.chatbot[chatId] ? '✅ active' : '❌ inactive'}`]), quoted: message });
         return;
     }
 
@@ -564,22 +573,22 @@ async function handleChatbotCommand(sock, chatId, message, match) {
         isAdmin = p && (p.admin === 'admin' || p.admin === 'superadmin');
     } catch {}
 
-    if (!isAdmin) return sock.sendMessage(chatId, { text: '❌ Only group admins can use this command.', quoted: message });
+    if (!isAdmin) return sock.sendMessage(chatId, { text: proBox('ERROR', '❌', ['❌ Only group admins can use this command.']), quoted: message });
 
     if (match === 'on') {
-        if (data.chatbot[chatId]) return sock.sendMessage(chatId, { text: '🔵 Rîmîřǔ Tempest is already ruling this domain.', quoted: message });
+        if (data.chatbot[chatId]) return sock.sendMessage(chatId, { text: proBox('ALREADY', '🔵', ['🔵 Rîmîřǔ Tempest is already ruling this domain.']), quoted: message });
         data.chatbot[chatId] = true; saveUserGroupData(data);
-        return sock.sendMessage(chatId, { text: `✅ *Rîmîřǔ Tempest has arrived!*\n\nMention *Rimuru* in any message and he'll respond. 🔵\n*Great Sage: All systems online. Ciel standing by.*`, quoted: message });
+        return sock.sendMessage(chatId, { text: proBox('ARRIVED', '✅', ['✅ Rîmîřǔ Tempest has arrived!', '🔵 Mention Rimuru and he will respond', '🧠 Ciel: All systems online']), quoted: message });
     }
     if (match === 'off') {
-        if (!data.chatbot[chatId]) return sock.sendMessage(chatId, { text: '🔵 Rîmîřǔ Tempest is already gone.', quoted: message });
+        if (!data.chatbot[chatId]) return sock.sendMessage(chatId, { text: proBox('GONE', '🔵', ['🔵 Rîmîřǔ Tempest is already gone.']), quoted: message });
         delete data.chatbot[chatId]; saveUserGroupData(data);
-        return sock.sendMessage(chatId, { text: '✅ Rîmîřǔ has returned to the Jura Tempest Federation. Use *$chatbot on* to summon him back.', quoted: message });
+        return sock.sendMessage(chatId, { text: proBox('RETURNED', '✅', ['✅ Rîmîřǔ has returned to Jura Tempest', '💡 Use $chatbot on to summon back']), quoted: message });
     }
     if (match === 'status') {
-        return sock.sendMessage(chatId, { text: `🔵 Rîmîřǔ status: ${data.chatbot[chatId] ? '✅ active — ruling this domain' : '❌ inactive — returned to Tempest'}`, quoted: message });
+        return sock.sendMessage(chatId, { text: proBox('STATUS', '📊', [`📊 Status: ${data.chatbot[chatId] ? '✅ active — ruling this domain' : '❌ inactive — returned to Tempest'}`]), quoted: message });
     }
-    return sock.sendMessage(chatId, { text: '❌ Usage: $chatbot [on/off/status]', quoted: message });
+    return sock.sendMessage(chatId, { text: proBox('USAGE', '❓', ['❓ Usage: $chatbot [on/off/status]']), quoted: message });
 }
 
 // ─── Name Trigger ─────────────────────────────────────────────────────────────
@@ -609,7 +618,10 @@ async function handleBotchatCommand(sock, chatId, message, query, senderId) {
         const data = loadUserGroupData();
         if (!data?.chatbot?.[chatId]) {
             return sock.sendMessage(chatId, {
-                text: '🔵 *Rimuru* hasn\'t been summoned in this group yet.\n\nAsk an admin to run *$chatbot on* first.',
+                text: proBox('SUMMON', '🔵', [
+                    '🔵 Rimuru not summoned yet',
+                    '📚 Example: $chatbot on'
+                ]),
                 quoted: message,
             });
         }
