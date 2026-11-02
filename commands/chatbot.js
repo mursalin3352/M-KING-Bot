@@ -1,7 +1,10 @@
 'use strict';
 const fs   = require('fs');
 const path = require('path');
+const axios = require('axios');
 const { get } = require('../lib/gifted');
+
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
 
 const USER_GROUP_DATA   = path.join(__dirname, '../data/userGroupData.json');
 const RIMURU_MEMORY_DIR = path.join(__dirname, '../data/rimuru_memory');
@@ -237,27 +240,67 @@ function cleanReply(raw) {
 }
 
 // ─── AI Call ──────────────────────────────────────────────────────────────────
+const POLLI = 'https://text.pollinations.ai/';
+
+function pickText(d) {
+    if (!d) return null;
+    const v = typeof d === 'string'
+        ? d
+        : (d.result ?? d.answer ?? d.response ?? d.message ?? d.text);
+    if (typeof v === 'string' && v.trim() && !/^\s*\{/.test(v)) return v;
+    return null;
+}
+
+async function pollinations(query) {
+    const enc = encodeURIComponent(query.slice(0, 3000));
+    const urls = [`${POLLI}${enc}?model=openai`, `${POLLI}${enc}`];
+    let last;
+    for (const u of urls) {
+        for (let i = 0; i < 2; i++) {
+            try {
+                const { data } = await axios.get(u, {
+                    timeout: 25000,
+                    responseType: 'text',
+                    headers: { 'User-Agent': UA },
+                    validateStatus: (s) => s >= 200 && s < 300,
+                });
+                const out = typeof data === 'string' ? data.trim() : '';
+                if (out && !/^\s*\{/.test(out)) return out;
+                last = new Error('empty');
+            } catch (e) {
+                last = e;
+                if (e.response?.status === 429) await new Promise((r) => setTimeout(r, 1200));
+            }
+        }
+    }
+    throw last || new Error('pollinations failed');
+}
+
+async function giftedAi(query) {
+    let last;
+    for (const ep of ['letmegpt', 'gemini', 'chatgpt']) {
+        try {
+            const data = await get(`/ai/${ep}`, { q: query }, 30000);
+            const t = pickText(data);
+            if (t) return t;
+            last = new Error(ep + ': no text');
+        } catch (e) { last = e; }
+    }
+    throw last || new Error('gifted ai failed');
+}
+
 async function getAIResponse(userMessage, context) {
     const fullQuery = buildPrompt(userMessage, context);
 
     try {
-        const data = await get('/ai/letmegpt', { q: fullQuery }, 30000);
-        if (!data?.success) throw new Error(data?.message || 'no response');
-        const reply = cleanReply(data.result);
-        if (reply) return reply;
-        throw new Error('empty or bad');
-    } catch (e) {
-        console.error('[Rimuru] letmegpt failed:', e.message);
-    }
+        const r = cleanReply(await pollinations(fullQuery));
+        if (r) return r;
+    } catch (e) { console.error('[Rimuru] pollinations failed:', e.message); }
 
     try {
-        const data = await get('/ai/gemini', { q: fullQuery }, 30000);
-        if (!data?.success) throw new Error(data?.message || 'no response');
-        const reply = cleanReply(data.result);
-        if (reply) return reply;
-    } catch (e) {
-        console.error('[Rimuru] gemini fallback failed:', e.message);
-    }
+        const r = cleanReply(await giftedAi(fullQuery));
+        if (r) return r;
+    } catch (e) { console.error('[Rimuru] gifted failed:', e.message); }
 
     return null;
 }
