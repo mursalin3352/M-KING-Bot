@@ -234,19 +234,15 @@ async function startSession(config = {}) {
 
     store.bind(XeonBotInc.ev)
 
-    // Message handling - M-KING FIXED WITH AUTOTYPING + PRIVATE LOCK
+    // Message handling - M-KING FIXED WITH AUTOTYPING
     XeonBotInc.ev.on('messages.upsert', async chatUpdate => {
         try {
             const mek = chatUpdate.messages[0]
             if (!mek.message) return
 
-            // ===== M-KING PRIVATE MODE LOCK - DM BAND =====
-            // Mode settings.js se ayega
-            const MODE = String(settings.MODE || settings.mode || settings.WORK_TYPE || global.MODE || 'public').toLowerCase();
-            const isFromMe = !!mek.key.fromMe;
-            if (MODE === 'private' && !isFromMe) {
-                return; // Private ON hai to owner ke ilawa kisi ko reply nahi - DM bhi band, Group bhi band
-            }
+            // ===== M-KING PRIVATE MODE LOCK - ADDED HERE =====
+            const MODE = String(settings.commandMode || 'public').toLowerCase();
+            if (MODE === 'private' && !mek.key.fromMe) { return; }
             // ===== END PRIVATE LOCK =====
 
             mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
@@ -260,13 +256,12 @@ async function startSession(config = {}) {
             try {
                 const chatJid = mek.key.remoteJid;
                 const userText = mek.message?.conversation || mek.message?.extendedTextMessage?.text || mek.message?.imageMessage?.caption || "hello";
-                // Private mode me typing bhi sirf owner ke liye
                 if (!mek.key.fromMe && chatJid && MODE !== 'private') {
-                    await handleAutotypingForMessage(XeonBotInc, chatJid, userText);
-                } else if (!mek.key.fromMe && chatJid && MODE === 'private' && isFromMe) {
+                    // isme await hai taake typing dikhe phir reply jaye
                     await handleAutotypingForMessage(XeonBotInc, chatJid, userText);
                 }
             } catch (e) {
+                // autotyping fail bhi ho to bot chalta rahe
             }
             // ===== END AUTOTYPING FIX =====
 
