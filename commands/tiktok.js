@@ -29,7 +29,7 @@ async function tikWmApi(url) {
             video: video,
             title: data.data.title || 'TikTok',
             author: data.data.author?.nickname || data.data.author?.unique_id || 'Unknown',
-            server: 'TikWM'
+            server: 'TikTok'
         };
     }
     throw new Error('TikWM fail');
