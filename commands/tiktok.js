@@ -21,7 +21,7 @@ function proBox(title, emoji, linesArr) {
     const body = linesArr.map(l => `║ ❃ → ${l}`).join('\n');
     return `╔══『 ${e} ${t} 』══╗
 ${body}
-╚══『 *M-KING👑* 』══╝`;
+╚══『 *M-KING* 👑 』══╝`;
 }
 
 async function toBuffer(url) {
@@ -103,18 +103,39 @@ async function tiktokCommand(sock, chatId, message) {
         if (!result?.video) throw new Error('No download URL returned');
         const buf = await toBuffer(result.video);
         
-        // ─── BOX FIX - Sab andar rahega, bahar nahi jayega ───
-        const clean = (t) => t.replace(/\n/g, ' ').replace(/#/g, '').trim();
-        const shortTitle = clean(result.title).length > 18 ? clean(result.title).slice(0, 18) + '..' : clean(result.title);
-        const shortAuthor = clean(result.author).length > 12 ? clean(result.author).slice(0, 12) + '..' : clean(result.author);
+        // ─── REAL + AUTO BOX - No compress, sab andar ───
+        const clean = (t) => t.replace(/\n/g, ' ').trim();
+        const fullAuthor = clean(result.author);
+        const fullTitle = clean(result.title);
 
-        const caption = `╔══════════════╗
-║
-║ ❃ → 👤 Author: ${shortAuthor}
-║ ❃ → 📝 Title: ${shortTitle}
-║ ❃ → 🔌 Server: ${result.server}
-║
-╚══『 *M-KING👑* 』══╝`;
+        // Auto wrap - lamba ho to dusri line box ke andar hi
+        function wrapLine(prefix, text, maxW) {
+            let out = [];
+            let remain = text;
+            let first = true;
+            while (remain.length > 0) {
+                let limit = first ? maxW - prefix.length : maxW - 10;
+                out.push((first ? prefix : '          ') + remain.slice(0, limit));
+                remain = remain.slice(limit);
+                first = false;
+            }
+            return out;
+        }
+
+        const INNER = 34;
+        let allLines = [];
+        allLines.push(`❃ → 👤 Author: ${fullAuthor}`);
+        allLines.push(...wrapLine(`❃ → 📝 Title: `, fullTitle, INNER));
+        allLines.push(`❃ → 🔌 Server: ${result.server}`);
+
+        let maxLen = Math.max(...allLines.map(l => l.length));
+        let border = '═'.repeat(maxLen + 2);
+
+        let caption = `╔${border}╗\n║\n`;
+        allLines.forEach(l => {
+            caption += `║ ${l.padEnd(maxLen)} ║\n`;
+        });
+        caption += `║\n╚${border}╝\n     『 *M-KING* 👑 』`;
 
         await sock.sendMessage(chatId, {
             video: buf, mimetype: 'video/mp4',
