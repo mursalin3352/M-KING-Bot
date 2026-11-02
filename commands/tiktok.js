@@ -4,7 +4,6 @@ const { get } = require('../lib/gifted');
 
 const processedMessages = new Set();
 
-// ─── 🔒 M-KING PRO DOUBLE BOX - AUTO EMOJI + BOLD + CUTE FONT ───────────────
 function getCmdEmoji(cmd) {
     const map = {
         'tiktok': '🎵',
@@ -19,7 +18,7 @@ function getCmdEmoji(cmd) {
 function proBox(title, emoji, linesArr) {
     const e = emoji || getCmdEmoji(title);
     const t = title.toUpperCase();
-    const body = linesArr.map(l => `║ ${l}`).join('\n');
+    const body = linesArr.map(l => `║ ❃ → ${l}`).join('\n');
     return `╔══『 ${e} ${t} 』══╗
 ${body}
 ╚══『 M-KING👑 』══╝`;
@@ -44,7 +43,6 @@ async function tikWmApi(url) {
     });
     if (data?.data?.play) {
         let video = data.data.play;
-        // FIX 1 - Yahi error tha
         if (video.startsWith('/')) video = 'https://www.tikwm.com' + video;
         return {
             video: video,
@@ -97,7 +95,7 @@ async function tiktokCommand(sock, chatId, message) {
     const url  = text.split(' ').slice(1).join(' ').trim();
     if (!url) return sock.sendMessage(chatId, { text: proBox('TIKTOK', '🎵', ['🎵 *Usage:* $tiktok <TikTok URL>', '📚 *Example:* $tiktok https://vt.tiktok.com/...']) }, { quoted: message });
     try {
-        await sock.sendMessage(chatId, { text: proBox('DOWNLOADING', '⏳', ['⏳ *Downloading* TikTok video…', '🔌 *Please wait*']) }, { quoted: message });
+        await sock.sendMessage(chatId, { text: `⏳ _Downloading TikTok video…_` }, { quoted: message });
         let result = null;
         try { result = await tikWmApi(url); } catch {}
         if (!result) { try { result = await princeApi(url); } catch {} }
@@ -105,14 +103,15 @@ async function tiktokCommand(sock, chatId, message) {
         if (!result?.video) throw new Error('No download URL returned');
         const buf = await toBuffer(result.video);
         
-        // ─── 🔥 FINAL COMBO: PRO DOUBLE BOX + BOLD MAIN + CUTE CLEAN FONT ───
-        const caption = `╔══『 🎵 *TIKTOK DOWNLOADER* 』══╗
+        // ─── FIXED + AUTO CUT - Box kabhi nahi tootega ───
+        const shortTitle = result.title.length > 28 ? result.title.slice(0, 28) + '..' : result.title;
+        const shortAuthor = result.author.length > 18 ? result.author.slice(0, 18) + '..' : result.author;
+
+        const caption = `╔══════════════╗
 ║
-║ 👤 *Author:* 🎀♡ ${result.author} ♡🎀
-║ 📝 *Title:* ${result.title}
-║ 🔌 *Server:* ${result.server}
-║
-║ 👑 *Powered by M-KING*
+║ ❃ → 👤 *Author:* 🎀♡ ${shortAuthor} ♡🎀
+║ ❃ → 📝 *Title:* ${shortTitle}
+║ ❃ → 🔌 *Server:* ${result.server}
 ╚══『 M-KING👑 』══╝`;
 
         await sock.sendMessage(chatId, {
