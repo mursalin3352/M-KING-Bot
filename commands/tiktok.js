@@ -103,14 +103,17 @@ async function tiktokCommand(sock, chatId, message) {
         if (!result?.video) throw new Error('No download URL returned');
         const buf = await toBuffer(result.video);
         
-        const shortTitle = result.title.length > 28 ? result.title.slice(0, 28) + '..' : result.title;
-        const shortAuthor = result.author.length > 18 ? result.author.slice(0, 18) + '..' : result.author;
+        // ─── BOX FIX - Sab andar rahega, bahar nahi jayega ───
+        const clean = (t) => t.replace(/\n/g, ' ').replace(/#/g, '').trim();
+        const shortTitle = clean(result.title).length > 18 ? clean(result.title).slice(0, 18) + '..' : clean(result.title);
+        const shortAuthor = clean(result.author).length > 12 ? clean(result.author).slice(0, 12) + '..' : clean(result.author);
 
         const caption = `╔══════════════╗
 ║
-║ ❃ → 👤 *Author:* 🎀♡ ${shortAuthor} ♡🎀
-║ ❃ → 📝 *Title:* ${shortTitle}
-║ ❃ → 🔌 *Server:* ${result.server}
+║ ❃ → 👤 Author: ${shortAuthor}
+║ ❃ → 📝 Title: ${shortTitle}
+║ ❃ → 🔌 Server: ${result.server}
+║
 ╚══『 *M-KING👑* 』══╝`;
 
         await sock.sendMessage(chatId, {
