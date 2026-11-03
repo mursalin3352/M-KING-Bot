@@ -122,7 +122,7 @@ async function sendOverview(sock, chatId, message) {
     const total = getTotalCommands();
     const categories = CATEGORIES.filter(c => getRealCmds(c.cmds).length > 0);
 
-    const header = createStylishBox('⚡  D A R A T E C H  B O T  ⚡', `v${ver}`);
+    const header = createStylishBox('⚡  M-K I N G 👑', `v${ver}`);
 
     const body = [
         header,
