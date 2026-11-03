@@ -1,6 +1,6 @@
 'use strict';
 /**
- * simage.js — Sticker to Image/Video - M-KING PROFESSIONAL - AUTO PLAY & LOOP
+ * simage.js — Sticker to Image/Video - M-KING PROFESSIONAL - NORMAL VIDEO
  */
 
 const fs = require('fs');
@@ -30,7 +30,7 @@ const convertStickerToImage = async (sock, quotedMessage, chatId, message) => {
             return sock.sendMessage(chatId, { text: '↩️ Reply to a sticker with *$simage*' }, { quoted: message });
         }
 
-        await sock.sendMessage(chatId, { text: '🖼️ Converting sticker to image...' }, { quoted: message });
+        await sock.sendMessage(chatId, { text: '🎬 Converting sticker to video...' }, { quoted: message });
 
         const stream = await downloadContentFromMessage(quotedMessage.stickerMessage, 'sticker');
         let buffer = Buffer.alloc(0);
@@ -59,16 +59,14 @@ const convertStickerToImage = async (sock, quotedMessage, chatId, message) => {
                     '-c:v', 'libx264',
                     '-pix_fmt', 'yuv420p',
                     '-movflags', '+faststart',
-                    '-r', '15',
-                    '-t', '6',
+                    '-r', '20',
                     '-an'
                 ]);
 
                 const videoBuffer = fs.readFileSync(mp4Path);
                 await sock.sendMessage(chatId, {
                     video: videoBuffer,
-                    caption: '🖼️ Here is your converted sticker\n\n*Powered by M-KING👑*',
-                    gifPlayback: true, // Isi se foran hilega, click nahi karna padega, loop chalega
+                    caption: '🎬 Here is your converted sticker\n\n*Powered by M-KING👑*',
                     mimetype: 'video/mp4'
                 }, { quoted: message });
 
