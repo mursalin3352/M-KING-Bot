@@ -2,7 +2,7 @@
 require('./lib/logger');
 
 /**
- * M-KINGMD- A WhatsApp Bot
+ * M-KING- A WhatsApp Bot
  * Copyright (c) 2024 M-KING SHOP
  * 
  * This program is free software: you can redistribute it and/or modify
