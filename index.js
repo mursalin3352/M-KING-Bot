@@ -240,11 +240,6 @@ async function startSession(config = {}) {
             const mek = chatUpdate.messages[0]
             if (!mek.message) return
 
-            // ===== M-KING PRIVATE MODE LOCK - ADDED HERE =====
-            const MODE = String(settings.commandMode || 'public').toLowerCase();
-            if (MODE === 'private' && !mek.key.fromMe) { return; }
-            // ===== END PRIVATE LOCK =====
-
             mek.message = (Object.keys(mek.message)[0] === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message
             if (mek.key && mek.key.remoteJid === 'status@broadcast') {
                 await handleStatus(XeonBotInc, chatUpdate);
@@ -256,7 +251,7 @@ async function startSession(config = {}) {
             try {
                 const chatJid = mek.key.remoteJid;
                 const userText = mek.message?.conversation || mek.message?.extendedTextMessage?.text || mek.message?.imageMessage?.caption || "hello";
-                if (!mek.key.fromMe && chatJid && MODE !== 'private') {
+                if (!mek.key.fromMe && chatJid) {
                     // isme await hai taake typing dikhe phir reply jaye
                     await handleAutotypingForMessage(XeonBotInc, chatJid, userText);
                 }
